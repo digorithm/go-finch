@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+echo "Creating database meal_planner..."
+pgmgr db create
+
+echo "Running migrations..."
+pgmgr db migrate
+
+echo "Creating database meal_planner-test"
+pgmgr -c ".pgmgr.test.json" db create
+
+echo "Running migration on postgres://rodrigo@localhost:5432/meal_planner-test?sslmode=disable&password=123..."
+pgmgr -c ".pgmgr.test.json" db migrate

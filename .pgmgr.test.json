@@ -1,0 +1,1 @@
+{ "url": "postgres://rodrigo@localhost:5432/meal_planner-test?sslmode=disable&password=123", "migration-folder": "migrations", "dump-file": "migrations/dump.sql", "seed-tables": [] }
