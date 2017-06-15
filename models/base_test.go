@@ -2,11 +2,11 @@ package models
 
 import (
 	"fmt"
-	"os"
 	"github.com/digorithm/meal_planner/libstring"
 	"github.com/digorithm/meal_planner/libunix"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"os"
 	"testing"
 )
 
@@ -17,7 +17,7 @@ func newEmailForTest() string {
 func newDbForTest(t *testing.T) *sqlx.DB {
 	var err error
 	pguser, _, pghost, pgport, pgsslmode := os.Getenv("PGUSER"), os.Getenv("PGPASSWORD"), os.Getenv("PGHOST"), os.Getenv("PGPORT"), os.Getenv("PGSSLMODE")
-	if pguser == ""{
+	if pguser == "" {
 		pguser, err = libunix.CurrentUser()
 		if err != nil {
 			t.Fatalf("Getting current user should never fail. Error: %v", err)
@@ -36,7 +36,7 @@ func newDbForTest(t *testing.T) *sqlx.DB {
 		pgsslmode = "disable"
 	}
 
-	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://%v@%v:%v/meal_planner-test?sslmode=%v", pguser, pghost, pgport, pgsslmode))
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://%v@%v:%v/meal_planner?sslmode=%v", pguser, pghost, pgport, pgsslmode))
 	if err != nil {
 		t.Fatalf("Connecting to local postgres should never fail. Error: %v", err)
 	}
@@ -83,9 +83,8 @@ func TestNewTransactionIfNeeded(t *testing.T) {
 
 func TestCreateDeleteGeneric(t *testing.T) {
 	base := newBaseForTest(t)
-	base.table = "users"
+	base.table = "user_info"
 
-	// INSERT INTO users (name) VALUES (...)
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
 	data["password"] = "abc123"
@@ -112,11 +111,12 @@ func TestCreateDeleteGeneric(t *testing.T) {
 
 func TestCreateDeleteById(t *testing.T) {
 	base := newBaseForTest(t)
-	base.table = "users"
+	base.table = "user_info"
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
+	data["username"] = "username"
 	data["password"] = "abc123"
 
 	result, err := base.InsertIntoTable(nil, data)
@@ -139,11 +139,12 @@ func TestCreateDeleteById(t *testing.T) {
 
 func TestCreateUpdateGenericDelete(t *testing.T) {
 	base := newBaseForTest(t)
-	base.table = "users"
+	base.table = "user_info"
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
+	data["username"] = "username"
 	data["password"] = "abc123"
 
 	result, err := base.InsertIntoTable(nil, data)
@@ -175,11 +176,12 @@ func TestCreateUpdateGenericDelete(t *testing.T) {
 
 func TestCreateUpdateByIDDelete(t *testing.T) {
 	base := newBaseForTest(t)
-	base.table = "users"
+	base.table = "user_info"
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
+	data["username"] = "username"
 	data["password"] = "abc123"
 
 	result, err := base.InsertIntoTable(nil, data)
@@ -210,13 +212,14 @@ func TestCreateUpdateByIDDelete(t *testing.T) {
 
 func TestCreateUpdateByKeyValueStringDelete(t *testing.T) {
 	base := newBaseForTest(t)
-	base.table = "users"
+	base.table = "user_info"
 
 	originalEmail := newEmailForTest()
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
+	data["username"] = "username"
 	data["password"] = originalEmail
 
 	result, err := base.InsertIntoTable(nil, data)

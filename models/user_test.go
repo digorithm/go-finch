@@ -13,7 +13,8 @@ func TestUserCRUD(t *testing.T) {
 	u := newUserForTest(t)
 
 	// Signup
-	userRow, err := u.Signup(nil, newEmailForTest(), "abc123", "abc123")
+	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+
 	if err != nil {
 		t.Errorf("Signing up user should work. Error: %v", err)
 	}

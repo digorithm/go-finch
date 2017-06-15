@@ -11,7 +11,7 @@ import (
 func NewUser(db *sqlx.DB) *User {
 	user := &User{}
 	user.db = db
-	user.table = "users"
+	user.table = "user_info"
 	user.hasID = true
 
 	return user
@@ -21,6 +21,7 @@ type UserRow struct {
 	ID       int64  `db:"id"`
 	Email    string `db:"email"`
 	Password string `db:"password"`
+	Username string `db:"username"`
 }
 
 type User struct {
@@ -79,7 +80,7 @@ func (u *User) GetUserByEmailAndPassword(tx *sqlx.Tx, email, password string) (*
 }
 
 // Signup create a new record of user.
-func (u *User) Signup(tx *sqlx.Tx, email, password, passwordAgain string) (*UserRow, error) {
+func (u *User) Signup(tx *sqlx.Tx, email, username, password, passwordAgain string) (*UserRow, error) {
 	if email == "" {
 		return nil, errors.New("Email cannot be blank.")
 	}
@@ -97,6 +98,7 @@ func (u *User) Signup(tx *sqlx.Tx, email, password, passwordAgain string) (*User
 
 	data := make(map[string]interface{})
 	data["email"] = email
+	data["username"] = username
 	data["password"] = hashedPassword
 
 	sqlResult, err := u.InsertIntoTable(tx, data)
