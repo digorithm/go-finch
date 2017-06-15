@@ -90,6 +90,9 @@ func (u *User) Signup(tx *sqlx.Tx, email, username, password, passwordAgain stri
 	if password != passwordAgain {
 		return nil, errors.New("Password is invalid.")
 	}
+	if username == "" {
+		return nil, errors.New("Username cannot be blank")
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 5)
 	if err != nil {

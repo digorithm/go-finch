@@ -1,8 +1,10 @@
+-- done
 create table house(
      id serial primary key,
      name varchar(355) not null
 );
 
+-- done
 create table user_info(
     id serial primary key,
     email varchar(355) unique not null,
