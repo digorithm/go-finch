@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"errors"
-	"github.com/digorithm/meal_planner/models"
 	"github.com/digorithm/meal_planner/libhttp"
+	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	"html/template"
@@ -29,10 +29,11 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	db := r.Context().Value("db").(*sqlx.DB)
 
 	email := r.FormValue("Email")
+	username := r.FormValue("username")
 	password := r.FormValue("Password")
 	passwordAgain := r.FormValue("PasswordAgain")
 
-	_, err := models.NewUser(db).Signup(nil, email, password, passwordAgain)
+	_, err := models.NewUser(db).Signup(nil, email, username, password, passwordAgain)
 	if err != nil {
 		libhttp.HandleErrorJson(w, err)
 		return
@@ -75,8 +76,8 @@ func GetLogin(w http.ResponseWriter, r *http.Request) {
 func PostLogin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	db := r.Context().Value( "db").(*sqlx.DB)
-	sessionStore := r.Context().Value( "sessionStore").(sessions.Store)
+	db := r.Context().Value("db").(*sqlx.DB)
+	sessionStore := r.Context().Value("sessionStore").(sessions.Store)
 
 	email := r.FormValue("Email")
 	password := r.FormValue("Password")
@@ -132,9 +133,9 @@ func PutUsersID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := r.Context().Value( "db").(*sqlx.DB)
+	db := r.Context().Value("db").(*sqlx.DB)
 
-	sessionStore := r.Context().Value( "sessionStore").(sessions.Store)
+	sessionStore := r.Context().Value("sessionStore").(sessions.Store)
 
 	session, _ := sessionStore.Get(r, "meal_planner-session")
 
