@@ -64,6 +64,15 @@ func (u *User) GetByEmail(tx *sqlx.Tx, email string) (*UserRow, error) {
 	return user, err
 }
 
+// GetByUsername returns record by username.
+func (u *User) GetByUsername(tx *sqlx.Tx, username string) (*UserRow, error) {
+	user := &UserRow{}
+	query := fmt.Sprintf("SELECT * FROM %v WHERE username=$1", u.table)
+	err := u.db.Get(user, query, username)
+
+	return user, err
+}
+
 // GetByEmail returns record by email but checks password first.
 func (u *User) GetUserByEmailAndPassword(tx *sqlx.Tx, email, password string) (*UserRow, error) {
 	user, err := u.GetByEmail(tx, email)
