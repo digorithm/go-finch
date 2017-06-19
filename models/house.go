@@ -20,7 +20,6 @@ type House struct {
 	Base
 }
 
-
 func (h *House) houseRowFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (*HouseRow, error) {
 	houseId, err := sqlResult.LastInsertId()
 	if err != nil {
@@ -64,15 +63,17 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 	return h.houseRowFromSqlResult(tx, sqlResult)
 }
 
-func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error){
+func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error) {
+
 	var users []UserOwnTypeRow
+
 	rows, err := h.db.Queryx("SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1", house_id)
+
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("print1")
-	
-	for rows.Next(){
+
+	for rows.Next() {
 		var u UserOwnTypeRow
 		err = rows.StructScan(&u)
 		if err != nil {

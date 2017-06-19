@@ -1,9 +1,9 @@
 package models
 
 import (
+	"fmt"
 	_ "github.com/lib/pq"
 	"testing"
-	"fmt"
 )
 
 func newHouseForTest(t *testing.T) *House {
@@ -24,7 +24,7 @@ func TestHouseCRUD(t *testing.T) {
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
-	
+
 	fmt.Println(users)
 
 	// Test deletion
@@ -33,5 +33,3 @@ func TestHouseCRUD(t *testing.T) {
 		t.Fatalf("Deleting house by id should not fail. Error: %v", err)
 	}
 }
-
-
