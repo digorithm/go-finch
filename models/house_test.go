@@ -1,9 +1,9 @@
 package models
 
 import (
+	"fmt"
 	_ "github.com/lib/pq"
 	"testing"
-	"fmt"
 )
 
 func newHouseForTest(t *testing.T) *House {
@@ -45,6 +45,9 @@ func TestGetRecipes(t *testing.T) {
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
+<<<<<<< HEAD
 
 	fmt.Println(recipes)
+=======
+>>>>>>> 309e66eac37624b49709136a32653073737535f7
 }
