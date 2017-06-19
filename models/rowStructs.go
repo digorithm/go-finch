@@ -13,9 +13,18 @@ type UserRow struct {
 	Username string `db:"username"`
 }
 
+type OwnerRow struct {
+	OwnType		int64  `db:"own_type"`
+	Description string `db:"description"`
+}
+
 type UserOwnTypeRow struct {
 	UserRow
-	OwnType		int64  `db: "own_type"`
-	Description string `db: "description"`
+	OwnerRow
+}
+
+type HouseStorageRow struct {
+	HouseRow
+	OwnerRow
 }
 
