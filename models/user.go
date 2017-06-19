@@ -17,12 +17,6 @@ func NewUser(db *sqlx.DB) *User {
 	return user
 }
 
-type UserRow struct {
-	ID       int64  `db:"id"`
-	Email    string `db:"email"`
-	Password string `db:"password"`
-	Username string `db:"username"`
-}
 
 type User struct {
 	Base

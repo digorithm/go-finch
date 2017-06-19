@@ -16,11 +16,6 @@ func NewHouse(db *sqlx.DB) *House {
 	return house
 }
 
-type HouseRow struct {
-	ID   int64  `db:"id"`
-	Name string `db:"name"`
-}
-
 type House struct {
 	Base
 }
@@ -69,8 +64,8 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 	return h.houseRowFromSqlResult(tx, sqlResult)
 }
 
-func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) (UserOwnType, error){
-	var users UserOwnType
+func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) (UserOwnTypeRow, error){
+	var users UserOwnTypeRow
 	rows, err := h.db.Queryx("SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1", house_id)
 	if err != nil {
 		fmt.Println(err)
