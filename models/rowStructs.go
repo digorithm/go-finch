@@ -28,3 +28,7 @@ type HouseStorageRow struct {
 	OwnerRow
 }
 
+type RecipeRow struct {
+	ID 		int64	`db:"id"`
+	Name	string	`db:"name"`
+}

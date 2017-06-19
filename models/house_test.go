@@ -20,13 +20,6 @@ func TestHouseCRUD(t *testing.T) {
 		t.Errorf("Creating house should work. Error: %v", err)
 	}
 
-	users, err := h.GetHouseUsers(nil, 1)
-	if err != nil {
-		t.Errorf("Getting users should work. Error: %v", err)
-	}
-	
-	fmt.Println(users)
-
 	// Test deletion
 	_, err = h.DeleteById(nil, houseRow.ID)
 	if err != nil {
@@ -34,4 +27,24 @@ func TestHouseCRUD(t *testing.T) {
 	}
 }
 
+func TestGetUsers(t *testing.T) {
+	h := newHouseForTest(t)
 
+	users, err := h.GetHouseUsers(nil, 1)
+	if err != nil {
+		t.Errorf("Getting users should work. Error: %v", err)
+	}
+
+	fmt.Println(users)
+}
+
+func TestGetRecipes(t *testing.T) {
+	h := newHouseForTest(t)
+
+	recipes, err := h.GetHouseRecipes(nil, 1)
+	if err != nil {
+		t.Errorf("Getting users should work. Error: %v", err)
+	}
+
+	fmt.Println(recipes)
+}

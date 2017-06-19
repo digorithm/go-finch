@@ -66,20 +66,41 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 
 func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error){
 	var users []UserOwnTypeRow
+
 	rows, err := h.db.Queryx("SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1", house_id)
 	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("print1")
-	
+        fmt.Printf("%v", err)
+    }
+
 	for rows.Next(){
 		var u UserOwnTypeRow
 		err = rows.StructScan(&u)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("%v", err)
 		}
 		users = append(users, u)
 	}
 
 	return users, err
 }
+
+func (h *House) GetHouseRecipes(ts *sqlx.Tx, house_id int64) ([]RecipeRow, error){
+	var recipes []RecipeRow
+
+	rows, err := h.db.Queryx("SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1", house_id)
+	if err != nil {
+        fmt.Printf("%v", err)
+    }
+
+	for rows.Next(){
+		var r RecipeRow
+		err = rows.StructScan(&r)
+		if err != nil {
+        	fmt.Printf("%v", err)
+    	}
+		recipes = append(recipes, r)
+	}
+
+	return recipes, err
+}
+ 
