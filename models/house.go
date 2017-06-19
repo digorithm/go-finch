@@ -64,8 +64,8 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 	return h.houseRowFromSqlResult(tx, sqlResult)
 }
 
-func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) (UserOwnTypeRow, error){
-	var users UserOwnTypeRow
+func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error){
+	var users []UserOwnTypeRow
 	rows, err := h.db.Queryx("SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1", house_id)
 	if err != nil {
 		fmt.Println(err)
@@ -73,10 +73,12 @@ func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) (UserOwnTypeRow, erro
 	fmt.Println("print1")
 	
 	for rows.Next(){
-		err := rows.StructScan(&users)
+		var u UserOwnTypeRow
+		err = rows.StructScan(&u)
 		if err != nil {
 			fmt.Println(err)
 		}
+		users = append(users, u)
 	}
 
 	return users, err
