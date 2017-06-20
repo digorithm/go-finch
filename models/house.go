@@ -63,7 +63,7 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 	return h.houseRowFromSqlResult(tx, sqlResult)
 }
 
-func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error) {
+func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error) {
 
 	var users []UserOwnTypeRow
 
@@ -85,10 +85,12 @@ func (h *House) GetHouseUsers(ts *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, er
 	return users, err
 }
 
-func (h *House) GetHouseRecipes(ts *sqlx.Tx, house_id int64) ([]RecipeRow, error) {
+func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error) {
 	var recipes []RecipeRow
 
 	rows, err := h.db.Queryx("SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1", house_id)
+	
+	fmt.Println(rows)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}

@@ -6,6 +6,9 @@ import (
 	"testing"
 )
 
+var userString string = "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
+var uRow UserOwnTypeRow
+
 func newHouseForTest(t *testing.T) *House {
 	return NewHouse(newDbForTest(t))
 }
@@ -41,10 +44,28 @@ func TestGetUsers(t *testing.T) {
 func TestGetRecipes(t *testing.T) {
 	h := newHouseForTest(t)
 
+	fmt.Println(h)
 	recipes, err := h.GetHouseRecipes(nil, 1)
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
 
 	fmt.Println(recipes)
+}
+
+func TestRowGetters(t *testing.T) {
+	h := newHouseForTest(t)
+
+	fmt.Println("1")
+
+	fmt.Println(uRow)
+	fmt.Println(userString)
+	fmt.Println(h)
+	users, err := h.rowGetter(nil, uRow, userString, 1)
+	if err != nil {
+		t.Errorf("Getting users should work. Error: %v", err)
+	}
+
+	fmt.Println(users)
+
 }
