@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
-	"reflect"
 )
 
 type InsertResult struct {
@@ -28,42 +27,6 @@ type Base struct {
 	hasID bool
 }
 
-func (b *Base) rowGetter(tx *sqlx.Tx, rowStruct interface{}, queryBody string, row_id int64) ([]interface{}, error){
-
-	var rowTableResults []interface{}
-
-	fmt.Println("2")
-	arr := reflect.ValueOf(rowStruct)
-	fmt.Println(arr)
-	fmt.Println("3")
-	
-	rows, err := b.db.Queryx(queryBody, row_id)
-
-	fmt.Println(rows)
-	if err != nil {
-		//fmt.Println("3")
-		fmt.Printf("%v", err)
-	}
-
-	for rows.Next() {
-		fmt.Println("4")
-		err = rows.StructScan(&arr)
-		fmt.Println("5")
-		if err != nil {
-			fmt.Printf("%v", err)
-		}
-		rowTableResults = append(rowTableResults, arr)
-		/*fmt.Println("this is rowTableResults before append: ")
-		fmt.Println(rowTableResults)
-		rowTableResults = append(rowTableResults, rowStruct)
-		fmt.Println("this is rowTableResults after append: ")
-		fmt.Println(rowTableResults)*/
-
-	}
-
-	return rowTableResults, err
-
-}
 
 func (b *Base) newTransactionIfNeeded(tx *sqlx.Tx) (*sqlx.Tx, bool, error) {
 	var err error

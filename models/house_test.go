@@ -44,28 +44,10 @@ func TestGetUsers(t *testing.T) {
 func TestGetRecipes(t *testing.T) {
 	h := newHouseForTest(t)
 
-	fmt.Println(h)
 	recipes, err := h.GetHouseRecipes(nil, 1)
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
 
 	fmt.Println(recipes)
-}
-
-func TestRowGetters(t *testing.T) {
-	h := newHouseForTest(t)
-
-	fmt.Println("1")
-
-	fmt.Println(uRow)
-	fmt.Println(userString)
-	fmt.Println(h)
-	users, err := h.rowGetter(nil, uRow, userString, 1)
-	if err != nil {
-		t.Errorf("Getting users should work. Error: %v", err)
-	}
-
-	fmt.Println(users)
-
 }
