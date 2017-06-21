@@ -42,6 +42,7 @@ func TestGetUsers(t *testing.T) {
 	}
 
 	fmt.Println(users)
+
 }
 
 func TestGetRecipes(t *testing.T) {
@@ -49,7 +50,7 @@ func TestGetRecipes(t *testing.T) {
 
 	recipes, err := h.GetHouseRecipes(nil, 1)
 	if err != nil {
-		t.Errorf("Getting users should work. Error: %v", err)
+		t.Errorf("Getting house recipes should work. Error: %v", err)
 	}
 
 	var r1 RecipeRow
