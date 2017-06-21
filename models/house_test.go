@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	_ "github.com/lib/pq"
 )
 
@@ -59,8 +57,14 @@ func TestGetRecipes(t *testing.T) {
 	var result []RecipeRow
 
 	result = append(result, r1, r2)
+	i := 0
+	for i < len(recipes) {
+		if result[i] != recipes[i] {
+			t.Errorf("House Recipes, got: %d, want: %d", recipes[i], result[i])
+		}
 
-	assert.Equal(t, result, recipes, "Two objects should be the same")
+		i++
+	}
 
 	fmt.Println(recipes)
 }
