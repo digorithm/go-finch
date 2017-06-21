@@ -99,7 +99,6 @@ func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwn
 func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []HouseStorageRow {
 
 	var row HouseStorageRow
-	var rows []HouseStorageRow
 
 	for i := 0; i < len(data); i++ {
 		v := reflect.ValueOf(data[i])
@@ -111,13 +110,12 @@ func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []Hou
 		rows = append(rows, row)
 	}
 
-	return rows
+	return storage
 }
 
 func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []FullRecipeRow {
 
 	var row FullRecipeRow
-	var rows []FullRecipeRow
 
 	for i := 0; i < len(data); i++ {
 
@@ -134,5 +132,5 @@ func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []Full
 		rows = append(rows, row)
 	}
 
-	return rows
+	return fullRecipe
 }
