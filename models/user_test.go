@@ -1,8 +1,11 @@
 package models
 
 import (
-	_ "github.com/lib/pq"
 	"testing"
+
+	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
 func newUserForTest(t *testing.T) *User {
@@ -85,5 +88,19 @@ func TestGetUserByUsername(t *testing.T) {
 	if userRow.Username != returningUserRow.Username {
 		t.Errorf("Usernames did not match!")
 	}
+
+}
+
+func TestGetUserRecipes(t *testing.T) {
+
+	u := newUserForTest(t)
+
+	recipes, err := u.GetUserRecipes(nil, 2)
+
+	if err != nil {
+		t.Errorf("Generic get recipe should work")
+	}
+
+	fmt.Println(recipes)
 
 }

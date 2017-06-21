@@ -10,11 +10,6 @@ type HouseScheduleRow struct {
 	Recipe string `db:"name"`
 }
 
-type UserHouseRow struct {
-	HouseRow
-	OwnerRow
-}
-
 type HouseRow struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
@@ -33,6 +28,11 @@ type UserRow struct {
 	Username string `db:"username"`
 }
 
+type UserHouseRow struct {
+	HouseRow
+	OwnerRow
+}
+
 type OwnerRow struct {
 	OwnType     int64  `db:"own_type"`
 	Description string `db:"description"`
@@ -44,9 +44,8 @@ type UserOwnTypeRow struct {
 }
 
 type RecipeRow struct {
-	ID    int64  `db:"id"`
-	Name  string `db:"name"`
-	image string `db:recipe`
+	ID   int64  `db:"id"`
+	Name string `db:"name"`
 }
 
 type IngredientRow struct {

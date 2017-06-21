@@ -85,19 +85,9 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, err
 
 func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error) {
 
-	var recipes []RecipeRow
-
 	query := "SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
 
-	data, err := h.GetCompoundModel(tx, query, houseID)
-
-	recipes = createRecipeRows(recipes, data)
-
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	return recipes, err
+	return h.GetRecipeForStruct(tx, query, houseID)
 }
 
 func (h *House) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
