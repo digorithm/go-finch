@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	_ "github.com/lib/pq"
 )
 
@@ -49,6 +51,18 @@ func TestGetRecipes(t *testing.T) {
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
+
+	var r1 RecipeRow
+	var r2 RecipeRow
+	r1.ID = 1
+	r1.Name = "Baked Potato"
+	r2.ID = 4
+	r2.Name = "Roast Chicken"
+	var result []RecipeRow
+
+	result = append(result, r1, r2)
+
+	assert.Equal(t, result, recipes, "Two objects should be the same")
 
 	fmt.Println(recipes)
 }

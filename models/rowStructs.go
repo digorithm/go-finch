@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"reflect"
 )
 
@@ -51,5 +52,21 @@ func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
 		rows = append(rows, row)
 	}
 
+	return rows
+}
+
+func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwnTypeRow {
+
+	var row UserOwnTypeRow
+	var rows []UserOwnTypeRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		row.ID = v.Index(0).Interface().(int64)
+	}
+
+	fmt.Printf("%v", rows)
 	return rows
 }
