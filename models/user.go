@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,7 +17,6 @@ func NewUser(db *sqlx.DB) *User {
 
 	return user
 }
-
 
 type User struct {
 	Base
@@ -116,7 +116,7 @@ func (u *User) Signup(tx *sqlx.Tx, email, username, password, passwordAgain stri
 }
 
 // UpdateEmailAndPasswordById updates user email and password.
-func (u *User) UpdateEmailAndPasswordById(tx *sqlx.Tx, userId int64, email, password, passwordAgain string) (*UserRow, error) {
+func (u *User) UpdateEmailAndPasswordById(tx *sqlx.Tx, userID int64, email, password, passwordAgain string) (*UserRow, error) {
 	data := make(map[string]interface{})
 
 	if email != "" {
@@ -133,11 +133,28 @@ func (u *User) UpdateEmailAndPasswordById(tx *sqlx.Tx, userId int64, email, pass
 	}
 
 	if len(data) > 0 {
-		_, err := u.UpdateByID(tx, data, userId)
+		_, err := u.UpdateByID(tx, data, userID)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return u.GetById(tx, userId)
+	return u.GetById(tx, userID)
+}
+
+func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) {
+
+	var houses []UserHouseRow
+
+	query := "SELECT H.ID, H.NAME, O.OWN_TYPE, O.DESCRIPTION FROM HOUSE H INNER JOIN MEMBER_OF M ON M.HOUSE_ID = H.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.USER_ID = $1"
+
+	data, err := u.GetCompoundModel(nil, query, userID)
+
+	houses = createUserHouseRows(houses, data)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	return houses, err
 }

@@ -10,6 +10,11 @@ type HouseScheduleRow struct {
 	Recipe string `db:"name"`
 }
 
+type UserHouseRow struct {
+	HouseRow
+	OwnerRow
+}
+
 type HouseRow struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
@@ -157,4 +162,23 @@ func createHouseScheduleRows(schedule []HouseScheduleRow, data []interface{}) []
 	}
 
 	return schedule
+}
+
+func createUserHouseRows(houses []UserHouseRow, data []interface{}) []UserHouseRow {
+
+	var row UserHouseRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		row.ID = v.Index(0).Interface().(int64)
+		row.Name = v.Index(1).Interface().(string)
+		row.OwnType = v.Index(2).Interface().(int64)
+		row.Description = v.Index(3).Interface().(string)
+
+		houses = append(houses, row)
+	}
+
+	return houses
 }

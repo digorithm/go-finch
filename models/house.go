@@ -64,13 +64,13 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 	return h.houseRowFromSqlResult(tx, sqlResult)
 }
 
-func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, error) {
+func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, error) {
 
 	var users []UserOwnTypeRow
 
 	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
 
-	data, err := h.GetCompoundModel(nil, query, house_id)
+	data, err := h.GetCompoundModel(tx, query, houseID)
 
 	users = createUserOwnTypeRows(users, data)
 
@@ -83,13 +83,13 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, er
 	return users, err
 }
 
-func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error) {
+func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error) {
 
 	var recipes []RecipeRow
 
 	query := "SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
 
-	data, err := h.GetCompoundModel(nil, query, house_id)
+	data, err := h.GetCompoundModel(tx, query, houseID)
 
 	recipes = createRecipeRows(recipes, data)
 
@@ -100,13 +100,13 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error
 	return recipes, err
 }
 
-func (h *House) GetHouseStorage(tx *sqlx.Tx, house_id int64) ([]HouseStorageRow, error) {
+func (h *House) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
 	var storage []HouseStorageRow
 
 	query := "SELECT I.NAME, S.AMOUNT, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
 
-	data, err := h.GetCompoundModel(nil, query, house_id)
+	data, err := h.GetCompoundModel(tx, query, houseID)
 
 	storage = createHouseStorageRows(storage, data)
 
@@ -117,13 +117,13 @@ func (h *House) GetHouseStorage(tx *sqlx.Tx, house_id int64) ([]HouseStorageRow,
 	return storage, err
 }
 
-func (h *House) GetHouseSchedule(tx *sqlx.Tx, house_id int64) ([]HouseScheduleRow, error) {
+func (h *House) GetHouseSchedule(tx *sqlx.Tx, houseID int64) ([]HouseScheduleRow, error) {
 
 	var schedule []HouseScheduleRow
 
 	query := "SELECT W.DAY, T.TYPE, R.NAME FROM RECIPE R, WEEKDAY W, MEAL_TYPE T, SCHEDULE S WHERE S.HOUSE_ID = $1 AND S.WEEK_ID = W.ID AND S.TYPE_ID = T.ID AND S.RECIPE_ID = R.ID"
 
-	data, err := h.GetCompoundModel(nil, query, house_id)
+	data, err := h.GetCompoundModel(tx, query, houseID)
 
 	schedule = createHouseScheduleRows(schedule, data)
 
