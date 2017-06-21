@@ -107,5 +107,11 @@ func (h *House) GetHouseStorage(tx *sqlx.Tx, house_id int64) ([]HouseStorageRow,
 
 	data, err := h.GetCompoundModel(nil, query, house_id)
 
-	storage = create
+	storage = createHouseStorageRows(storage, data)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	return storage, err
 }
