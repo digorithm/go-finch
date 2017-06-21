@@ -65,6 +65,11 @@ func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwn
 		v := reflect.ValueOf(data[i])
 
 		row.ID = v.Index(0).Interface().(int64)
+		row.Email = v.Index(1).Interface().(string)
+		row.Password = v.Index(2).Interface().(string)
+		row.Username = v.Index(3).Interface().(string)
+		row.OwnType = v.Index(4).Interface().(int64)
+		row.Description = v.Index(5).Interface().(string)
 	}
 
 	fmt.Printf("%v", rows)
