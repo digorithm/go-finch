@@ -1,5 +1,8 @@
 package models
 
+import (
+	"reflect"
+)
 
 type HouseRow struct {
 	ID   int64  `db:"id"`
@@ -14,7 +17,7 @@ type UserRow struct {
 }
 
 type OwnerRow struct {
-	OwnType		int64  `db:"own_type"`
+	OwnType     int64  `db:"own_type"`
 	Description string `db:"description"`
 }
 
@@ -29,6 +32,24 @@ type HouseStorageRow struct {
 }
 
 type RecipeRow struct {
-	ID 		int64	`db:"id"`
-	Name	string	`db:"name"`
+	ID   int64  `db:"id"`
+	Name string `db:"name"`
+}
+
+func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
+
+	var row RecipeRow
+	var rows []RecipeRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		row.ID = v.Index(0).Interface().(int64)
+		row.Name = v.Index(1).Interface().(string)
+
+		rows = append(rows, row)
+	}
+
+	return rows
 }

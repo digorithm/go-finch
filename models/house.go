@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -89,12 +90,13 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error
 	data, err := h.GetCompoundModel(nil, query, house_id)
 
 	// Move data to recipes
+	recipes = createRecipeRows(recipes, data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
 
-	fmt.Println(data)
+	//fmt.Println(data)
 
 	return recipes, err
 }
