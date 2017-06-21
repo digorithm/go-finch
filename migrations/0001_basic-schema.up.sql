@@ -85,8 +85,8 @@ create table schedule(
     house_id int4 references house(id),
     week_id int4 references weekday(id) not null,
     type_id int4 references meal_type(id) not null,
-    recipe_id int4 references recipe(id) not null,
-    primary key(house_id)
+    recipe_id int4 references recipe(id),
+    primary key(house_id, week_id, type_id)
 );
 
  create table ownership(
