@@ -116,3 +116,20 @@ func (h *House) GetHouseStorage(tx *sqlx.Tx, house_id int64) ([]HouseStorageRow,
 
 	return storage, err
 }
+
+func (h *House) GetHouseSchedule(tx *sqlx.Tx, house_id int64) ([]HouseScheduleRow, error) {
+
+	var schedule []HouseScheduleRow
+
+	query := "SELECT W.DAY, T.TYPE, R.NAME FROM RECIPE R, WEEKDAY W, MEAL_TYPE T, SCHEDULE S WHERE S.HOUSE_ID = $1 AND S.WEEK_ID = W.ID AND S.TYPE_ID = T.ID AND S.RECIPE_ID = R.ID"
+
+	data, err := h.GetCompoundModel(nil, query, house_id)
+
+	schedule = createHouseScheduleRows(schedule, data)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	return schedule, err
+}

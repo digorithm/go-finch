@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-type ScheduleRow struct {
+type HouseScheduleRow struct {
 	Week   string `db:"day"`
 	Type   string `db:"type"`
 	Recipe string `db:"name"`
@@ -139,4 +139,22 @@ func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []Full
 	}
 
 	return fullRecipe
+}
+
+func createHouseScheduleRows(schedule []HouseScheduleRow, data []interface{}) []HouseScheduleRow {
+
+	var row HouseScheduleRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		row.Week = v.Index(0).Interface().(string)
+		row.Type = v.Index(1).Interface().(string)
+		row.Recipe = v.Index(2).Interface().(string)
+
+		schedule = append(schedule, row)
+	}
+
+	return schedule
 }
