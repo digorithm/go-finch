@@ -67,20 +67,16 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, er
 
 	var users []UserOwnTypeRow
 
-	rows, err := h.db.Queryx("SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1", house_id)
+	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
+
+	data, err := h.GetCompoundModel(nil, query, house_id)
+	// Move data to users
 
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
 
-	for rows.Next() {
-		var u UserOwnTypeRow
-		err = rows.StructScan(&u)
-		if err != nil {
-			fmt.Printf("%v", err)
-		}
-		users = append(users, u)
-	}
+	fmt.Println(data)
 
 	return users, err
 }
@@ -88,20 +84,17 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, er
 func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error) {
 	var recipes []RecipeRow
 
-	rows, err := h.db.Queryx("SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1", house_id)
+	query := "SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
+
+	data, err := h.GetCompoundModel(nil, query, house_id)
+
+	// Move data to recipes
 
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
 
-	for rows.Next() {
-		var r RecipeRow
-		err = rows.StructScan(&r)
-		if err != nil {
-			fmt.Printf("%v", err)
-		}
-		recipes = append(recipes, r)
-	}
+	fmt.Println(data)
 
 	return recipes, err
 }

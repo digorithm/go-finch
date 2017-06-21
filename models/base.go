@@ -27,7 +27,6 @@ type Base struct {
 	hasID bool
 }
 
-
 func (b *Base) newTransactionIfNeeded(tx *sqlx.Tx) (*sqlx.Tx, bool, error) {
 	var err error
 	wrapInSingleTransaction := false
@@ -309,4 +308,24 @@ func (b *Base) DeleteById(tx *sqlx.Tx, id int64) (sql.Result, error) {
 	}
 
 	return result, err
+}
+
+func (b *Base) GetCompoundModel(tx *sqlx.Tx, query string, id int64) ([]interface{}, error) {
+
+	rows, err := b.db.Queryx(query, id)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	var results []interface{}
+
+	for rows.Next() {
+		cols, err := rows.SliceScan()
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		results = append(results, cols)
+	}
+	return results, err
 }
