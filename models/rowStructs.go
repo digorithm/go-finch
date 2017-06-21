@@ -4,6 +4,12 @@ import (
 	"reflect"
 )
 
+type ScheduleRow struct {
+	Week   string `db:"day"`
+	Type   string `db:"type"`
+	Recipe string `db:"name"`
+}
+
 type HouseRow struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
@@ -107,7 +113,7 @@ func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []Hou
 		row.Amount = v.Index(1).Interface().(float64)
 		row.Unit = v.Index(2).Interface().(string)
 
-		rows = append(rows, row)
+		storage = append(storage, row)
 	}
 
 	return storage
@@ -129,7 +135,7 @@ func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []Full
 		row.Unit = v.Index(5).Interface().(string)
 		row.Text = v.Index(6).Interface().(string)
 
-		rows = append(rows, row)
+		fullRecipe = append(fullRecipe, row)
 	}
 
 	return fullRecipe
