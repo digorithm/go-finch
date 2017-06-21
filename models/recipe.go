@@ -51,3 +51,5 @@ func (b *Base) GetRecipeForStruct(tx *sqlx.Tx, recipeQuery string, recipeID int6
 
 	return recipes, err
 }
+
+// TODO: func (r *Recipe) GetNutritionalFacts(tx *sqlx.Tx, recipe_id int64) ()
