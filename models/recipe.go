@@ -36,3 +36,5 @@ func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipe_id int64) ([]FullRecipeRow, e
 	return FullRecipe, err
 
 }
+
+// TODO: func (r *Recipe) GetNutritionalFacts(tx *sqlx.Tx, recipe_id int64) ()
