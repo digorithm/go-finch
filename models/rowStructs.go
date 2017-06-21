@@ -1,13 +1,18 @@
 package models
 
 import (
-	"fmt"
 	"reflect"
 )
 
 type HouseRow struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
+}
+
+type HouseStorageRow struct {
+	Name   string  `db:"name"`
+	Amount float64 `db:"amount`
+	Unit   string  `db:"name"`
 }
 
 type UserRow struct {
@@ -27,11 +32,6 @@ type UserOwnTypeRow struct {
 	OwnerRow
 }
 
-type HouseStorageRow struct {
-	HouseRow
-	OwnerRow
-}
-
 type RecipeRow struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
@@ -40,7 +40,6 @@ type RecipeRow struct {
 func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
 
 	var row RecipeRow
-	var rows []RecipeRow
 
 	for i := 0; i < len(data); i++ {
 
@@ -49,16 +48,15 @@ func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
 		row.ID = v.Index(0).Interface().(int64)
 		row.Name = v.Index(1).Interface().(string)
 
-		rows = append(rows, row)
+		recipes = append(recipes, row)
 	}
 
-	return rows
+	return recipes
 }
 
 func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwnTypeRow {
 
 	var row UserOwnTypeRow
-	var rows []UserOwnTypeRow
 
 	for i := 0; i < len(data); i++ {
 
@@ -70,8 +68,26 @@ func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwn
 		row.Username = v.Index(3).Interface().(string)
 		row.OwnType = v.Index(4).Interface().(int64)
 		row.Description = v.Index(5).Interface().(string)
+
+		users = append(users, row)
 	}
 
-	fmt.Printf("%v", rows)
-	return rows
+	return users
+}
+
+func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []HouseStorageRow {
+
+	var row HouseStorageRow
+
+	for i := 0; i < len(data); i++ {
+		v := reflect.ValueOf(data[i])
+
+		row.Name = v.Index(0).Interface().(string)
+		row.Amount = v.Index(1).Interface().(float64)
+		row.Unit = v.Index(2).Interface().(string)
+
+		storage = append(storage, row)
+	}
+
+	return storage
 }

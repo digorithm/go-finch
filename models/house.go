@@ -71,7 +71,8 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, house_id int64) ([]UserOwnTypeRow, er
 	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
 
 	data, err := h.GetCompoundModel(nil, query, house_id)
-	// Move data to users
+
+	users = createUserOwnTypeRows(users, data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -97,4 +98,14 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, house_id int64) ([]RecipeRow, error
 	}
 
 	return recipes, err
+}
+
+func (h *House) GetHouseStorage(tx *sqlx.Tx, house_id int64) ([]HouseStorageRow, error) {
+	var storage []HouseStorageRow
+
+	query := "SELECT I.NAME, S.AMOUNT, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
+
+	data, err := h.GetCompoundModel(nil, query, house_id)
+
+	storage = create
 }
