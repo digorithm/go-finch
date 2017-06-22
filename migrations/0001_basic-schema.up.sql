@@ -1,7 +1,9 @@
 -- done
 create table house(
      id serial primary key,
-     name varchar(355) not null
+     name varchar(355) not null,
+     grocery_id int4 references weekday(id) not null,
+     household_number int not null
 );
 
 -- done
@@ -15,6 +17,8 @@ create table user_info(
 create table recipe(
      id serial primary key,
      name varchar(355) not null,
+     type_id int4 references meal_type(id) not null,
+     serves_for int,
      image varchar(50)
 );
 
