@@ -161,7 +161,7 @@ func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) 
 
 func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 
-	query := "SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
+	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
 
 	return u.GetRecipeForStruct(tx, query, userID)
 }

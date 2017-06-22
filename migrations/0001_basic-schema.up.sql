@@ -1,8 +1,18 @@
 -- done
+create table meal_type(
+    id serial primary key,
+    type varchar(50) unique
+);
+
+create table weekday(
+    id serial primary key,
+    day varchar(50) unique
+);
+
 create table house(
      id serial primary key,
      name varchar(355) not null,
-     grocery_id int4 references weekday(id) not null,
+     grocery_day varchar(50) references weekday(day) not null,
      household_number int not null
 );
 
@@ -17,7 +27,7 @@ create table user_info(
 create table recipe(
      id serial primary key,
      name varchar(355) not null,
-     type_id int4 references meal_type(id) not null,
+     type varchar(50) references meal_type(type) not null,
      serves_for int,
      image varchar(50)
 );
@@ -36,16 +46,6 @@ create table unit(
      id serial primary key,
      name varchar(50) unique not null
  );
-
-create table weekday(
-    id serial primary key,
-    day varchar(50)
-);
-
-create table meal_type(
-    id serial primary key,
-    type varchar(50)
-);
 
 create table step(
     recipe_id int4 references recipe(id),
@@ -121,34 +121,6 @@ insert into user_info(username, email, password)
 values 
 ('joe', 'iamjoe@gmail.com', 'password3');
 
-insert into house(name)
-values
-('My Lovely Home');
-
-insert into house(name)
-values
-('My Lovely Home');
-
-insert into house(name)
-values
-('Spaceship');
-
-insert into recipe(name)
-values
-('Baked Potato');
-
-insert into recipe(name)
-values
-('Beans with rice');
-
-insert into recipe(name)
-values
-('No Flour Pancake');
-
-insert into recipe(name)
-values
-('Roast Chicken');
-
 insert into weekday(day)
 values
 ('Monday');
@@ -183,15 +155,39 @@ values
 
 insert into meal_type(type)
 values
-('Lunch');
-
-insert into meal_type(type)
-values
-('Dinner');
-
-insert into meal_type(type)
-values
 ('Snack');
+
+insert into meal_type(type)
+values
+('Lunch/Dinner');
+
+insert into house(name, grocery_day, household_number)
+values
+('My Lovely Home', 'Friday', 2);
+
+insert into house(name, grocery_day, household_number)
+values
+('My Lovely Home', 'Saturday', 4);
+
+insert into house(name, grocery_day, household_number)
+values
+('Spaceship', 'Sunday', 1);
+
+insert into recipe(name, type, serves_for)
+values
+('Baked Potato', 'Lunch/Dinner', 4);
+
+insert into recipe(name, type, serves_for)
+values
+('Beans with rice', 'Lunch/Dinner', 6);
+
+insert into recipe(name, type, serves_for)
+values
+('No Flour Pancake', 'Breakfast', 2);
+
+insert into recipe(name, type, serves_for)
+values
+('Roast Chicken', 'Lunch/Dinner', 4);
 
 insert into ingredient(name, carb_per_100g, protein_per_100g, fat_per_100g, fiber_per_100g, calories_per_100g)
 values

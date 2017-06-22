@@ -11,8 +11,10 @@ type HouseScheduleRow struct {
 }
 
 type HouseRow struct {
-	ID   int64  `db:"id"`
-	Name string `db:"name"`
+	ID         int64  `db:"id"`
+	Name       string `db:"name"`
+	GroceryDay string `db:"grocery_day"`
+	HouseHold  int64  `db:"household_number"`
 }
 
 type HouseStorageRow struct {
@@ -44,8 +46,10 @@ type UserOwnTypeRow struct {
 }
 
 type RecipeRow struct {
-	ID   int64  `db:"id"`
-	Name string `db:"name"`
+	ID        int64  `db:"id"`
+	Name      string `db:"name"`
+	Type      string `db:"type"`
+	ServesFor int64  `db:"serves_for"`
 }
 
 type IngredientRow struct {
@@ -59,8 +63,7 @@ type IngredientRow struct {
 }
 
 type FullRecipeRow struct {
-	RecipeID   int64   `db:"id"`
-	RecipeName string  `db:"name"`
+	RecipeRow
 	StepID     int64   `db:"id"`
 	Ingredient string  `db:"name"`
 	Amount     float64 `db:"amount"`
@@ -78,6 +81,8 @@ func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
 
 		row.ID = v.Index(0).Interface().(int64)
 		row.Name = v.Index(1).Interface().(string)
+		row.Type = v.Index(2).Interface().(string)
+		row.ServesFor = v.Index(3).Interface().(int64)
 
 		recipes = append(recipes, row)
 	}
@@ -131,13 +136,15 @@ func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []Full
 
 		v := reflect.ValueOf(data[i])
 
-		row.RecipeID = v.Index(0).Interface().(int64)
-		row.RecipeName = v.Index(1).Interface().(string)
-		row.StepID = v.Index(2).Interface().(int64)
-		row.Ingredient = v.Index(3).Interface().(string)
-		row.Amount = v.Index(4).Interface().(float64)
-		row.Unit = v.Index(5).Interface().(string)
-		row.Text = v.Index(6).Interface().(string)
+		row.ID = v.Index(0).Interface().(int64)
+		row.Name = v.Index(1).Interface().(string)
+		row.Type = v.Index(2).Interface().(string)
+		row.ServesFor = v.Index(3).Interface().(int64)
+		row.StepID = v.Index(4).Interface().(int64)
+		row.Ingredient = v.Index(5).Interface().(string)
+		row.Amount = v.Index(6).Interface().(float64)
+		row.Unit = v.Index(7).Interface().(string)
+		row.Text = v.Index(8).Interface().(string)
 
 		fullRecipe = append(fullRecipe, row)
 	}
@@ -173,8 +180,10 @@ func createUserHouseRows(houses []UserHouseRow, data []interface{}) []UserHouseR
 
 		row.ID = v.Index(0).Interface().(int64)
 		row.Name = v.Index(1).Interface().(string)
-		row.OwnType = v.Index(2).Interface().(int64)
-		row.Description = v.Index(3).Interface().(string)
+		row.GroceryDay = v.Index(2).Interface().(string)
+		row.HouseHold = v.Index(3).Interface().(int64)
+		row.OwnType = v.Index(4).Interface().(int64)
+		row.Description = v.Index(5).Interface().(string)
 
 		houses = append(houses, row)
 	}

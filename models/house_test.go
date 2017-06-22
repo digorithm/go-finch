@@ -15,7 +15,7 @@ func TestHouseCRUD(t *testing.T) {
 	h := newHouseForTest(t)
 
 	// Create house
-	houseRow, err := h.CreateHouse(nil, "my lovely home")
+	houseRow, err := h.CreateHouse(nil, "my lovely home", "Monday", 5)
 
 	if err != nil {
 		t.Errorf("Creating house should work. Error: %v", err)
@@ -52,8 +52,13 @@ func TestGetRecipes(t *testing.T) {
 	var r2 RecipeRow
 	r1.ID = 1
 	r1.Name = "Baked Potato"
+	r1.Type = "Lunch/Dinner"
+	r1.ServesFor = 4
+
 	r2.ID = 4
 	r2.Name = "Roast Chicken"
+	r2.Type = "Lunch/Dinner"
+	r2.ServesFor = 4
 	var result []RecipeRow
 
 	result = append(result, r1, r2)

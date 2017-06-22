@@ -46,7 +46,7 @@ func (h *House) GetById(tx *sqlx.Tx, id int64) (*HouseRow, error) {
 	return house, err
 }
 
-func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
+func (h *House) CreateHouse(tx *sqlx.Tx, name string, groceryDay string, household int64) (*HouseRow, error) {
 
 	if name == "" {
 		return nil, errors.New("House name cannot be blank")
@@ -54,6 +54,8 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string) (*HouseRow, error) {
 
 	data := make(map[string]interface{})
 	data["name"] = name
+	data["grocery_day"] = groceryDay
+	data["household_number"] = household
 
 	sqlResult, err := h.InsertIntoTable(tx, data)
 
@@ -85,7 +87,7 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, err
 
 func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error) {
 
-	query := "SELECT R.ID, R.NAME FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
+	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
 
 	return h.GetRecipeForStruct(tx, query, houseID)
 }
