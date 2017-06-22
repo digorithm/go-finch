@@ -32,6 +32,7 @@ func TestGetUsers(t *testing.T) {
 	h := newHouseForTest(t)
 
 	users, err := h.GetHouseUsers(nil, 1)
+
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
@@ -71,5 +72,52 @@ func TestGetRecipes(t *testing.T) {
 		i++
 	}
 
-	fmt.Println(recipes)
+	fmt.Println("recipes")
+}
+
+func TestGetHouseSchedule(t *testing.T) {
+	h := newHouseForTest(t)
+
+	schedule, err := h.GetHouseSchedule(nil, 2)
+	if err != nil {
+		t.Errorf("Getting house schedule should work. Error: %v", err)
+	}
+
+	var s1 HouseScheduleRow
+	var s2 HouseScheduleRow
+
+	s1.Week = "Saturday"
+	s1.Type = "Breakfast"
+	s1.Recipe = "No Flour Pancake"
+	s2.Week = "Tuesday"
+	s2.Type = "Breakfast"
+	s2.Recipe = "No Flour Pancake"
+
+	var result []HouseScheduleRow
+
+	result = append(result, s1, s2)
+
+	i := 0
+	for i < len(schedule) {
+		if result[i] != schedule[i] {
+			t.Errorf("House Schedule, got: %d, want: %d", schedule[i], result[i])
+		}
+
+		i++
+	}
+
+	fmt.Println("schedule")
+
+}
+
+func TestUpdateHouseHold(t *testing.T) {
+	h := newHouseForTest(t)
+
+	house, err := h.UpdateHouseHold(nil, 3, 2)
+	if err != nil {
+		t.Errorf("Updating household should work. Error: %v", err)
+	}
+
+	fmt.Println(house)
+
 }

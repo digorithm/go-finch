@@ -137,6 +137,9 @@ func (b *Base) UpdateFromTable(tx *sqlx.Tx, data map[string]interface{}, where s
 
 	result, err = tx.Exec(query, values...)
 
+	fmt.Println("result from update")
+	fmt.Println(result)
+
 	if err != nil {
 		return nil, err
 	}

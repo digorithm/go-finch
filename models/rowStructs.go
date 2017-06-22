@@ -10,6 +10,13 @@ type HouseScheduleRow struct {
 	Recipe string `db:"name"`
 }
 
+type ScheduleRow struct {
+	HouseID  int64 `db:"house_id"`
+	WeekID   int64 `db:"week_id"`
+	TypeID   int64 `db:"type_id"`
+	RecipeId int64 `db:"recipe_id"`
+}
+
 type HouseRow struct {
 	ID         int64  `db:"id"`
 	Name       string `db:"name"`

@@ -22,8 +22,11 @@ type House struct {
 }
 
 func (h *House) houseRowFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (*HouseRow, error) {
+
 	houseId, err := sqlResult.LastInsertId()
 	if err != nil {
+		fmt.Println("6")
+
 		return nil, err
 	}
 
@@ -124,4 +127,33 @@ func (h *House) GetHouseSchedule(tx *sqlx.Tx, houseID int64) ([]HouseScheduleRow
 	}
 
 	return schedule, err
+}
+
+func (h *House) UpdateHouseHold(tx *sqlx.Tx, houseHold int64, houseID int64) (int64, error) {
+
+	data := make(map[string]interface{})
+	data["household_number"] = houseHold
+	where := fmt.Sprintf("ID = %v", houseID)
+
+	fmt.Println("2")
+	result, err := h.UpdateFromTable(tx, data, where)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return h.AffectedRowsFromSqlResult(tx, result)
+
+}
+
+func (h *House) AffectedRowsFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (int64, error) {
+
+	houseId, err := sqlResult.RowsAffected()
+	if err != nil {
+		fmt.Println("6")
+
+		fmt.Println(err)
+	}
+
+	return houseId, err
 }
