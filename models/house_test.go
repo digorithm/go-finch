@@ -85,6 +85,7 @@ func TestGetHouseSchedule(t *testing.T) {
 
 	var s1 HouseScheduleRow
 	var s2 HouseScheduleRow
+	var s3 HouseScheduleRow
 
 	s1.Week = "Saturday"
 	s1.Type = "Breakfast"
@@ -92,10 +93,13 @@ func TestGetHouseSchedule(t *testing.T) {
 	s2.Week = "Tuesday"
 	s2.Type = "Breakfast"
 	s2.Recipe = "No Flour Pancake"
+	s3.Week = "Wednesday"
+	s3.Type = "Lunch/Dinner"
+	s3.Recipe = "Roast Chicken"
 
 	var result []HouseScheduleRow
 
-	result = append(result, s1, s2)
+	result = append(result, s1, s2, s3)
 
 	i := 0
 	for i < len(schedule) {
