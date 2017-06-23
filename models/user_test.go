@@ -3,8 +3,6 @@ package models
 import (
 	"testing"
 
-	"fmt"
-
 	_ "github.com/lib/pq"
 )
 
@@ -94,13 +92,22 @@ func TestGetUserByUsername(t *testing.T) {
 func TestGetUserRecipes(t *testing.T) {
 
 	u := newUserForTest(t)
+	var r1 = createVarsForGetRecipes(2, "Beans with rice", "Lunch/Dinner", 6)
+	var r2 = createVarsForGetRecipes(3, "No Flour Pancake", "Breakfast", 2)
+	var result []RecipeRow
 
 	recipes, err := u.GetUserRecipes(nil, 2)
-
 	if err != nil {
 		t.Errorf("Generic get recipe should work")
 	}
 
-	fmt.Println(recipes)
+	result = append(result, r1, r2)
+	i := 0
+	for i < len(recipes) {
+		if result[i] != recipes[i] {
+			t.Errorf("House Users, got: %d, want: %d", recipes[i], result[i])
+		}
+		i++
+	}
 
 }

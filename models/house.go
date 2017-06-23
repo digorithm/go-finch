@@ -25,8 +25,6 @@ func (h *House) houseRowFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (*House
 
 	houseId, err := sqlResult.LastInsertId()
 	if err != nil {
-		fmt.Println("6")
-
 		return nil, err
 	}
 
@@ -83,8 +81,6 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, err
 		fmt.Printf("%v", err)
 	}
 
-	fmt.Println(data)
-
 	return users, err
 }
 
@@ -135,7 +131,6 @@ func (h *House) UpdateHouseHold(tx *sqlx.Tx, houseHold int64, houseID int64) (in
 	data["household_number"] = houseHold
 	where := fmt.Sprintf("ID = %v", houseID)
 
-	fmt.Println("2")
 	result, err := h.UpdateFromTable(tx, data, where)
 
 	if err != nil {
@@ -150,7 +145,6 @@ func (h *House) AffectedRowsFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (in
 
 	houseId, err := sqlResult.RowsAffected()
 	if err != nil {
-		fmt.Println("6")
 
 		fmt.Println(err)
 	}

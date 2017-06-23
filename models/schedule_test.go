@@ -12,10 +12,9 @@ func newScheduleForTest(t *testing.T) *Schedule {
 }
 
 func TestUpdateSchedule(t *testing.T) {
-	fmt.Println("1")
+
 	s := newScheduleForTest(t)
 	h := newHouseForTest(t)
-	fmt.Println("2")
 
 	oldSchedule, err := h.GetHouseSchedule(nil, 2)
 	fmt.Println("oldSchedule:")
@@ -27,10 +26,15 @@ func TestUpdateSchedule(t *testing.T) {
 	fmt.Println("newSchedule:")
 	fmt.Println(newSchedule)
 
+	s.UpdateSchedule(nil, 2, 3, 3, 4)
+
+	row, e := schedule.RowsAffected()
+
+	if row != 1 {
+		t.Errorf("Update Schedule failed, got: %d, want: %d, with error: %d", row, 1, e)
+	}
 	if err != nil {
 		t.Errorf("Updating schedule should work. Error: %v", err)
 	}
-
-	fmt.Println(schedule)
 
 }

@@ -1,11 +1,44 @@
 package models
 
 import (
-	"fmt"
 	"testing"
 
 	_ "github.com/lib/pq"
 )
+
+func createVarsForGetUsers(id int64, email string, pWord string, uName string, ownT int64, desc string) UserOwnTypeRow {
+	var user UserOwnTypeRow
+
+	user.ID = id
+	user.Email = email
+	user.Password = pWord
+	user.Username = uName
+	user.OwnType = ownT
+	user.Description = desc
+
+	return user
+}
+
+func createVarsForGetRecipes(id int64, name string, typem string, serves int64) RecipeRow {
+	var recipe RecipeRow
+
+	recipe.ID = id
+	recipe.Name = name
+	recipe.Type = typem
+	recipe.ServesFor = serves
+
+	return recipe
+}
+
+func createVarsForGetSchedule(day string, typem string, name string) HouseScheduleRow {
+	var schedule HouseScheduleRow
+
+	schedule.Week = day
+	schedule.Type = typem
+	schedule.Recipe = name
+
+	return schedule
+}
 
 func newHouseForTest(t *testing.T) *House {
 	return NewHouse(newDbForTest(t))
@@ -29,40 +62,42 @@ func TestHouseCRUD(t *testing.T) {
 }
 
 func TestGetUsers(t *testing.T) {
+
 	h := newHouseForTest(t)
+	var u1 = createVarsForGetUsers(1, "gulipek5@gmail.com", "password", "guli", 1, "owner")
+	var u2 = createVarsForGetUsers(2, "rod.dearaujo@gmail.com", "password1", "digo", 2, "resident")
+	var u3 = createVarsForGetUsers(4, "iamjoe@gmail.com", "password3", "joe", 3, "not allowed")
+	var result []UserOwnTypeRow
 
 	users, err := h.GetHouseUsers(nil, 1)
-
 	if err != nil {
 		t.Errorf("Getting users should work. Error: %v", err)
 	}
 
-	fmt.Println(users)
+	result = append(result, u1, u2, u3)
+	i := 0
+	for i < len(users) {
+		if result[i] != users[i] {
+			t.Errorf("House Users, got: %d, want: %d", users[i], result[i])
+		}
+
+		i++
+	}
 
 }
 
 func TestGetRecipes(t *testing.T) {
-	h := newHouseForTest(t)
 
-	recipes, err := h.GetHouseRecipes(nil, 1)
+	h := newHouseForTest(t)
+	var r1 = createVarsForGetRecipes(2, "Beans with rice", "Lunch/Dinner", 6)
+	var result []RecipeRow
+
+	recipes, err := h.GetHouseRecipes(nil, 3)
 	if err != nil {
 		t.Errorf("Getting house recipes should work. Error: %v", err)
 	}
 
-	var r1 RecipeRow
-	var r2 RecipeRow
-	r1.ID = 1
-	r1.Name = "Baked Potato"
-	r1.Type = "Lunch/Dinner"
-	r1.ServesFor = 4
-
-	r2.ID = 4
-	r2.Name = "Roast Chicken"
-	r2.Type = "Lunch/Dinner"
-	r2.ServesFor = 4
-	var result []RecipeRow
-
-	result = append(result, r1, r2)
+	result = append(result, r1)
 	i := 0
 	for i < len(recipes) {
 		if result[i] != recipes[i] {
@@ -71,46 +106,30 @@ func TestGetRecipes(t *testing.T) {
 
 		i++
 	}
-
-	fmt.Println("recipes")
 }
 
 func TestGetHouseSchedule(t *testing.T) {
+
 	h := newHouseForTest(t)
+	var s1 = createVarsForGetSchedule("Saturday", "Breakfast", "No Flour Pancake")
+	var s2 = createVarsForGetSchedule("Tuesday", "Breakfast", "No Flour Pancake")
+	var s3 = createVarsForGetSchedule("Wednesday", "Lunch/Dinner", "Roast Chicken")
+	var result []HouseScheduleRow
 
 	schedule, err := h.GetHouseSchedule(nil, 2)
 	if err != nil {
 		t.Errorf("Getting house schedule should work. Error: %v", err)
 	}
 
-	var s1 HouseScheduleRow
-	var s2 HouseScheduleRow
-	var s3 HouseScheduleRow
-
-	s1.Week = "Saturday"
-	s1.Type = "Breakfast"
-	s1.Recipe = "No Flour Pancake"
-	s2.Week = "Tuesday"
-	s2.Type = "Breakfast"
-	s2.Recipe = "No Flour Pancake"
-	s3.Week = "Wednesday"
-	s3.Type = "Lunch/Dinner"
-	s3.Recipe = "Roast Chicken"
-
-	var result []HouseScheduleRow
-
 	result = append(result, s1, s2, s3)
-
 	i := 0
 	for i < len(schedule) {
 		if result[i] != schedule[i] {
-			t.Errorf("House Schedule, got: %d, want: %d", schedule[i], result[i])
+			t.Errorf("Get House Schedule failed, got: %d, want: %d", schedule[i], result[i])
 		}
 
 		i++
 	}
-
-	fmt.Println("schedule")
 
 }
 
@@ -119,9 +138,13 @@ func TestUpdateHouseHold(t *testing.T) {
 
 	house, err := h.UpdateHouseHold(nil, 3, 2)
 	if err != nil {
-		t.Errorf("Updating household should work. Error: %v", err)
+		t.Errorf("Updating house schedule should work. Error: %v", err)
 	}
 
-	fmt.Println(house)
+	if house != 1 {
+		t.Errorf("Update House Schedule failed, got: %d, want: %d", house, 1)
+	}
+
+	h.UpdateHouseHold(nil, 4, 2)
 
 }

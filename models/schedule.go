@@ -25,7 +25,6 @@ func NewSchedule(db *sqlx.DB) *Schedule {
 
 func (s *Schedule) UpdateSchedule(tx *sqlx.Tx, hID int64, wID int64, tID int64, rID int64) (sql.Result, error) {
 
-	fmt.Println("1")
 	query := fmt.Sprintf("UPDATE %v SET RECIPE_ID = %v WHERE HOUSE_ID = %v AND WEEK_ID = %v AND TYPE_ID = %v", s.table, rID, hID, wID, tID)
 
 	tx, wrapInSingleTransaction, err := s.newTransactionIfNeeded(tx)
@@ -47,13 +46,9 @@ func (s *Schedule) UpdateSchedule(tx *sqlx.Tx, hID int64, wID int64, tID int64, 
 		err = tx.Commit()
 	}
 
-	fmt.Println("After updation")
-	fmt.Println(sqlResult.RowsAffected())
 	if err != nil {
 		fmt.Printf("Error is: %v", err)
 	}
-
-	fmt.Println("1")
 
 	return sqlResult, err
 

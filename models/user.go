@@ -159,6 +159,7 @@ func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) 
 	return houses, err
 }
 
+// GetUserRecipes used by house and user
 func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 
 	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
