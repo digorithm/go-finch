@@ -74,7 +74,6 @@ func TestCreateFullSchedule(t *testing.T) {
 	}
 
 	houseID := house.ID
-	fmt.Printf("This is houseID: %v", houseID)
 	inserted := s.CreateHouseSchedule(nil, houseID)
 
 	if inserted != true {
@@ -86,4 +85,14 @@ func TestCreateFullSchedule(t *testing.T) {
 		t.Fatalf("Deleting house by id should not fail. Error: %v", err)
 	}
 
+}
+
+func TestInsertMissingSchedule(t *testing.T) {
+
+	s := newScheduleForTest(t)
+	inserted := s.CreateHouseSchedule(nil, 1)
+
+	if inserted != true {
+		t.Errorf("Full schedule insertion failed, got: %d, want: true", inserted)
+	}
 }

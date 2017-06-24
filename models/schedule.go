@@ -32,18 +32,18 @@ func (s *Schedule) CreateHouseSchedule(tx *sqlx.Tx, houseID int64) bool {
 		fmt.Printf("%v", err)
 	}
 
-	res := createHouseScheduleRows(data)
+	res := createScheduleRows(data)
 
 	if len(res) == 0 {
-		fmt.Println("In res == 0")
+
 		s.CreateFullSchedule(tx, houseID)
 
 	} else {
+
 		s.InsertMissingSchedule(tx, houseID)
 	}
 	schedule := s.GetScheduleRow(tx, houseID)
-	fmt.Println("schedule length:")
-	fmt.Println(len(schedule))
+
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -56,8 +56,6 @@ func (s *Schedule) CreateHouseSchedule(tx *sqlx.Tx, houseID int64) bool {
 // CreateFullSchedule is called when there is no instance of house_id in schedule table
 func (s *Schedule) CreateFullSchedule(tx *sqlx.Tx, houseID int64) {
 
-	fmt.Println("In createfullschedule")
-
 	i := 1
 	data := make(map[string]interface{})
 
@@ -68,11 +66,8 @@ func (s *Schedule) CreateFullSchedule(tx *sqlx.Tx, houseID int64) {
 
 		for j < 4 {
 			data["type_id"] = j
-			fmt.Println("Before insert:")
-			fmt.Println(data)
-			res, err := s.InsertIntoMultiKeyTable(tx, data)
+			_, err := s.InsertIntoMultiKeyTable(tx, data)
 
-			fmt.Println(res)
 			if err != nil {
 				fmt.Printf("Error: %v", err)
 			}
@@ -85,25 +80,31 @@ func (s *Schedule) CreateFullSchedule(tx *sqlx.Tx, houseID int64) {
 func (s *Schedule) InsertMissingSchedule(tx *sqlx.Tx, houseID int64) {
 
 	schedule := s.GetScheduleRow(tx, houseID)
+
 	k := 0
+
 	var i int64 = 1
 	var j int64 = 1
-
 	for i < 8 {
+		j = 1
 		for j < 4 {
+
 			item := schedule[k]
 			w := item.WeekID
 			t := item.TypeID
+
 			if (w != i) || (t != j) {
 				data := make(map[string]interface{})
 				data["house_id"] = houseID
 				data["week_id"] = i
 				data["type_id"] = j
-
-				s.InsertIntoTable(tx, data)
+				s.InsertIntoMultiKeyTable(tx, data)
+			} else {
+				if k < len(schedule)-1 {
+					k++
+				}
 			}
 			j++
-			k++
 		}
 		i++
 	}
@@ -165,9 +166,7 @@ func (s *Schedule) GetScheduleRow(tx *sqlx.Tx, houseID int64) []ScheduleRow {
 		fmt.Printf("%v", err)
 	}
 
-	fmt.Println("this is the whole schedule:")
-	fmt.Println(data)
-	schedule := createScheduleRows(data)
+	schedule := createFullScheduleRows(data)
 
 	return schedule
 }

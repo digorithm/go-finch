@@ -207,6 +207,23 @@ func createScheduleRows(data []interface{}) []ScheduleRow {
 
 		v := reflect.ValueOf(data[i])
 
+		s.WeekID = v.Index(0).Interface().(int64)
+		s.TypeID = v.Index(1).Interface().(int64)
+
+		schedule = append(schedule, s)
+	}
+
+	return schedule
+}
+
+func createFullScheduleRows(data []interface{}) []ScheduleRow {
+	var schedule []ScheduleRow
+	var s ScheduleRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
 		s.HouseID = v.Index(0).Interface().(int64)
 		s.WeekID = v.Index(1).Interface().(int64)
 		s.TypeID = v.Index(2).Interface().(int64)
