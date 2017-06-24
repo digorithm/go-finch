@@ -165,3 +165,73 @@ func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 
 	return u.GetRecipeForStruct(tx, query, userID)
 }
+
+// AddRecipe adds a recipe and binds it to a user.
+// It will come here as a JSON and then the respective Handler will break
+// the json into 3 maps: recipe, ingredients and steps. This will be used
+// to add the necessary information to add the recipe to the database.
+func (u *User) AddRecipe(tx *sqlx.Tx, recipe map[string]interface{}, steps []map[string]interface{}) (FullRecipeRow, error) {
+
+	var FullRecipe FullRecipeRow
+	recipeObj := NewRecipe(u.db)
+	ingredientObj := NewIngredient(u.db)
+
+	// Add recipe metadata to DB
+	recipe_result, err := recipeObj.InsertIntoTable(tx, recipe)
+	if err != nil {
+		return FullRecipe, err
+	}
+
+	// Add steps to the DB
+	var step_db Base
+	step_db.db = u.db
+	step_db.table = "step"
+	step_db.hasID = true
+
+	var step_ingredient_db Base
+	step_ingredient_db.db = u.db
+	step_ingredient_db.table = "step_ingredient"
+	step_ingredient_db.hasID = false
+
+	for _, step := range steps {
+
+		// Extract ingredients and save them to DB
+		ingredientStrings := u.ExtractInterfaceSliceOfStrings(step["step_ingredients"])
+		ingredientIDs, err := ingredientObj.AddIngredients(tx, ingredientStrings)
+
+		if err != nil {
+			return FullRecipe, err
+		}
+
+		// Add info about steps to the DB
+		step_table_data := make(map[string]interface{})
+		step_table_data["recipe_id"], _ = recipe_result.LastInsertId()
+		step_table_data["text"] = step["text"]
+		step_table_data["id"] = step["step_id"]
+		step_table_result, err := step_db.InsertIntoTable(tx, step_table_data)
+
+		if err != nil {
+			fmt.Println(step_table_result)
+			return FullRecipe, err
+		}
+
+		for _, ingId := range ingredientIDs {
+			fmt.Println("AYOOO")
+			// Add info about step_ingredient to the DB
+			step_ingredient_data := make(map[string]interface{})
+			step_ingredient_data["recipe_id"] = step_table_data["recipe_id"]
+			step_ingredient_data["step_id"] = step_table_data["id"]
+			step_ingredient_data["ingredient_id"] = ingId
+			step_ingredient_data["unit_id"] = step["unit"]
+			step_ingredient_data["amount"] = step["amount"]
+
+			step_ingredient_result, err := step_ingredient_db.InsertIntoTable(tx, step_ingredient_data)
+			if err != nil {
+				return FullRecipe, err
+			}
+			fmt.Println(step_ingredient_result)
+		}
+	}
+
+	return FullRecipe, err
+}

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/jmoiron/sqlx"
+	"reflect"
+	"strings"
 )
 
 type InsertResult struct {
@@ -93,6 +93,11 @@ func (b *Base) InsertIntoTable(tx *sqlx.Tx, data map[string]interface{}) (sql.Re
 		}
 
 		result.lastInsertId = lastInsertId
+	} else {
+		_, err = tx.Exec(query, values...)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if wrapInSingleTransaction == true {
@@ -329,4 +334,19 @@ func (b *Base) GetCompoundModel(tx *sqlx.Tx, query string, id int64) ([]interfac
 		results = append(results, cols)
 	}
 	return results, err
+}
+
+func (b *Base) ExtractInterfaceSliceOfStrings(t interface{}) []string {
+	var str []string
+
+	switch reflect.TypeOf(t).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(t)
+
+		for i := 0; i < s.Len(); i++ {
+			str = append(str, s.Index(i).Interface().(string))
+		}
+		return str
+	}
+	return str
 }
