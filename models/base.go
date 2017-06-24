@@ -102,6 +102,51 @@ func (b *Base) InsertIntoTable(tx *sqlx.Tx, data map[string]interface{}) (sql.Re
 	return result, err
 }
 
+func (b *Base) InsertIntoMultiKeyTable(tx *sqlx.Tx, data map[string]interface{}) (sql.Result, error) {
+
+	if b.table == "" {
+		return nil, errors.New("Table must not be empty.")
+	}
+
+	tx, wrapInSingleTransaction, err := b.newTransactionIfNeeded(tx)
+	if tx == nil {
+		return nil, errors.New("Transaction struct must not be empty.")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	keys := make([]string, 0)
+	dollarMarks := make([]string, 0)
+	values := make([]interface{}, 0)
+
+	loopCounter := 1
+	for key, value := range data {
+		keys = append(keys, key)
+		dollarMarks = append(dollarMarks, fmt.Sprintf("$%v", loopCounter))
+		values = append(values, value)
+
+		loopCounter++
+	}
+
+	query := fmt.Sprintf(
+		"INSERT INTO %v (%v) VALUES (%v)",
+		b.table,
+		strings.Join(keys, ","),
+		strings.Join(dollarMarks, ","))
+
+	result, err := tx.Exec(query, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	if wrapInSingleTransaction == true {
+		err = tx.Commit()
+	}
+
+	return result, err
+}
+
 func (b *Base) UpdateFromTable(tx *sqlx.Tx, data map[string]interface{}, where string) (sql.Result, error) {
 	var result sql.Result
 

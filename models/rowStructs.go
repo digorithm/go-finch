@@ -78,7 +78,8 @@ type FullRecipeRow struct {
 	Text       string  `db:"text"`
 }
 
-func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
+func createRecipeRows(data []interface{}) []RecipeRow {
+	var recipes []RecipeRow
 
 	var row RecipeRow
 
@@ -97,8 +98,8 @@ func createRecipeRows(recipes []RecipeRow, data []interface{}) []RecipeRow {
 	return recipes
 }
 
-func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwnTypeRow {
-
+func createUserOwnTypeRows(data []interface{}) []UserOwnTypeRow {
+	var users []UserOwnTypeRow
 	var row UserOwnTypeRow
 
 	for i := 0; i < len(data); i++ {
@@ -118,8 +119,8 @@ func createUserOwnTypeRows(users []UserOwnTypeRow, data []interface{}) []UserOwn
 	return users
 }
 
-func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []HouseStorageRow {
-
+func createHouseStorageRows(data []interface{}) []HouseStorageRow {
+	var storage []HouseStorageRow
 	var row HouseStorageRow
 
 	for i := 0; i < len(data); i++ {
@@ -135,8 +136,8 @@ func createHouseStorageRows(storage []HouseStorageRow, data []interface{}) []Hou
 	return storage
 }
 
-func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []FullRecipeRow {
-
+func createFullRecipeRows(data []interface{}) []FullRecipeRow {
+	var fullRecipe []FullRecipeRow
 	var row FullRecipeRow
 
 	for i := 0; i < len(data); i++ {
@@ -159,8 +160,8 @@ func createFullRecipeRows(fullRecipe []FullRecipeRow, data []interface{}) []Full
 	return fullRecipe
 }
 
-func createHouseScheduleRows(schedule []HouseScheduleRow, data []interface{}) []HouseScheduleRow {
-
+func createHouseScheduleRows(data []interface{}) []HouseScheduleRow {
+	var schedule []HouseScheduleRow
 	var row HouseScheduleRow
 
 	for i := 0; i < len(data); i++ {
@@ -196,4 +197,22 @@ func createUserHouseRows(houses []UserHouseRow, data []interface{}) []UserHouseR
 	}
 
 	return houses
+}
+
+func createScheduleRows(data []interface{}) []ScheduleRow {
+	var schedule []ScheduleRow
+	var s ScheduleRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		s.HouseID = v.Index(0).Interface().(int64)
+		s.WeekID = v.Index(1).Interface().(int64)
+		s.TypeID = v.Index(2).Interface().(int64)
+
+		schedule = append(schedule, s)
+	}
+
+	return schedule
 }

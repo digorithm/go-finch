@@ -48,7 +48,7 @@ create table unit(
  );
 
 create table step(
-    recipe_id int4 references recipe(id),
+    recipe_id int4 references recipe(id) on delete cascade,
     id int not null,
     text text not null,
     primary key(recipe_id, id),
@@ -62,7 +62,7 @@ create table step_ingredient(
     unit_id int4 references unit(id) not null,
     amount float8 not null,
     primary key(recipe_id, step_id, ingredient_id),
-    foreign key(recipe_id, step_id) references step(recipe_id,id)
+    foreign key(recipe_id, step_id) references step(recipe_id,id) on delete cascade
 );
 
 create table item_in_storage(
@@ -74,19 +74,19 @@ create table item_in_storage(
 );
 
 create table user_recipe(
-    user_id int4 references user_info(id),
-    recipe_id int4 references recipe(id),
+    user_id int4 references user_info(id) on delete cascade,
+    recipe_id int4 references recipe(id) on delete cascade,
     primary key (user_id, recipe_id)
 );
 
 create table house_recipe(
-    house_id int4 references house(id),
-    recipe_id int4 references recipe(id),
+    house_id int4 references house(id) on delete cascade,
+    recipe_id int4 references recipe(id) on delete cascade,
     primary key (house_id, recipe_id)
 );
 
 create table schedule(
-    house_id int4 references house(id),
+    house_id int4 references house(id) on delete cascade,
     week_id int4 references weekday(id) not null,
     type_id int4 references meal_type(id) not null,
     recipe_id int4 references recipe(id),
@@ -99,9 +99,9 @@ create table schedule(
  );
 
 create table member_of(
-    user_id int4 references user_info(id),
-    house_id int4 references house(id),
-    own_type int4 references ownership(own_type),
+    user_id int4 references user_info(id) on delete cascade,
+    house_id int4 references house(id) on delete cascade,
+    own_type int4 references ownership(own_type) on delete cascade,
     primary key(user_id, house_id, own_type)
 );
 
@@ -356,3 +356,11 @@ values
 insert into schedule(house_id, week_id, type_id, recipe_id)
 values 
 (2,6,1,3);
+
+insert into schedule(house_id, week_id, type_id, recipe_id)
+values 
+(2,2,1,3);
+
+insert into schedule(house_id, week_id, type_id, recipe_id)
+values 
+(2,3,3,4);

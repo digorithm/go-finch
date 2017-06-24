@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// NewHouse creates a new base that points to house table
 func NewHouse(db *sqlx.DB) *House {
 	house := &House{}
 	house.db = db
@@ -17,20 +18,23 @@ func NewHouse(db *sqlx.DB) *House {
 	return house
 }
 
+// House is a base
 type House struct {
 	Base
 }
 
-func (h *House) houseRowFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (*HouseRow, error) {
+//HouseRowFromSQLResult returns the house that was last inserted to house table
+func (h *House) HouseRowFromSQLResult(tx *sqlx.Tx, sqlResult sql.Result) (*HouseRow, error) {
 
-	houseId, err := sqlResult.LastInsertId()
+	houseID, err := sqlResult.LastInsertId()
 	if err != nil {
 		return nil, err
 	}
 
-	return h.GetById(tx, houseId)
+	return h.GetByID(tx, houseID)
 }
 
+// AllHouses returns every house in the housetable
 func (h *House) AllHouses(tx *sqlx.Tx) ([]*HouseRow, error) {
 	houses := []*HouseRow{}
 	query := fmt.Sprintf("SELECT * FROM %v", h.table)
@@ -39,7 +43,8 @@ func (h *House) AllHouses(tx *sqlx.Tx) ([]*HouseRow, error) {
 	return houses, err
 }
 
-func (h *House) GetById(tx *sqlx.Tx, id int64) (*HouseRow, error) {
+// GetByID returns a houseRow with the given id
+func (h *House) GetByID(tx *sqlx.Tx, id int64) (*HouseRow, error) {
 	house := &HouseRow{}
 	query := fmt.Sprintf("SELECT * FROM %v WHERE id=$1", h.table)
 	err := h.db.Get(house, query, id)
@@ -47,6 +52,7 @@ func (h *House) GetById(tx *sqlx.Tx, id int64) (*HouseRow, error) {
 	return house, err
 }
 
+// CreateHouse creates a house and a schedule for it
 func (h *House) CreateHouse(tx *sqlx.Tx, name string, groceryDay string, household int64) (*HouseRow, error) {
 
 	if name == "" {
@@ -59,23 +65,20 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string, groceryDay string, househo
 	data["household_number"] = household
 
 	sqlResult, err := h.InsertIntoTable(tx, data)
-
 	if err != nil {
 		return nil, err
 	}
 
-	return h.houseRowFromSqlResult(tx, sqlResult)
+	return h.HouseRowFromSQLResult(tx, sqlResult)
 }
 
 func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, error) {
-
-	var users []UserOwnTypeRow
 
 	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
 
 	data, err := h.GetCompoundModel(tx, query, houseID)
 
-	users = createUserOwnTypeRows(users, data)
+	users := createUserOwnTypeRows(data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -93,36 +96,17 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error)
 
 func (h *House) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
-	var storage []HouseStorageRow
-
 	query := "SELECT I.NAME, S.AMOUNT, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
 
 	data, err := h.GetCompoundModel(tx, query, houseID)
 
-	storage = createHouseStorageRows(storage, data)
+	storage := createHouseStorageRows(data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
 
 	return storage, err
-}
-
-func (h *House) GetHouseSchedule(tx *sqlx.Tx, houseID int64) ([]HouseScheduleRow, error) {
-
-	var schedule []HouseScheduleRow
-
-	query := "SELECT W.DAY, T.TYPE, R.NAME FROM RECIPE R, WEEKDAY W, MEAL_TYPE T, SCHEDULE S WHERE S.HOUSE_ID = $1 AND S.WEEK_ID = W.ID AND S.TYPE_ID = T.ID AND S.RECIPE_ID = R.ID"
-
-	data, err := h.GetCompoundModel(tx, query, houseID)
-
-	schedule = createHouseScheduleRows(schedule, data)
-
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	return schedule, err
 }
 
 func (h *House) UpdateHouseHold(tx *sqlx.Tx, houseHold int64, houseID int64) (int64, error) {

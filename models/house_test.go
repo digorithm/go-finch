@@ -108,31 +108,6 @@ func TestGetRecipes(t *testing.T) {
 	}
 }
 
-func TestGetHouseSchedule(t *testing.T) {
-
-	h := newHouseForTest(t)
-	var s1 = createVarsForGetSchedule("Saturday", "Breakfast", "No Flour Pancake")
-	var s2 = createVarsForGetSchedule("Tuesday", "Breakfast", "No Flour Pancake")
-	var s3 = createVarsForGetSchedule("Wednesday", "Lunch/Dinner", "Roast Chicken")
-	var result []HouseScheduleRow
-
-	schedule, err := h.GetHouseSchedule(nil, 2)
-	if err != nil {
-		t.Errorf("Getting house schedule should work. Error: %v", err)
-	}
-
-	result = append(result, s1, s2, s3)
-	i := 0
-	for i < len(schedule) {
-		if result[i] != schedule[i] {
-			t.Errorf("Get House Schedule failed, got: %d, want: %d", schedule[i], result[i])
-		}
-
-		i++
-	}
-
-}
-
 func TestUpdateHouseHold(t *testing.T) {
 	h := newHouseForTest(t)
 
