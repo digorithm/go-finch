@@ -10,31 +10,10 @@ type HouseScheduleRow struct {
 	Recipe string `db:"name"`
 }
 
-type ScheduleRow struct {
-	HouseID  int64 `db:"house_id"`
-	WeekID   int64 `db:"week_id"`
-	TypeID   int64 `db:"type_id"`
-	RecipeId int64 `db:"recipe_id"`
-}
-
-type HouseRow struct {
-	ID         int64  `db:"id"`
-	Name       string `db:"name"`
-	GroceryDay string `db:"grocery_day"`
-	HouseHold  int64  `db:"household_number"`
-}
-
 type HouseStorageRow struct {
-	Name   string  `db:"name"`
-	Amount float64 `db:"amount`
-	Unit   string  `db:"name"`
-}
-
-type UserRow struct {
-	ID       int64  `db:"id"`
-	Email    string `db:"email"`
-	Password string `db:"password"`
-	Username string `db:"username"`
+	ItemInStorageRow
+	IngName  string `db:"name"`
+	UnitName string `db:"name"`
 }
 
 type UserHouseRow struct {
@@ -42,31 +21,9 @@ type UserHouseRow struct {
 	OwnerRow
 }
 
-type OwnerRow struct {
-	OwnType     int64  `db:"own_type"`
-	Description string `db:"description"`
-}
-
 type UserOwnTypeRow struct {
 	UserRow
 	OwnerRow
-}
-
-type RecipeRow struct {
-	ID        int64  `db:"id"`
-	Name      string `db:"name"`
-	Type      string `db:"type"`
-	ServesFor int64  `db:"serves_for"`
-}
-
-type IngredientRow struct {
-	ID              int64   `db:"id"`
-	Name            string  `db:"name"`
-	CarbPer100G     float64 `db:"carb_per_100g"`
-	ProteinPer100G  float64 `db:"protein_per_100g"`
-	FatPer100G      float64 `db:"fat_per_100g"`
-	FiberPer100G    float64 `db:"fiber_per_100g"`
-	CaloriesPer100G float64 `db:"calories_per_100g"`
 }
 
 type FullRecipeRow struct {
@@ -76,26 +33,6 @@ type FullRecipeRow struct {
 	Amount     float64 `db:"amount"`
 	Unit       string  `db:"name"`
 	Text       string  `db:"text"`
-}
-
-func createRecipeRows(data []interface{}) []RecipeRow {
-	var recipes []RecipeRow
-
-	var row RecipeRow
-
-	for i := 0; i < len(data); i++ {
-
-		v := reflect.ValueOf(data[i])
-
-		row.ID = v.Index(0).Interface().(int64)
-		row.Name = v.Index(1).Interface().(string)
-		row.Type = v.Index(2).Interface().(string)
-		row.ServesFor = v.Index(3).Interface().(int64)
-
-		recipes = append(recipes, row)
-	}
-
-	return recipes
 }
 
 func createUserOwnTypeRows(data []interface{}) []UserOwnTypeRow {
@@ -126,9 +63,12 @@ func createHouseStorageRows(data []interface{}) []HouseStorageRow {
 	for i := 0; i < len(data); i++ {
 		v := reflect.ValueOf(data[i])
 
-		row.Name = v.Index(0).Interface().(string)
-		row.Amount = v.Index(1).Interface().(float64)
-		row.Unit = v.Index(2).Interface().(string)
+		row.HouseID = v.Index(0).Interface().(int64)
+		row.IngID = v.Index(1).Interface().(int64)
+		row.Amount = v.Index(2).Interface().(float64)
+		row.UnitID = v.Index(3).Interface().(int64)
+		row.IngName = v.Index(4).Interface().(string)
+		row.UnitName = v.Index(5).Interface().(string)
 
 		storage = append(storage, row)
 	}

@@ -96,7 +96,7 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error)
 
 func (h *House) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
-	query := "SELECT I.NAME, S.AMOUNT, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
+	query := "SELECT S.HOUSE_ID, I.ID, S.AMOUNT, S.UNIT_ID, I.NAME, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
 
 	data, err := h.GetCompoundModel(tx, query, houseID)
 
