@@ -88,6 +88,7 @@ func TestCreateDeleteGeneric(t *testing.T) {
 	data := make(map[string]interface{})
 	data["email"] = newEmailForTest()
 	data["password"] = "abc123"
+	data["username"] = "rodrigo"
 
 	result, err := base.InsertIntoTable(nil, data)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
+	"github.com/buger/jsonparser"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -165,4 +165,109 @@ func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
 
 	return u.GetRecipeForStruct(tx, query, userID)
+}
+
+// AddRecipe adds a recipe and binds it to a user.
+// It will come as a JSON and then the respective Handler will break
+// the json into 2 maps: recipe and steps. This will be used
+// to add the necessary information to add the recipe to the database.
+func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte) ([]FullRecipeRow, error) {
+
+	var FullRecipe []FullRecipeRow
+	recipeObj := NewRecipe(u.db)
+
+	// Add recipe metadata to DB
+	recipeResult, err := u.addJsonRecipeTable(tx, jsonRecipe)
+	if err != nil {
+		return FullRecipe, err
+	}
+
+	recipeId, _ := recipeResult.LastInsertId()
+
+	// Add both step and step_ingredient tables to the DB
+	_, _, err = u.addJsonIngredientStepTable(tx, recipeId, jsonRecipe)
+
+	if err != nil {
+		return FullRecipe, err
+	}
+
+	FullRecipe, err = recipeObj.GetFullRecipe(tx, recipeId)
+
+	return FullRecipe, err
+}
+
+func (u *User) addJsonRecipeTable(tx *sqlx.Tx, jsonData []byte) (sql.Result, error) {
+	recipeObj := NewRecipe(u.db)
+
+	var err error
+
+	recipeData := make(map[string]interface{})
+	recipeData["name"], err = jsonparser.GetString(jsonData, "recipe_name")
+	recipeData["type"], err = jsonparser.GetString(jsonData, "type")
+	recipeData["serves_for"], err = jsonparser.GetString(jsonData, "serves_for")
+
+	if err != nil {
+		return nil, err
+	}
+
+	recipeResult, err := recipeObj.InsertIntoTable(tx, recipeData)
+
+	return recipeResult, err
+}
+
+func (u *User) addJsonIngredientStepTable(tx *sqlx.Tx, recipeId int64, jsonData []byte) (sql.Result, sql.Result, error) {
+
+	ingredientObj := NewIngredient(u.db)
+
+	var err error
+	var stepResult sql.Result
+	var stepIngredientResult sql.Result
+
+	var step_db Base
+	step_db.db = u.db
+	step_db.table = "step"
+	step_db.hasID = true
+
+	var step_ingredient_db Base
+	step_ingredient_db.db = u.db
+	step_ingredient_db.table = "step_ingredient"
+	step_ingredient_db.hasID = false
+
+	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		// Insert data into step table
+		stepData := make(map[string]interface{})
+		stepData["recipe_id"] = recipeId
+		stepData["id"], _ = jsonparser.GetInt(value, "step_id")
+		stepData["text"], _ = jsonparser.GetString(value, "text")
+
+		stepResult, err = step_db.InsertIntoTable(tx, stepData)
+
+		if err != nil {
+			fmt.Printf("Error while adding step into DB. Error: %v", err)
+		}
+
+		jsonparser.ArrayEach(value, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+
+			stepIngredientData := make(map[string]interface{})
+			stepIngredientData["recipe_id"] = stepData["recipe_id"]
+			stepIngredientData["unit_id"], _ = jsonparser.GetInt(value, "unit")
+			stepIngredientData["amount"], _ = jsonparser.GetFloat(value, "amount")
+			stepIngredientData["step_id"] = stepData["id"]
+
+			// Check if ingredient ID exists in the DB
+			stepIngredientDataName, _ := jsonparser.GetString(value, "name")
+			iRow, _ := ingredientObj.GetByName(tx, stepIngredientDataName)
+			if iRow == nil {
+				addedIRow, _ := ingredientObj.AddIngredient(tx, stepIngredientDataName)
+				stepIngredientData["ingredient_id"] = addedIRow.ID
+			} else {
+				stepIngredientData["ingredient_id"] = iRow.ID
+			}
+			stepIngredientResult, err = step_ingredient_db.InsertIntoTable(tx, stepIngredientData)
+			if err != nil {
+				fmt.Printf("Error while adding step ingredient into DB. Error: %v", err)
+			}
+		}, "step_ingredients")
+	}, "steps")
+	return stepResult, stepIngredientResult, err
 }

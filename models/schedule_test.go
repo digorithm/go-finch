@@ -15,15 +15,10 @@ func TestUpdateSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
 
-	oldSchedule, err := s.GetHouseSchedule(nil, 2)
-	fmt.Println("oldSchedule:")
-	fmt.Println(oldSchedule)
+	_, err := s.GetHouseSchedule(nil, 2)
 
 	schedule, err := s.UpdateSchedule(nil, 2, 3, 3, 1)
-	newSchedule, err := s.GetHouseSchedule(nil, 2)
-
-	fmt.Println("newSchedule:")
-	fmt.Println(newSchedule)
+	_, err = s.GetHouseSchedule(nil, 2)
 
 	s.UpdateSchedule(nil, 2, 3, 3, 4)
 

@@ -17,7 +17,7 @@ func deleteTestUser(t *testing.T, u *User, id int64) {
 	}
 }
 
-func TestUserCRUD(t *testing.T) {
+func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
 
 	// Signup
@@ -87,6 +87,93 @@ func TestGetUserByUsername(t *testing.T) {
 		t.Errorf("Usernames did not match!")
 	}
 
+}
+
+func TestAddRecipe(t *testing.T) {
+	u := newUserForTest(t)
+
+	// Define a test recipe.
+	// It will come from the client request as a JSON.
+	// The handler will extract the maps[] from the JSON just like we are doing
+	// down here and pass them to User.AddRecipe(...)
+
+	test_recipe := []byte(`{
+		"recipe_name": "feijoada",
+		"type": "Lunch/Dinner",
+		"serves_for": "2",
+		"steps": [
+			{
+				"step_id": 1,
+				"text": "description of the first step",
+				"step_ingredients": [
+					{"name": "beans", "amount": 34.5, "unit": 10},
+					{"name": "rice", "amount": 14.5, "unit": 10}
+				]
+			},
+			{
+				"step_id": 2,
+				"text": "description of the second step",
+				"step_ingredients": [
+					{"name": "water", "amount": 4.5, "unit": 10}
+				]
+			},
+			{
+				"step_id": 3,
+				"text": "description of the third step",
+				"step_ingredients": [
+					{"name": "salt", "amount": 1.5, "unit": 10}
+				]
+			}
+		]
+	}`)
+
+	returnedRecipe, err := u.AddRecipe(nil, test_recipe)
+
+	if err != nil {
+		t.Errorf("Add recipe should work. Err: %v", err)
+	}
+
+	if returnedRecipe[0].Name != "feijoada" {
+		t.Errorf("Recipes have different names.")
+		t.Errorf("Expected: feijoada")
+		t.Errorf("Actual: %v", returnedRecipe[0].Name)
+	}
+
+	if returnedRecipe[0].Type != "Lunch/Dinner" {
+		t.Errorf("Recipes have different types.")
+		t.Errorf("Expected: Lunch/Dinner")
+		t.Errorf("Actual: %v", returnedRecipe[0].Type)
+	}
+
+	if returnedRecipe[0].ServesFor != 2 {
+		t.Errorf("Recipes have different ServesFor.")
+		t.Errorf("Expected: 2")
+		t.Errorf("Actual: %v", returnedRecipe[0].Type)
+	}
+
+	if returnedRecipe[0].Ingredient != "beans" {
+		t.Errorf("Wrong ingredient.")
+		t.Errorf("Expected: beans")
+		t.Errorf("Actual: %v", returnedRecipe[0].Ingredient)
+	}
+
+	if returnedRecipe[1].Ingredient != "rice" {
+		t.Errorf("Wrong ingredient.")
+		t.Errorf("Expected: rice")
+		t.Errorf("Actual: %v", returnedRecipe[1].Ingredient)
+	}
+
+	if returnedRecipe[2].Ingredient != "water" {
+		t.Errorf("Wrong ingredient.")
+		t.Errorf("Expected: water")
+		t.Errorf("Actual: %v", returnedRecipe[2].Ingredient)
+	}
+
+	if returnedRecipe[3].Ingredient != "salt" {
+		t.Errorf("Wrong ingredient.")
+		t.Errorf("Expected: salt")
+		t.Errorf("Actual: %v", returnedRecipe[3].Ingredient)
+	}
 }
 
 func TestGetUserRecipes(t *testing.T) {

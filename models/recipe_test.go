@@ -30,8 +30,8 @@ func TestGetFullRecipe(t *testing.T) {
 
 	r := newRecipeForTest(t)
 	var f1 = createVarsForFullRecipe(1, "Baked Potato", "Lunch/Dinner", 4, 1, "potato", 4, "litre", "peel and cut the potatoes into an inch thick disks")
-	var f2 = createVarsForFullRecipe(1, "Baked Potato", "Lunch/Dinner", 4, 2, "parmesan cheese", 1, "grams", "mix the milk and parmesan together")
-	var f3 = createVarsForFullRecipe(1, "Baked Potato", "Lunch/Dinner", 4, 2, "milk", 0.25, "cup", "mix the milk and parmesan together")
+	var f2 = createVarsForFullRecipe(1, "Baked Potato", "Lunch/Dinner", 4, 2, "milk", 0.25, "cup", "mix the milk and parmesan together")
+	var f3 = createVarsForFullRecipe(1, "Baked Potato", "Lunch/Dinner", 4, 2, "parmesan cheese", 1, "grams", "mix the milk and parmesan together")
 	var result []FullRecipeRow
 
 	fullRecipe, err := r.GetFullRecipe(nil, 1)
