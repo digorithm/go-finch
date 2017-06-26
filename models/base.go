@@ -94,6 +94,8 @@ func (b *Base) InsertIntoTable(tx *sqlx.Tx, data map[string]interface{}) (sql.Re
 
 		result.lastInsertId = lastInsertId
 	} else {
+		// This else is dangerous, if any weird bug happens, look here!
+		// #TODO: better abstraction for this kind of thing
 		_, err = tx.Exec(query, values...)
 		if err != nil {
 			return nil, err
