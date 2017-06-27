@@ -171,7 +171,7 @@ func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 // It will come as a JSON and then the respective Handler will break
 // the json into 2 maps: recipe and steps. This will be used
 // to add the necessary information to add the recipe to the database.
-func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte) ([]FullRecipeRow, error) {
+func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte, userID int64) ([]FullRecipeRow, error) {
 
 	var FullRecipe []FullRecipeRow
 	recipeObj := NewRecipe(u.db)
@@ -190,6 +190,16 @@ func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte) ([]FullRecipeRow, error
 	if err != nil {
 		return FullRecipe, err
 	}
+
+	var user_recipe_db Base
+	user_recipe_db.db = u.db
+	user_recipe_db.table = "user_recipe"
+	user_recipe_db.hasID = false
+
+	userRecipeData := make(map[string]interface{})
+	userRecipeData["user_id"] = userID
+	userRecipeData["recipe_id"] = recipeId
+	user_recipe_db.InsertIntoTable(tx, userRecipeData)
 
 	FullRecipe, err = recipeObj.GetFullRecipe(tx, recipeId)
 
@@ -269,5 +279,6 @@ func (u *User) addJsonIngredientStepTable(tx *sqlx.Tx, recipeId int64, jsonData 
 			}
 		}, "step_ingredients")
 	}, "steps")
+
 	return stepResult, stepIngredientResult, err
 }

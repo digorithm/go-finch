@@ -10,6 +10,12 @@ func newUserForTest(t *testing.T) *User {
 	return NewUser(newDbForTest(t))
 }
 
+func newUserRowForTest(t *testing.T) (*User, *UserRow) {
+	u := newUserForTest(t)
+	userRow, _ := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	return u, userRow
+}
+
 func deleteTestUser(t *testing.T, u *User, id int64) {
 	_, err := u.DeleteById(nil, id)
 	if err != nil {
@@ -90,7 +96,9 @@ func TestGetUserByUsername(t *testing.T) {
 }
 
 func TestAddRecipe(t *testing.T) {
-	u := newUserForTest(t)
+
+	u, uRow := newUserRowForTest(t)
+	defer deleteTestUser(t, u, uRow.ID)
 
 	// Define a test recipe.
 	// It will come from the client request as a JSON.
@@ -127,7 +135,7 @@ func TestAddRecipe(t *testing.T) {
 		]
 	}`)
 
-	returnedRecipe, err := u.AddRecipe(nil, test_recipe)
+	returnedRecipe, err := u.AddRecipe(nil, test_recipe, uRow.ID)
 
 	if err != nil {
 		t.Errorf("Add recipe should work. Err: %v", err)
