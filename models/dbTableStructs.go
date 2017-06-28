@@ -1,6 +1,7 @@
 package models
 
 import "reflect"
+import "fmt"
 
 type MealRow struct {
 	ID   int64  `db:"id"`
@@ -110,4 +111,21 @@ func createRecipeRows(data []interface{}) []RecipeRow {
 	}
 
 	return recipes
+}
+
+func createItemInStorage(data []interface{}) ItemInStorageRow {
+
+	var item ItemInStorageRow
+
+	fmt.Printf("This is it: %v", data)
+
+	v := reflect.ValueOf(data[0])
+
+	item.HouseID = v.Index(0).Interface().(int64)
+	item.IngID = v.Index(1).Interface().(int64)
+	item.Amount = v.Index(2).Interface().(float64)
+	item.UnitID = v.Index(3).Interface().(int64)
+
+	return item
+
 }

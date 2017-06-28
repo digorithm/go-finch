@@ -66,7 +66,7 @@ create table step_ingredient(
 );
 
 create table item_in_storage(
-   house_id int4 references house(id),
+   house_id int4 references house(id) on delete cascade,
    ingredient_id int4 references ingredient(id),
    amount float8 not null,
    unit_id int4 references unit(id) not null,
