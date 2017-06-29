@@ -85,6 +85,7 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string, groceryDay string, househo
 	return h.HouseRowFromSQLResult(tx, sqlResult)
 }
 
+// GetHouseUsers retrieves all users of a given house id and returns relevant information about the residents
 func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, error) {
 
 	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
@@ -100,6 +101,7 @@ func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, err
 	return users, err
 }
 
+// GetHouseRecipes retrieves all recipes of a given house id and returns relevant information about the recipes
 func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error) {
 
 	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN HOUSE_RECIPE H ON R.ID = H.RECIPE_ID WHERE H.HOUSE_ID = $1"
@@ -107,6 +109,7 @@ func (h *House) GetHouseRecipes(tx *sqlx.Tx, houseID int64) ([]RecipeRow, error)
 	return h.GetRecipeForStruct(tx, query, houseID)
 }
 
+// GetHouseStorage retrieves all ingredients in a given house's storage and returns relevant information about the ingredients
 func (h *House) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
 	query := "SELECT S.HOUSE_ID, I.ID, S.AMOUNT, S.UNIT_ID, I.NAME, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
@@ -152,6 +155,7 @@ func (i *ItemInStorage) InsertToStorage(tx *sqlx.Tx, houseID int64, ingID int64,
 	return storage, err
 }
 
+// UpdateHouseHold updates the number of residents in a given house by taking the number of households
 func (h *House) UpdateHouseHold(tx *sqlx.Tx, houseHold int64, houseID int64) (int64, error) {
 
 	data := make(map[string]interface{})
@@ -164,17 +168,17 @@ func (h *House) UpdateHouseHold(tx *sqlx.Tx, houseHold int64, houseID int64) (in
 		fmt.Println(err)
 	}
 
-	return h.AffectedRowsFromSqlResult(tx, result)
+	return h.affectedRowsFromSQLResult(tx, result)
 
 }
 
-func (h *House) AffectedRowsFromSqlResult(tx *sqlx.Tx, sqlResult sql.Result) (int64, error) {
+func (h *House) affectedRowsFromSQLResult(tx *sqlx.Tx, sqlResult sql.Result) (int64, error) {
 
-	houseId, err := sqlResult.RowsAffected()
+	houseID, err := sqlResult.RowsAffected()
 	if err != nil {
 
 		fmt.Println(err)
 	}
 
-	return houseId, err
+	return houseID, err
 }
