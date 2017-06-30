@@ -19,12 +19,11 @@ func createVarsForGetUsers(id int64, email string, pWord string, uName string, o
 	return user
 }
 
-func createVarsForGetRecipes(id int64, name string, typem string, serves int64) RecipeRow {
+func createVarsForGetRecipes(id int64, name string, serves int64) RecipeRow {
 	var recipe RecipeRow
 
 	recipe.ID = id
 	recipe.Name = name
-	recipe.Type = typem
 	recipe.ServesFor = serves
 
 	return recipe
@@ -89,7 +88,7 @@ func TestGetUsers(t *testing.T) {
 func TestGetRecipes(t *testing.T) {
 
 	h := newHouseForTest(t)
-	var r1 = createVarsForGetRecipes(2, "Beans with rice", "Lunch/Dinner", 6)
+	var r1 = createVarsForGetRecipes(2, "Beans with rice", 6)
 	var result []RecipeRow
 
 	recipes, err := h.GetHouseRecipes(nil, 3)

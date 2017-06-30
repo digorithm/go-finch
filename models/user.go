@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/buger/jsonparser"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
@@ -144,13 +145,11 @@ func (u *User) UpdateEmailAndPasswordById(tx *sqlx.Tx, userID int64, email, pass
 
 func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) {
 
-	var houses []UserHouseRow
-
 	query := "SELECT H.ID, H.NAME, O.OWN_TYPE, O.DESCRIPTION FROM HOUSE H INNER JOIN MEMBER_OF M ON M.HOUSE_ID = H.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.USER_ID = $1"
 
 	data, err := u.GetCompoundModel(nil, query, userID)
 
-	houses = createUserHouseRows(houses, data)
+	houses := createUserHouseRows(data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -162,7 +161,7 @@ func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) 
 // GetUserRecipes used by house and user
 func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 
-	query := "SELECT R.ID, R.NAME, R.TYPE, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
+	query := "SELECT R.ID, R.NAME, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE U.USER_ID = $1"
 
 	return u.GetRecipeForStruct(tx, query, userID)
 }
@@ -177,12 +176,19 @@ func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte, userID int64) ([]FullRe
 	recipeObj := NewRecipe(u.db)
 
 	// Add recipe metadata to DB
+
 	recipeResult, err := u.addJsonRecipeTable(tx, jsonRecipe)
 	if err != nil {
 		return FullRecipe, err
 	}
 
 	recipeId, _ := recipeResult.LastInsertId()
+
+	_, err = u.addJsonRecipeTypeTable(tx, recipeId, jsonRecipe)
+
+	if err != nil {
+		return FullRecipe, err
+	}
 
 	// Add both step and step_ingredient tables to the DB
 	_, _, err = u.addJsonIngredientStepTable(tx, recipeId, jsonRecipe)
@@ -213,7 +219,6 @@ func (u *User) addJsonRecipeTable(tx *sqlx.Tx, jsonData []byte) (sql.Result, err
 
 	recipeData := make(map[string]interface{})
 	recipeData["name"], err = jsonparser.GetString(jsonData, "recipe_name")
-	recipeData["type"], err = jsonparser.GetString(jsonData, "type")
 	recipeData["serves_for"], err = jsonparser.GetString(jsonData, "serves_for")
 
 	if err != nil {
@@ -250,6 +255,9 @@ func (u *User) addJsonIngredientStepTable(tx *sqlx.Tx, recipeId int64, jsonData 
 		stepData["id"], _ = jsonparser.GetInt(value, "step_id")
 		stepData["text"], _ = jsonparser.GetString(value, "text")
 
+		recipeType := make(map[string]interface{})
+		recipeType["recipe_id"] = recipeId
+
 		stepResult, err = step_db.InsertIntoTable(tx, stepData)
 
 		if err != nil {
@@ -281,4 +289,44 @@ func (u *User) addJsonIngredientStepTable(tx *sqlx.Tx, recipeId int64, jsonData 
 	}, "steps")
 
 	return stepResult, stepIngredientResult, err
+}
+
+func (u *User) addJsonRecipeTypeTable(tx *sqlx.Tx, recipeID int64, jsonData []byte) (sql.Result, error) {
+
+	recipeTypeObj := NewRecipeType(u.db)
+
+	var recipeTypeRes sql.Result
+	var err error
+
+	jsonparser.ArrayEach(jsonData, func(jsonData []byte, dataType jsonparser.ValueType, offset int, err error) {
+
+		data := make(map[string]interface{})
+		data["recipe_id"] = recipeID
+		typeS := string(jsonData)
+		data["type_id"] = getTypeID(string(typeS))
+
+		recipeTypeRes, err = recipeTypeObj.InsertIntoTable(tx, data)
+
+	}, "type")
+
+	return recipeTypeRes, err
+
+}
+
+func getTypeID(typeR string) int {
+
+	var ID int
+
+	switch typeR {
+	case "Breakfast":
+		ID = 1
+	case "Snack":
+		ID = 2
+	case "Lunch":
+		ID = 3
+	case "Dinner":
+		ID = 4
+	}
+
+	return ID
 }

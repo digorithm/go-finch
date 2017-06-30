@@ -1,7 +1,6 @@
 package models
 
 import "reflect"
-import "fmt"
 
 type MealRow struct {
 	ID   int64  `db:"id"`
@@ -30,7 +29,6 @@ type UserRow struct {
 type RecipeRow struct {
 	ID        int64  `db:"id"`
 	Name      string `db:"name"`
-	Type      string `db:"type"`
 	ServesFor int64  `db:"serves_for"`
 }
 
@@ -93,6 +91,11 @@ type MemberOfRow struct {
 	OwnType int64 `db:"own_type"`
 }
 
+type RecipeTypeRow struct {
+	Recipe_id int64 `db:"recipe_id"`
+	Type_id   int64 `db:"type_id"`
+}
+
 func createRecipeRows(data []interface{}) []RecipeRow {
 	var recipes []RecipeRow
 
@@ -104,8 +107,7 @@ func createRecipeRows(data []interface{}) []RecipeRow {
 
 		row.ID = v.Index(0).Interface().(int64)
 		row.Name = v.Index(1).Interface().(string)
-		row.Type = v.Index(2).Interface().(string)
-		row.ServesFor = v.Index(3).Interface().(int64)
+		row.ServesFor = v.Index(2).Interface().(int64)
 
 		recipes = append(recipes, row)
 	}
@@ -116,8 +118,6 @@ func createRecipeRows(data []interface{}) []RecipeRow {
 func createItemInStorage(data []interface{}) ItemInStorageRow {
 
 	var item ItemInStorageRow
-
-	fmt.Printf("This is it: %v", data)
 
 	v := reflect.ValueOf(data[0])
 

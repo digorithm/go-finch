@@ -37,7 +37,7 @@ func TestGetHouseSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
 	var s1 = createVarsForGetSchedule("Tuesday", "Breakfast", "No Flour Pancake")
-	var s2 = createVarsForGetSchedule("Wednesday", "Lunch/Dinner", "Roast Chicken")
+	var s2 = createVarsForGetSchedule("Wednesday", "Lunch", "Roast Chicken")
 	var s3 = createVarsForGetSchedule("Saturday", "Breakfast", "No Flour Pancake")
 	var result []HouseScheduleRow
 

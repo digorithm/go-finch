@@ -35,6 +35,11 @@ type FullRecipeRow struct {
 	Text       string  `db:"text"`
 }
 
+type RecipeTypeNameRow struct {
+	RecipeTypeRow
+	TypeName string `db:"type"`
+}
+
 func createUserOwnTypeRows(data []interface{}) []UserOwnTypeRow {
 	var users []UserOwnTypeRow
 	var row UserOwnTypeRow
@@ -86,13 +91,12 @@ func createFullRecipeRows(data []interface{}) []FullRecipeRow {
 
 		row.ID = v.Index(0).Interface().(int64)
 		row.Name = v.Index(1).Interface().(string)
-		row.Type = v.Index(2).Interface().(string)
-		row.ServesFor = v.Index(3).Interface().(int64)
-		row.StepID = v.Index(4).Interface().(int64)
-		row.Ingredient = v.Index(5).Interface().(string)
-		row.Amount = v.Index(6).Interface().(float64)
-		row.Unit = v.Index(7).Interface().(string)
-		row.Text = v.Index(8).Interface().(string)
+		row.ServesFor = v.Index(2).Interface().(int64)
+		row.StepID = v.Index(3).Interface().(int64)
+		row.Ingredient = v.Index(4).Interface().(string)
+		row.Amount = v.Index(5).Interface().(float64)
+		row.Unit = v.Index(6).Interface().(string)
+		row.Text = v.Index(7).Interface().(string)
 
 		fullRecipe = append(fullRecipe, row)
 	}
@@ -118,9 +122,10 @@ func createHouseScheduleRows(data []interface{}) []HouseScheduleRow {
 	return schedule
 }
 
-func createUserHouseRows(houses []UserHouseRow, data []interface{}) []UserHouseRow {
+func createUserHouseRows(data []interface{}) []UserHouseRow {
 
 	var row UserHouseRow
+	var houses []UserHouseRow
 
 	for i := 0; i < len(data); i++ {
 
@@ -137,4 +142,23 @@ func createUserHouseRows(houses []UserHouseRow, data []interface{}) []UserHouseR
 	}
 
 	return houses
+}
+
+func createRecipeTypeNameRows(data []interface{}) []RecipeTypeNameRow {
+
+	var row RecipeTypeNameRow
+	var recipes []RecipeTypeNameRow
+
+	for i := 0; i < len(data); i++ {
+
+		v := reflect.ValueOf(data[i])
+
+		row.Recipe_id = v.Index(0).Interface().(int64)
+		row.Type_id = v.Index(1).Interface().(int64)
+		row.TypeName = v.Index(2).Interface().(string)
+		recipes = append(recipes, row)
+	}
+
+	return recipes
+
 }

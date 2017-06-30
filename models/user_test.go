@@ -23,6 +23,14 @@ func deleteTestUser(t *testing.T, u *User, id int64) {
 	}
 }
 
+func deleteTestRecipe(t *testing.T, id int64) {
+	r := newRecipeForTest(t)
+	_, err := r.DeleteById(nil, id)
+	if err != nil {
+		t.Fatal("Something went wrong with test recipe deletion. Error: %v", err)
+	}
+}
+
 func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
 
@@ -107,7 +115,7 @@ func TestAddRecipe(t *testing.T) {
 
 	test_recipe := []byte(`{
 		"recipe_name": "feijoada",
-		"type": "Lunch/Dinner",
+		"type": ["Lunch", "Dinner"],
 		"serves_for": "2",
 		"steps": [
 			{
@@ -141,22 +149,20 @@ func TestAddRecipe(t *testing.T) {
 		t.Errorf("Add recipe should work. Err: %v", err)
 	}
 
+	if len(returnedRecipe) == 0 {
+		t.Errorf("Empty returnedRecipe: %v", returnedRecipe)
+	}
+
 	if returnedRecipe[0].Name != "feijoada" {
 		t.Errorf("Recipes have different names.")
 		t.Errorf("Expected: feijoada")
 		t.Errorf("Actual: %v", returnedRecipe[0].Name)
 	}
 
-	if returnedRecipe[0].Type != "Lunch/Dinner" {
-		t.Errorf("Recipes have different types.")
-		t.Errorf("Expected: Lunch/Dinner")
-		t.Errorf("Actual: %v", returnedRecipe[0].Type)
-	}
-
 	if returnedRecipe[0].ServesFor != 2 {
 		t.Errorf("Recipes have different ServesFor.")
 		t.Errorf("Expected: 2")
-		t.Errorf("Actual: %v", returnedRecipe[0].Type)
+		t.Errorf("Actual: %v", returnedRecipe[0].ServesFor)
 	}
 
 	if returnedRecipe[0].Ingredient != "beans" {
@@ -182,13 +188,16 @@ func TestAddRecipe(t *testing.T) {
 		t.Errorf("Expected: salt")
 		t.Errorf("Actual: %v", returnedRecipe[3].Ingredient)
 	}
+
+	deleteTestRecipe(t, returnedRecipe[0].ID)
+
 }
 
 func TestGetUserRecipes(t *testing.T) {
 
 	u := newUserForTest(t)
-	var r1 = createVarsForGetRecipes(2, "Beans with rice", "Lunch/Dinner", 6)
-	var r2 = createVarsForGetRecipes(3, "No Flour Pancake", "Breakfast", 2)
+	var r1 = createVarsForGetRecipes(2, "Beans with rice", 6)
+	var r2 = createVarsForGetRecipes(3, "No Flour Pancake", 2)
 	var result []RecipeRow
 
 	recipes, err := u.GetUserRecipes(nil, 2)
