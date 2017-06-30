@@ -27,7 +27,6 @@ create table user_info(
 create table recipe(
      id serial primary key,
      name varchar(355) not null,
-     type varchar(50) references meal_type(type) not null,
      serves_for int,
      image varchar(50)
 );
@@ -105,6 +104,12 @@ create table member_of(
     primary key(user_id, house_id, own_type)
 );
 
+create table recipe_type(
+    recipe_id int4 references recipe(id) on delete cascade,
+    type_id int4 references meal_type(id) not null,
+    primary key(recipe_id, type_id)
+);
+
 insert into user_info(username, email, password)
 values 
 ('guli', 'gulipek5@gmail.com', 'password');
@@ -159,7 +164,11 @@ values
 
 insert into meal_type(type)
 values
-('Lunch/Dinner');
+('Lunch');
+
+insert into meal_type(type)
+values
+('Dinner');
 
 insert into house(name, grocery_day, household_number)
 values
@@ -173,21 +182,49 @@ insert into house(name, grocery_day, household_number)
 values
 ('Spaceship', 'Sunday', 1);
 
-insert into recipe(name, type, serves_for)
+insert into recipe(name, serves_for)
 values
-('Baked Potato', 'Lunch/Dinner', 4);
+('Baked Potato', 4);
 
-insert into recipe(name, type, serves_for)
+insert into recipe(name, serves_for)
 values
-('Beans with rice', 'Lunch/Dinner', 6);
+('Beans with rice', 6);
 
-insert into recipe(name, type, serves_for)
+insert into recipe(name, serves_for)
 values
-('No Flour Pancake', 'Breakfast', 2);
+('No Flour Pancake', 2);
 
-insert into recipe(name, type, serves_for)
+insert into recipe(name, serves_for)
 values
-('Roast Chicken', 'Lunch/Dinner', 4);
+('Roast Chicken', 4);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(2, 4);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(4, 4);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(2, 3);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(3, 1);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(3, 2);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(1, 4);
+
+insert into recipe_type(recipe_id, type_id)
+values
+(1, 3);
 
 insert into ingredient(name, carb_per_100g, protein_per_100g, fat_per_100g, fiber_per_100g, calories_per_100g)
 values
