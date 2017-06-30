@@ -1,13 +1,14 @@
 package application
 
 import (
+	"net/http"
+
 	"github.com/carbocation/interpose"
 	gorilla_mux "github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
-	"net/http"
 
 	"github.com/digorithm/meal_planner/handlers"
 	"github.com/digorithm/meal_planner/middlewares"
@@ -35,9 +36,9 @@ func New(config *viper.Viper) (*Application, error) {
 
 // Application is the application object that runs HTTP server.
 type Application struct {
-	config      *viper.Viper
-	dsn         string
-	db          *sqlx.DB
+	config       *viper.Viper
+	dsn          string
+	db           *sqlx.DB
 	sessionStore sessions.Store
 }
 
@@ -46,17 +47,18 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 	middle.Use(middlewares.SetDB(app.db))
 	middle.Use(middlewares.SetSessionStore(app.sessionStore))
 
-	middle.UseHandler(app.mux())
+	middle.UseHandler(app.Mux())
 
 	return middle, nil
 }
 
-func (app *Application) mux() *gorilla_mux.Router {
+func (app *Application) Mux() *gorilla_mux.Router {
 	MustLogin := middlewares.MustLogin
 
 	router := gorilla_mux.NewRouter()
 
-	router.Handle("/", MustLogin(http.HandlerFunc(handlers.GetHome))).Methods("GET")
+	//router.Handle("/", MustLogin(http.HandlerFunc(handlers.GetHome))).Methods("GET")
+	router.HandleFunc("/", handlers.GetMain).Methods("GET")
 
 	router.HandleFunc("/signup", handlers.GetSignup).Methods("GET")
 	router.HandleFunc("/signup", handlers.PostSignup).Methods("POST")

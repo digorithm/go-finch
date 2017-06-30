@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"reflect"
 	"strings"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type InsertResult struct {

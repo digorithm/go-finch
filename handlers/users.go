@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"errors"
+	"html/template"
+	"net/http"
+	"strings"
+
 	"github.com/digorithm/meal_planner/libhttp"
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
-	"html/template"
-	"net/http"
-	"strings"
 )
 
 func GetSignup(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +128,7 @@ func PostPutDeleteUsersID(w http.ResponseWriter, r *http.Request) {
 }
 
 func PutUsersID(w http.ResponseWriter, r *http.Request) {
-	userId, err := getIdFromPath(w, r)
+	userId, err := getIDFromPath(w, r)
 	if err != nil {
 		libhttp.HandleErrorJson(w, err)
 		return
@@ -162,6 +163,7 @@ func PutUsersID(w http.ResponseWriter, r *http.Request) {
 	// Update currentUser stored in session.
 	session.Values["user"] = currentUser
 	err = session.Save(r, w)
+
 	if err != nil {
 		libhttp.HandleErrorJson(w, err)
 		return

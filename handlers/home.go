@@ -1,17 +1,18 @@
 package handlers
 
 import (
-	"github.com/digorithm/meal_planner/models"
-	"github.com/digorithm/meal_planner/libhttp"
-	"github.com/gorilla/sessions"
 	"html/template"
 	"net/http"
+
+	"github.com/digorithm/meal_planner/libhttp"
+	"github.com/digorithm/meal_planner/models"
+	"github.com/gorilla/sessions"
 )
 
 func GetHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	sessionStore := r.Context().Value( "sessionStore").(sessions.Store)
+	sessionStore := r.Context().Value("sessionStore").(sessions.Store)
 
 	session, _ := sessionStore.Get(r, "meal_planner-session")
 	currentUser, ok := session.Values["user"].(*models.UserRow)
@@ -33,4 +34,8 @@ func GetHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
+}
+
+func GetMain(w http.ResponseWriter, r *http.Request) {
+	RespondWithJSON(w, 200, "hello")
 }

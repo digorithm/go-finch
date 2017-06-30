@@ -3,15 +3,16 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/spf13/viper"
-	"github.com/tylerb/graceful"
 	"net/http"
 	"time"
 
+	"github.com/Sirupsen/logrus"
+	"github.com/spf13/viper"
+	"github.com/tylerb/graceful"
+
 	"github.com/digorithm/meal_planner/application"
-	"github.com/digorithm/meal_planner/models"
 	"github.com/digorithm/meal_planner/libunix"
+	"github.com/digorithm/meal_planner/models"
 )
 
 func init() {
@@ -37,7 +38,7 @@ func newConfig() (*viper.Viper, error) {
 	return c, nil
 }
 
-func main() {
+func Initialize() {
 	config, err := newConfig()
 	if err != nil {
 		logrus.Fatal(err)
@@ -80,4 +81,8 @@ func main() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+}
+
+func main() {
+	Initialize()
 }
