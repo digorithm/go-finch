@@ -94,7 +94,7 @@ create table schedule(
 
  create table ownership(
      own_type serial primary key,
-     description varchar(50) not null
+     description varchar(50) unique not null 
  );
 
 create table member_of(
@@ -356,7 +356,7 @@ values
 
 insert into ownership(description)
 values
-('not allowed');
+('blocked');
 
 insert into member_of(user_id, house_id, own_type)
 values 

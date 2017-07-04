@@ -110,13 +110,13 @@ func TestGetRecipes(t *testing.T) {
 func TestUpdateHouseHold(t *testing.T) {
 	h := newHouseForTest(t)
 
-	house, err := h.UpdateHouseHold(nil, 3, 2)
+	res, err := h.UpdateHouseHold(nil, 3, 2)
 	if err != nil {
 		t.Errorf("Updating house schedule should work. Error: %v", err)
 	}
 
-	if house != 1 {
-		t.Errorf("Update House Schedule failed, got: %d, want: %d", house, 1)
+	if res.HouseHold != 3 {
+		t.Errorf("Update House Schedule failed, got: %d, want: %d", res.HouseHold, 3)
 	}
 
 	h.UpdateHouseHold(nil, 4, 2)

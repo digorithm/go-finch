@@ -166,6 +166,10 @@ func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 	return u.GetRecipeForStruct(tx, query, userID)
 }
 
+func (u *User) getMembership(tx *sqlx.Tx, houseID int64) {
+
+}
+
 // AddRecipe adds a recipe and binds it to a user.
 // It will come as a JSON and then the respective Handler will break
 // the json into 2 maps: recipe and steps. This will be used
