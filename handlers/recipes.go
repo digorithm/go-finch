@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -10,6 +11,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// GetHouseRecipesHandler will handle the API call to get all recipes of a given house,
+// it will return a JSON for the endpoint /recipes/house/{house_id} as described in the docs
 func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -32,26 +35,88 @@ func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var fullRecipes [][]models.FullRecipeRow
 
+	RecipesTypes := make(map[int64][]string)
+
 	for _, recipe := range recipes {
 		fullRecipe, err := recipeObj.GetFullRecipe(nil, recipe.ID)
+		recipeTypes, err := recipeObj.GetRecipeType(nil, recipe.ID)
+
+		RecipesTypes[recipe.ID] = recipeTypes
 
 		if err != nil {
 			fmt.Printf("Error fecthing full recipe. Error: %v", err)
 		}
 		fullRecipes = append(fullRecipes, fullRecipe)
 	}
+	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
 
-	JSONResponse := buildFullRecipeJSONResponse(fullRecipes)
-
-	fmt.Println(string(JSONResponse))
-
-	w.Write([]byte("hello"))
+	w.Write(JSONResponse)
 }
 
-func buildFullRecipeJSONResponse(recipes [][]models.FullRecipeRow) []byte {
+func buildFullRecipeJSONResponse(recipes [][]models.FullRecipeRow, RecipesTypes map[int64][]string) []byte {
+
+	finalRecipes := make([]map[string]interface{}, 0, 0)
+
 	for _, recipe := range recipes {
-		fmt.Println(recipe)
+
+		finalRecipe := make(map[string]interface{})
+
+		if len(recipe) > 0 {
+			recipeID := recipe[0].ID
+			recipeName := recipe[0].Name
+			servesFor := recipe[0].ServesFor
+			recipeTypes := RecipesTypes[recipeID]
+
+			steps := make([]map[string]interface{}, 0, 0)
+			stepsIngredients := make(map[int64][]map[string]interface{})
+
+			for _, row := range recipe {
+				step := make(map[string]interface{})
+				step["step_id"] = row.StepID
+				step["text"] = row.Text
+
+				singleStepIntegredient := make(map[string]interface{})
+				singleStepIntegredient["name"] = row.Ingredient
+				singleStepIntegredient["amount"] = row.Amount
+				singleStepIntegredient["unit"] = row.Unit
+				stepsIngredients[row.StepID] = append(stepsIngredients[row.StepID], singleStepIntegredient)
+
+				step["step_ingredients"] = stepsIngredients[row.StepID]
+				steps = append(steps, step)
+			}
+
+			steps = removeDuplicateStepID(steps)
+
+			finalRecipe["id"] = recipeID
+			finalRecipe["name"] = recipeName
+			finalRecipe["type"] = recipeTypes
+			finalRecipe["serves_for"] = servesFor
+			finalRecipe["steps"] = steps
+
+		}
+		finalRecipes = append(finalRecipes, finalRecipe)
+
 	}
 
-	return []byte("In development")
+	finalRecipesJSON, _ := json.MarshalIndent(finalRecipes, "", "    ")
+
+	return finalRecipesJSON
+}
+
+// removeDuplicateStepID is the worst awful shameless workaround ever. Don't even try to understand why this was created.
+func removeDuplicateStepID(steps []map[string]interface{}) []map[string]interface{} {
+	for k, step := range steps {
+		if k+1 < len(steps) {
+			stepID := step["step_id"].(int64)
+			nextStepID := steps[k+1]["step_id"].(int64)
+			if stepID < nextStepID {
+				// Continue to the next step
+				continue
+			} else if stepID == nextStepID {
+				// same step, remove this current index
+				steps = steps[:k+copy(steps[k:], steps[k+1:])]
+			}
+		}
+	}
+	return steps
 }

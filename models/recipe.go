@@ -32,6 +32,30 @@ type Recipe struct {
 	Base
 }
 
+func (r *Recipe) GetRecipeType(tx *sqlx.Tx, recipeID int64) ([]string, error) {
+
+	var types []string
+
+	query := "select type from recipe_type inner join meal_type on meal_type.id = recipe_type.type_id where recipe_type.recipe_id = $1"
+
+	rows, err := r.db.Queryx(query, recipeID)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+		cols, err := rows.SliceScan()
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		for _, col := range cols {
+			types = append(types, col.(string))
+		}
+	}
+	return types, err
+}
+
 func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, error) {
 
 	var FullRecipe []FullRecipeRow
