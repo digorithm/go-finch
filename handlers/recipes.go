@@ -53,6 +53,47 @@ func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(JSONResponse)
 }
 
+func GetUserRecipesHandler(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	userObj := models.NewUser(db)
+	recipeObj := models.NewRecipe(db)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	recipes, err := userObj.GetUserRecipes(nil, int64(userID))
+
+	if err != nil {
+		fmt.Printf("Something went wrong while fecthing the recipes. Error: %v", err)
+	}
+
+	var fullRecipes [][]models.FullRecipeRow
+
+	RecipesTypes := make(map[int64][]string)
+
+	for _, recipe := range recipes {
+		fullRecipe, err := recipeObj.GetFullRecipe(nil, recipe.ID)
+		recipeTypes, err := recipeObj.GetRecipeType(nil, recipe.ID)
+
+		RecipesTypes[recipe.ID] = recipeTypes
+
+		if err != nil {
+			fmt.Printf("Error fecthing full recipe. Error: %v", err)
+		}
+		fullRecipes = append(fullRecipes, fullRecipe)
+	}
+	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+	w.Write(JSONResponse)
+}
+
 func buildFullRecipeJSONResponse(recipes [][]models.FullRecipeRow, RecipesTypes map[int64][]string) []byte {
 
 	finalRecipes := make([]map[string]interface{}, 0, 0)
