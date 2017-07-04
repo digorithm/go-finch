@@ -50,7 +50,7 @@ func (m *Member) addUserHelper(tx *sqlx.Tx, houseID, userID, ownID int64) {
 	data["house_id"] = houseID
 	data["own_type"] = ownID
 
-	_, err := m.InsertIntoTable(tx, data)
+	_, err := m.InsertIntoMultiKeyTable(tx, data)
 
 	if err != nil {
 		fmt.Printf("%v", err)
