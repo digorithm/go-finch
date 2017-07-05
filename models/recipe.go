@@ -56,11 +56,19 @@ func (r *Recipe) GetRecipeType(tx *sqlx.Tx, recipeID int64) ([]string, error) {
 	return types, err
 }
 
+// GetAllRecipes used by house and user
+func (r *Recipe) GetAllRecipes(tx *sqlx.Tx) ([]RecipeRow, error) {
+
+	query := "SELECT R.ID, R.NAME, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID"
+
+	return r.GetAllRecipesForStruct(tx, query)
+}
+
 func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, error) {
 
 	var FullRecipe []FullRecipeRow
 
-	query := "select r.id, r.name, r.serves_for, si.step_id, i.name, si.amount, u.name, s.text from recipe r inner join step_ingredient si on r.id = si.recipe_id inner join step s on s.id = si.step_id and s.recipe_id = r.id inner join ingredient i on i.id = si.ingredient_id inner join unit u on u.id = si.unit_id where r.id = $1"
+	query := "select r.id, r.name, r.serves_for, si.step_id, i.name as ingredient, si.amount, u.name as unit, s.text from recipe r inner join step_ingredient si on r.id = si.recipe_id inner join step s on s.id = si.step_id and s.recipe_id = r.id inner join ingredient i on i.id = si.ingredient_id inner join unit u on u.id = si.unit_id where r.id = $1"
 
 	data, err := r.GetCompoundModel(tx, query, recipeID)
 
@@ -74,9 +82,49 @@ func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, er
 
 }
 
+func (r *Recipe) GetFullRecipes(tx *sqlx.Tx) ([][]FullRecipeRow, map[int64][]string, error) {
+
+	recipes, err := r.GetAllRecipes(tx)
+
+	if err != nil {
+		fmt.Printf("Something went wrong while fecthing the recipes. Error: %v", err)
+	}
+
+	var fullRecipes [][]FullRecipeRow
+
+	RecipesTypes := make(map[int64][]string)
+
+	for _, recipe := range recipes {
+		fullRecipe, err := r.GetFullRecipe(nil, recipe.ID)
+		recipeTypes, err := r.GetRecipeType(nil, recipe.ID)
+
+		RecipesTypes[recipe.ID] = recipeTypes
+
+		if err != nil {
+			fmt.Printf("Error fecthing full recipe. Error: %v", err)
+		}
+		fullRecipes = append(fullRecipes, fullRecipe)
+	}
+
+	return fullRecipes, RecipesTypes, err
+}
+
 func (b *Base) GetRecipeForStruct(tx *sqlx.Tx, recipeQuery string, recipeID int64) ([]RecipeRow, error) {
 
 	data, err := b.GetCompoundModel(tx, recipeQuery, recipeID)
+
+	recipes := createRecipeRows(data)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	return recipes, err
+}
+
+func (b *Base) GetAllRecipesForStruct(tx *sqlx.Tx, recipeQuery string) ([]RecipeRow, error) {
+
+	data, err := b.GetCompoundModelWithoutID(tx, recipeQuery)
 
 	recipes := createRecipeRows(data)
 

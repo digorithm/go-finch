@@ -21,8 +21,10 @@ import (
 // 3. Write the test to call that route
 func RouterForTest() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/recipes/house/{house_id}/", GetHouseRecipesHandler).Methods("GET")
-	router.HandleFunc("/recipes/user/{user_id}/", GetUserRecipesHandler).Methods("GET")
+	router.HandleFunc("/recipes/house/{house_id}", GetHouseRecipesHandler).Methods("GET")
+	router.HandleFunc("/recipes/user/{user_id}", GetUserRecipesHandler).Methods("GET")
+	router.HandleFunc("/recipes/{recipe_id}", GetRecipeByIDHandler).Methods("GET")
+	router.HandleFunc("/recipes", GetRecipesHandler).Methods("GET")
 	return router
 }
 
@@ -46,7 +48,7 @@ func SetTestDBEnv(request *http.Request) *http.Request {
 }
 func TestGetHouseRecipesEndpoint(t *testing.T) {
 
-	endpoint := "/recipes/house/1/"
+	endpoint := "/recipes/house/1"
 	method := "GET"
 
 	request, _ := http.NewRequest(method, endpoint, nil)
@@ -61,7 +63,39 @@ func TestGetHouseRecipesEndpoint(t *testing.T) {
 }
 func TestGetUserRecipesEndpoint(t *testing.T) {
 
-	endpoint := "/recipes/user/1/"
+	endpoint := "/recipes/user/1"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+}
+
+func TestGetRecipeByIDEndpoint(t *testing.T) {
+
+	endpoint := "/recipes/1"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+}
+
+func TestGetAllRecipesEndpoint(t *testing.T) {
+
+	endpoint := "/recipes"
 	method := "GET"
 
 	request, _ := http.NewRequest(method, endpoint, nil)

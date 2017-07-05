@@ -28,10 +28,10 @@ type UserOwnTypeRow struct {
 
 type FullRecipeRow struct {
 	RecipeRow
-	StepID     int64   `db:"id"`
-	Ingredient string  `db:"name"`
+	StepID     int64   `db:"step_id"`
+	Ingredient string  `db:"ingredient"`
 	Amount     float64 `db:"amount"`
-	Unit       string  `db:"name"`
+	Unit       string  `db:"unit"`
 	Text       string  `db:"text"`
 }
 

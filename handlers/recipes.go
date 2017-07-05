@@ -11,6 +11,71 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	recipeObj := models.NewRecipe(db)
+
+	fullRecipes, RecipesTypes, err := recipeObj.GetFullRecipes(nil)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(JSONResponse)
+}
+
+func GetRecipeByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	recipeID, err := strconv.Atoi(vars["recipe_id"])
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	recipeObj := models.NewRecipe(db)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	recipe, err := recipeObj.GetFullRecipe(nil, int64(recipeID))
+
+	if err != nil {
+		fmt.Printf("Something went wrong while fecthing the recipes. Error: %v", err)
+	}
+
+	if len(recipe) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Recipe not found"))
+		return
+	}
+
+	var fullRecipes [][]models.FullRecipeRow
+
+	RecipesTypes := make(map[int64][]string)
+	recipeTypes, err := recipeObj.GetRecipeType(nil, recipe[0].ID)
+
+	RecipesTypes[recipe[0].ID] = recipeTypes
+
+	if err != nil {
+		fmt.Printf("Error fecthing full recipe. Error: %v", err)
+	}
+
+	fullRecipes = append(fullRecipes, recipe)
+	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(JSONResponse)
+}
+
 // GetHouseRecipesHandler will handle the API call to get all recipes of a given house,
 // it will return a JSON for the endpoint /recipes/house/{house_id} as described in the docs
 func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +115,7 @@ func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(JSONResponse)
 }
 
@@ -91,6 +157,7 @@ func GetUserRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(JSONResponse)
 }
 
