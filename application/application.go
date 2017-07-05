@@ -53,12 +53,12 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 }
 
 func (app *Application) Mux() *gorilla_mux.Router {
-	MustLogin := middlewares.MustLogin
+	//MustLogin := middlewares.MustLogin
 
 	router := gorilla_mux.NewRouter()
 
 	//router.Handle("/", MustLogin(http.HandlerFunc(handlers.GetHome))).Methods("GET")
-	router.HandleFunc("/", handlers.GetMain).Methods("GET")
+	/*router.HandleFunc("/", handlers.GetMain).Methods("GET")
 
 	router.HandleFunc("/signup", handlers.GetSignup).Methods("GET")
 	router.HandleFunc("/signup", handlers.PostSignup).Methods("POST")
@@ -66,12 +66,15 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/login", handlers.PostLogin).Methods("POST")
 	router.HandleFunc("/logout", handlers.GetLogout).Methods("GET")
 
-	router.Handle("/users/{id:[0-9]+}", MustLogin(http.HandlerFunc(handlers.PostPutDeleteUsersID))).Methods("POST", "PUT", "DELETE")
+	router.Handle("/users/{id:[0-9]+}", MustLogin(http.HandlerFunc(handlers.PostPutDeleteUsersID))).Methods("POST", "PUT", "DELETE")*/
 
 	router.HandleFunc("/recipes/house/{house_id}", handlers.GetHouseRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/user/{user_id}", handlers.GetUserRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/{recipe_id}", handlers.GetRecipeByIDHandler).Methods("GET")
 	router.HandleFunc("/recipes", handlers.GetRecipesHandler).Methods("GET")
+
+	router.HandleFunc("/users", handlers.GetUsersHandler).Methods("GET")
+	router.HandleFunc("/users/{user_id}", handlers.GetUserByIDHandler).Methods("GET")
 
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
