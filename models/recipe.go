@@ -64,6 +64,13 @@ func (r *Recipe) GetAllRecipes(tx *sqlx.Tx) ([]RecipeRow, error) {
 	return r.GetAllRecipesForStruct(tx, query)
 }
 
+func (r *Recipe) GetAllRecipesByStringSearch(tx *sqlx.Tx, stringSearch string) ([]RecipeRow, error) {
+
+	query := fmt.Sprintf("SELECT R.ID, R.NAME, R.SERVES_FOR FROM RECIPE R INNER JOIN USER_RECIPE U ON R.ID = U.RECIPE_ID WHERE R.NAME ILIKE '%%%v%%'", stringSearch)
+
+	return r.GetAllRecipesForStruct(tx, query)
+}
+
 func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, error) {
 
 	var FullRecipe []FullRecipeRow
@@ -80,6 +87,32 @@ func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, er
 
 	return FullRecipe, err
 
+}
+func (r *Recipe) GetFullRecipesByStringSearch(tx *sqlx.Tx, stringSearch string) ([][]FullRecipeRow, map[int64][]string, error) {
+
+	recipes, err := r.GetAllRecipesByStringSearch(tx, stringSearch)
+
+	if err != nil {
+		fmt.Printf("Something went wrong while fecthing the recipes. Error: %v", err)
+	}
+
+	var fullRecipes [][]FullRecipeRow
+
+	RecipesTypes := make(map[int64][]string)
+
+	for _, recipe := range recipes {
+		fullRecipe, err := r.GetFullRecipe(nil, recipe.ID)
+		recipeTypes, err := r.GetRecipeType(nil, recipe.ID)
+
+		RecipesTypes[recipe.ID] = recipeTypes
+
+		if err != nil {
+			fmt.Printf("Error fecthing full recipe. Error: %v", err)
+		}
+		fullRecipes = append(fullRecipes, fullRecipe)
+	}
+
+	return fullRecipes, RecipesTypes, err
 }
 
 func (r *Recipe) GetFullRecipes(tx *sqlx.Tx) ([][]FullRecipeRow, map[int64][]string, error) {

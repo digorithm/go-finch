@@ -71,3 +71,18 @@ func TestGetAllRecipesEndpoint(t *testing.T) {
 
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 }
+func TestGetRecipeBySearchStringEndpoint(t *testing.T) {
+
+	endpoint := "/recipes?name=baked"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+}

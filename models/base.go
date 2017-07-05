@@ -364,6 +364,28 @@ func (b *Base) DeleteById(tx *sqlx.Tx, id int64) (sql.Result, error) {
 	return result, err
 }
 
+func (b *Base) GetCompoundModelWithStringSearch(tx *sqlx.Tx, query, stringSearch string) ([]interface{}, error) {
+
+	rows, err := b.db.Queryx(query, stringSearch)
+
+	fmt.Printf("ROws:: %v", rows)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	var results []interface{}
+
+	for rows.Next() {
+		cols, err := rows.SliceScan()
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		results = append(results, cols)
+	}
+	return results, err
+}
+
 func (b *Base) GetCompoundModelWithoutID(tx *sqlx.Tx, query string) ([]interface{}, error) {
 
 	rows, err := b.db.Queryx(query)
