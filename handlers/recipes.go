@@ -49,7 +49,7 @@ func GetRecipeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	recipe, err := recipeObj.GetFullRecipe(nil, int64(recipeID))
 
 	if err != nil {
-		fmt.Printf("Something went wrong while fecthing the recipes. Error: %v", err)
+		fmt.Printf("Something went wrong while fecthing the recipe. Error: %v", err)
 	}
 
 	if len(recipe) == 0 {

@@ -22,6 +22,8 @@ func RouterForTest() *mux.Router {
 	router.HandleFunc("/recipes/user/{user_id}", GetUserRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/{recipe_id}", GetRecipeByIDHandler).Methods("GET")
 	router.HandleFunc("/recipes", GetRecipesHandler).Methods("GET")
+	router.HandleFunc("/users", GetUsersHandler).Methods("GET")
+	router.HandleFunc("/users/{user_id}", GetUserByIDHandler).Methods("GET")
 	return router
 }
 

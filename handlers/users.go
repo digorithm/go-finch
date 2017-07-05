@@ -1,21 +1,92 @@
 package handlers
 
 import (
-	"errors"
-	"html/template"
+	"fmt"
 	"net/http"
-	"strings"
+	"strconv"
 
-	"github.com/digorithm/meal_planner/libhttp"
+	"encoding/json"
+
 	"github.com/digorithm/meal_planner/models"
-	"github.com/gorilla/sessions"
+	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
 
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+	db := r.Context().Value("db").(*sqlx.DB)
 
+	userObj := models.NewUser(db)
 
+	users, err := userObj.AllUsers(nil)
 
-func GetSignup(w http.ResponseWriter, r *http.Request) {
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+	JSONResponse := buildAllUsersJSONResponse(users)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(JSONResponse)
+}
+
+func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	var user []*models.UserRow
+	vars := mux.Vars(r)
+
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	userObj := models.NewUser(db)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	u, err := userObj.GetById(nil, int64(userID))
+
+	if err != nil {
+		fmt.Printf("Something went wrong while fecthing the user. Error: %v", err)
+	}
+
+	user = append(user, u)
+
+	if len(user) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("User not found"))
+		return
+	}
+
+	JSONResponse := buildAllUsersJSONResponse(user)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(JSONResponse)
+}
+
+func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
+
+	finalUsers := make([]map[string]interface{}, 0, 0)
+
+	for _, user := range users {
+
+		finalUser := make(map[string]interface{})
+		finalUser["id"] = user.ID
+		finalUser["name"] = user.Username
+		finalUser["email"] = user.Email
+
+		finalUsers = append(finalUsers, finalUser)
+	}
+
+	finalUsersJSON, _ := json.MarshalIndent(finalUsers, "", "	")
+
+	return finalUsersJSON
+}
+
+/*func GetSignup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	tmpl, err := template.ParseFiles("templates/users/users-external.html.tmpl", "templates/users/signup.html.tmpl")
@@ -179,4 +250,4 @@ func DeleteUsersID(w http.ResponseWriter, r *http.Request) {
 	err := errors.New("DELETE method is not implemented.")
 	libhttp.HandleErrorJson(w, err)
 	return
-}
+}*/

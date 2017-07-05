@@ -24,6 +24,7 @@ func TestGetHouseRecipesEndpoint(t *testing.T) {
 
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 }
+
 func TestGetUserRecipesEndpoint(t *testing.T) {
 
 	endpoint := "/recipes/user/1"
