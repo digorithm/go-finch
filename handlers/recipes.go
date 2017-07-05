@@ -17,19 +17,42 @@ func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	recipeObj := models.NewRecipe(db)
 
-	fullRecipes, RecipesTypes, err := recipeObj.GetFullRecipes(nil)
+	stringSearch := r.URL.Query()["name"]
 
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something went wrong"))
-		return
+	// Two cases here:
+	// 1. Get all recipes regardless of name or ID
+	// 2. Get recipes that match the search string
+	if len(stringSearch) != 0 {
+		fullRecipes, RecipesTypes, err := recipeObj.GetFullRecipesByStringSearch(nil, stringSearch[0])
+
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+			return
+		}
+
+		JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(JSONResponse)
+
+	} else {
+		fullRecipes, RecipesTypes, err := recipeObj.GetFullRecipes(nil)
+
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+			return
+		}
+
+		JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(JSONResponse)
 	}
 
-	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(JSONResponse)
 }
 
 func GetRecipeByIDHandler(w http.ResponseWriter, r *http.Request) {
