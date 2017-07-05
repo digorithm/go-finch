@@ -3,6 +3,8 @@ package models
 import (
 	"testing"
 
+	"fmt"
+
 	_ "github.com/lib/pq"
 )
 
@@ -212,6 +214,22 @@ func TestGetUserRecipes(t *testing.T) {
 			t.Errorf("House Users, got: %d, want: %d", recipes[i], result[i])
 		}
 		i++
+	}
+
+}
+
+func TestGetMembership(t *testing.T) {
+
+	u := newUserForTest(t)
+
+	own, err := u.getMembership(nil, 2, 1)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	if own.OwnType != 2 {
+		t.Errorf("Get Membership, got: %d, want: %d", own.OwnType, 2)
 	}
 
 }

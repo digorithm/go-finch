@@ -129,3 +129,15 @@ func createItemInStorage(data []interface{}) ItemInStorageRow {
 	return item
 
 }
+
+func createOwnerRow(data []interface{}) *OwnerRow {
+
+	own := &OwnerRow{}
+
+	v := reflect.ValueOf(data[0])
+
+	own.OwnType = v.Index(0).Interface().(int64)
+	own.Description = v.Index(1).Interface().(string)
+
+	return own
+}

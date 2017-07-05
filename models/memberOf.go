@@ -53,6 +53,7 @@ func (m *Member) addUserHelper(tx *sqlx.Tx, houseID, userID, ownID int64) {
 	_, err := m.InsertIntoMultiKeyTable(tx, data)
 
 	if err != nil {
-		fmt.Printf("%v", err)
+
+		fmt.Printf("Got error in adding: %v", err)
 	}
 }

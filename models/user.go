@@ -147,7 +147,7 @@ func (u *User) GetUserHouses(tx *sqlx.Tx, userID int64) ([]UserHouseRow, error) 
 
 	query := "SELECT H.ID, H.NAME, O.OWN_TYPE, O.DESCRIPTION FROM HOUSE H INNER JOIN MEMBER_OF M ON M.HOUSE_ID = H.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.USER_ID = $1"
 
-	data, err := u.GetCompoundModel(nil, query, userID)
+	data, err := u.GetCompoundModel(tx, query, userID)
 
 	houses := createUserHouseRows(data)
 
@@ -166,7 +166,19 @@ func (u *User) GetUserRecipes(tx *sqlx.Tx, userID int64) ([]RecipeRow, error) {
 	return u.GetRecipeForStruct(tx, query, userID)
 }
 
-func (u *User) getMembership(tx *sqlx.Tx, houseID int64) {
+// getMembership returns the membership of the user for the given houseID
+func (u *User) getMembership(tx *sqlx.Tx, userID, houseID int64) (*OwnerRow, error) {
+
+	query := fmt.Sprintf("SELECT O.OWN_TYPE, O.DESCRIPTION FROM OWNERSHIP O INNER JOIN MEMBER_OF M ON M.OWN_TYPE = O.OWN_TYPE WHERE M.HOUSE_ID = %v AND M.USER_ID = $1", houseID)
+
+	data, err := u.GetCompoundModel(tx, query, userID)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	ownership := createOwnerRow(data)
+	return ownership, err
 
 }
 
