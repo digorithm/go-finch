@@ -12,6 +12,9 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+
+
+
 func GetSignup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
