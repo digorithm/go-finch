@@ -6,10 +6,91 @@ import (
 	"net/http"
 	"strconv"
 
+	"io/ioutil"
+
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
+
+func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
+	var recipe map[string]interface{}
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing data in the recipe"))
+		return
+	}
+
+	_ = json.Unmarshal(body, &recipe)
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	userObj := models.NewUser(db)
+	recipeObj := models.NewRecipe(db)
+
+	authorID := r.URL.Query()["author"]
+
+	if len(authorID) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("ID missing in the request to add a recipe"))
+		return
+	}
+
+	authorIDString, _ := strconv.Atoi(authorID[0])
+
+	returnedRecipe, err := userObj.AddRecipe(nil, body, int64(authorIDString))
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Something went wrong when adding a recipe. Error: %v", err)))
+		return
+	}
+
+	recipeTypes, _ := recipeObj.GetRecipeType(nil, returnedRecipe[0].ID)
+
+	// Necessary to build the JSON response
+	var fullRecipes [][]models.FullRecipeRow
+	RecipesTypes := make(map[int64][]string)
+
+	RecipesTypes[returnedRecipe[0].ID] = recipeTypes
+
+	fullRecipes = append(fullRecipes, returnedRecipe)
+
+	JSONResponse := buildFullRecipeJSONResponse(fullRecipes, RecipesTypes)
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write(JSONResponse)
+}
+
+func DeleteRecipesHandler(w http.ResponseWriter, r *http.Request) {
+
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	recipeObj := models.NewRecipe(db)
+
+	vars := mux.Vars(r)
+
+	recipeID, err := strconv.Atoi(vars["recipe_id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("You must send an ID to delete a recipe"))
+		return
+	}
+
+	_, err = recipeObj.DeleteById(nil, int64(recipeID))
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Could not delete the recipe"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
 
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -26,7 +107,6 @@ func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 		fullRecipes, RecipesTypes, err := recipeObj.GetFullRecipesByStringSearch(nil, stringSearch[0])
 
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something went wrong"))
 			return

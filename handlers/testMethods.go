@@ -21,7 +21,10 @@ func RouterForTest() *mux.Router {
 	router.HandleFunc("/recipes/house/{house_id}", GetHouseRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/user/{user_id}", GetUserRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/{recipe_id}", GetRecipeByIDHandler).Methods("GET")
+	router.HandleFunc("/recipes/{recipe_id}", DeleteRecipesHandler).Methods("DELETE")
 	router.HandleFunc("/recipes", GetRecipesHandler).Methods("GET")
+	router.HandleFunc("/recipes", AddRecipesHandler).Methods("POST")
+
 	router.HandleFunc("/users", GetUsersHandler).Methods("GET")
 	router.HandleFunc("/users/{user_id}", GetUserByIDHandler).Methods("GET")
 	router.HandleFunc("/users", PostSignup).Methods("POST")
@@ -47,4 +50,17 @@ func SetTestDBEnv(request *http.Request) *http.Request {
 	request = request.WithContext(ctx)
 
 	return request
+}
+
+func GetTestDB() *sqlx.DB {
+	u, err := libunix.CurrentUser()
+	if err != nil {
+		fmt.Println(err)
+	}
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://%v@localhost:5432/meal_planner?sslmode=disable", u))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	return db
 }
