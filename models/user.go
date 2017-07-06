@@ -84,16 +84,17 @@ func (u *User) GetUserByEmailAndPassword(tx *sqlx.Tx, email, password string) (*
 }
 
 // Signup create a new record of user.
-func (u *User) Signup(tx *sqlx.Tx, email, username, password, passwordAgain string) (*UserRow, error) {
+func (u *User) Signup(tx *sqlx.Tx, email, username, password string) (*UserRow, error) {
+
 	if email == "" {
 		return nil, errors.New("Email cannot be blank.")
 	}
 	if password == "" {
 		return nil, errors.New("Password cannot be blank.")
 	}
-	if password != passwordAgain {
+	/*if password != passwordAgain {
 		return nil, errors.New("Password is invalid.")
-	}
+	}*/
 	if username == "" {
 		return nil, errors.New("Username cannot be blank")
 	}
