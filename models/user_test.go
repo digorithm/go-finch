@@ -14,7 +14,7 @@ func newUserForTest(t *testing.T) *User {
 
 func newUserRowForTest(t *testing.T) (*User, *UserRow) {
 	u := newUserForTest(t)
-	userRow, _ := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	userRow, _ := u.Signup(nil, newEmailForTest(), "username", "abc123")
 	return u, userRow
 }
 
@@ -37,7 +37,7 @@ func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
 
 	// Signup
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
 	defer deleteTestUser(t, u, userRow.ID)
 
 	if err != nil {
@@ -54,7 +54,7 @@ func TestUserSignup(t *testing.T) {
 func TestGetUserById(t *testing.T) {
 	u := newUserForTest(t)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetById(nil, userRow.ID)
@@ -72,7 +72,7 @@ func TestGetUserById(t *testing.T) {
 func TestGetUserByEmail(t *testing.T) {
 	u := newUserForTest(t)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByEmail(nil, userRow.Email)
@@ -90,7 +90,7 @@ func TestGetUserByEmail(t *testing.T) {
 func TestGetUserByUsername(t *testing.T) {
 	u := newUserForTest(t)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123", "abc123")
+	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByUsername(nil, userRow.Username)
