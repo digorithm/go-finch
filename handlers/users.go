@@ -7,15 +7,25 @@ import (
 
 	"encoding/json"
 
+	"io/ioutil"
+
+	"github.com/digorithm/meal_planner/libhttp"
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
 
-func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+func createUserObj(r *http.Request) *models.User {
 	db := r.Context().Value("db").(*sqlx.DB)
 
 	userObj := models.NewUser(db)
+
+	return userObj
+}
+
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+
+	userObj := createUserObj(r)
 
 	users, err := userObj.AllUsers(nil)
 
@@ -39,9 +49,7 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := strconv.Atoi(vars["user_id"])
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	userObj := models.NewUser(db)
+	userObj := createUserObj(r)
 
 	if err != nil {
 		fmt.Println(err)
@@ -96,27 +104,56 @@ func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
 	}
 
 	tmpl.Execute(w, nil)
-}
+}*/
 
 func PostSignup(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
 
-	db := r.Context().Value("db").(*sqlx.DB)
+	userObj := createUserObj(r)
 
-	email := r.FormValue("Email")
-	username := r.FormValue("username")
-	password := r.FormValue("Password")
-	passwordAgain := r.FormValue("PasswordAgain")
+	var user map[string]interface{}
 
-	_, err := models.NewUser(db).Signup(nil, email, username, password, passwordAgain)
+	body, err := ioutil.ReadAll(r.Body)
+	_ = json.Unmarshal(body, &user)
+
+	email := user["email"].(string)
+	username := user["name"].(string)
+	password := user["password"].(string)
+	//passwordAgain := r.FormValue("PasswordAgain")
+
+	u, err := userObj.Signup(nil, email, username, password)
+	userJSON, err := json.Marshal(u)
+
 	if err != nil {
+		fmt.Printf("%v", err)
 		libhttp.HandleErrorJson(w, err)
 		return
 	}
 
+	w.Write(userJSON)
+
 	// Perform login
-	PostLogin(w, r)
+	//PostLogin(w, r)
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+
+	userObj := createUserObj(r)
+
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	_, err = userObj.DeleteById(nil, int64(userID))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong in Delete user with email"))
+		return
+	}
+
+}
+
+/*
 
 func GetLoginWithoutSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -151,13 +188,12 @@ func GetLogin(w http.ResponseWriter, r *http.Request) {
 func PostLogin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	db := r.Context().Value("db").(*sqlx.DB)
 	sessionStore := r.Context().Value("sessionStore").(sessions.Store)
 
-	email := r.FormValue("Email")
-	password := r.FormValue("Password")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
-	u := models.NewUser(db)
+	u := createUserObj(r)
 
 	user, err := u.GetUserByEmailAndPassword(nil, email, password)
 	if err != nil {
@@ -176,6 +212,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", 302)
 }
+
 
 func GetLogout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -246,8 +283,4 @@ func PutUsersID(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func DeleteUsersID(w http.ResponseWriter, r *http.Request) {
-	err := errors.New("DELETE method is not implemented.")
-	libhttp.HandleErrorJson(w, err)
-	return
-}*/
+*/
