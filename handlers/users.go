@@ -129,6 +129,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	w.Write(userJSON)
 
 	// Perform login
@@ -150,6 +151,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Something went wrong in Delete user with email"))
 		return
 	}
+	w.WriteHeader(http.StatusNoContent)
 
 }
 

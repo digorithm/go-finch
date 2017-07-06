@@ -65,7 +65,7 @@ func TestPostUserEndpoint(t *testing.T) {
 	_ = json.Unmarshal(body, &i)
 
 	deleteUser(t, i["ID"].(float64))
-	assert.Equal(t, 200, response.Code, "OK response is expected")
+	assert.Equal(t, 201, response.Code, "OK response is expected")
 
 }
 
@@ -83,5 +83,5 @@ func deleteUser(t *testing.T, userID float64) {
 	RouterForTest().ServeHTTP(response, request)
 
 	fmt.Printf("response code for delete: %v", response.Code)
-	assert.Equal(t, 200, response.Code, "OK response is expected")
+	assert.Equal(t, 204, response.Code, "OK response is expected")
 }
