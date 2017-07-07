@@ -92,6 +92,57 @@ func DeleteRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func UpdateRecipesHandler(w http.ResponseWriter, r *http.Request) {
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	recipeObj := models.NewRecipe(db)
+
+	vars := mux.Vars(r)
+
+	recipeID, err := strconv.Atoi(vars["recipe_id"])
+	fieldToUpdate := vars["field"]
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	ToUpdate := make(map[string]interface{})
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing data to update the recipe"))
+		return
+	}
+
+	err = json.Unmarshal(body, &ToUpdate)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid json request"))
+		return
+	}
+
+	switch fieldToUpdate {
+	case "name", "serves_for":
+		_, err = recipeObj.UpdateByID(nil, ToUpdate, int64(recipeID))
+	case "type":
+		fmt.Println("that a different case")
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Could not update"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	w.Write([]byte("Recipe updated"))
+
+}
+
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := r.Context().Value("db").(*sqlx.DB)
