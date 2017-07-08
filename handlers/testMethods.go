@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/digorithm/meal_planner/libunix"
 	"github.com/gorilla/mux"
@@ -64,4 +65,19 @@ func GetTestDB() *sqlx.DB {
 		fmt.Println(err)
 	}
 	return db
+}
+
+func ExtractInterfaceSliceOfStrings(t interface{}) []string {
+	var str []string
+
+	switch reflect.TypeOf(t).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(t)
+
+		for i := 0; i < s.Len(); i++ {
+			str = append(str, s.Index(i).Interface().(string))
+		}
+		return str
+	}
+	return str
 }

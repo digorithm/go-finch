@@ -194,4 +194,52 @@ func (r *RecipeType) GetRecipeType(tx *sqlx.Tx, recipeID int64) ([]RecipeTypeNam
 	return result, err
 }
 
+func (r *Recipe) UpdateRecipeType(tx *sqlx.Tx, recipeID int64, typeToUpdate []string) error {
+
+	// Delete all types for this recipe
+
+	query := "DELETE FROM recipe_type WHERE recipe_id = $1"
+	_, err := r.db.Exec(query, recipeID)
+
+	if err != nil {
+		return err
+	}
+
+	for _, t := range typeToUpdate {
+
+		TypeID, err := r.GetMealTypeByName(nil, t)
+
+		if err != nil {
+			return err
+		}
+
+		err = r.AddType(tx, recipeID, TypeID.ID)
+
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
+func (r *Recipe) AddType(tx *sqlx.Tx, recipeID, TypeID int64) error {
+	query := fmt.Sprintf("INSERT INTO recipe_type (recipe_id, type_id) values (%v,%v)", recipeID, TypeID)
+	_, err := r.db.Exec(query)
+
+	if err != nil {
+		fmt.Printf("Something went wrong. Error: %v", err)
+		return err
+	}
+	return nil
+}
+
+func (r *Recipe) GetMealTypeByName(tx *sqlx.Tx, name string) (*MealRow, error) {
+	mealType := &MealRow{}
+	query := "SELECT * FROM meal_type WHERE type=$1"
+	err := r.db.Get(mealType, query, name)
+
+	return mealType, err
+}
+
 // TODO: func (r *Recipe) GetNutritionalFacts(tx *sqlx.Tx, recipe_id int64) ()

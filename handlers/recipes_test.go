@@ -272,6 +272,16 @@ func TestUpdateRecipeEndPoint(t *testing.T) {
 	response = httptest.NewRecorder()
 	RouterForTest().ServeHTTP(response, request)
 
+	// Fire another update request, now the type
+	endpoint = fmt.Sprintf("/recipes/%v/type", ReturnedID)
+	method = "PUT"
+
+	RequestBody = []byte(`{"type":["Breakfast"]}`)
+	request, _ = http.NewRequest(method, endpoint, bytes.NewBuffer(RequestBody))
+	request = SetTestDBEnv(request)
+	response = httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+
 	// Get the recipe to check if it was updated
 	endpoint = fmt.Sprintf("/recipes/%v", ReturnedID)
 	method = "GET"
@@ -292,6 +302,10 @@ func TestUpdateRecipeEndPoint(t *testing.T) {
 
 	// Assert that the update actually happened
 	assert.Equal(t, ResponseStruct[0]["name"], "feijao com arroz")
+
+	returnedTypes := ExtractInterfaceSliceOfStrings(ResponseStruct[0]["type"])
+
+	assert.Equal(t, returnedTypes[0], "Breakfast")
 
 	DeleteTestRecipeEndpoint(int64(ReturnedID), t)
 }

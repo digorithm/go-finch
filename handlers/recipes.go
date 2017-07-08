@@ -126,7 +126,8 @@ func UpdateRecipesHandler(w http.ResponseWriter, r *http.Request) {
 	case "name", "serves_for":
 		_, err = recipeObj.UpdateByID(nil, ToUpdate, int64(recipeID))
 	case "type":
-		fmt.Println("that a different case")
+		TypeToUpdate := recipeObj.ExtractInterfaceSliceOfStrings(ToUpdate["type"])
+		recipeObj.UpdateRecipeType(nil, int64(recipeID), TypeToUpdate)
 	}
 
 	if err != nil {
