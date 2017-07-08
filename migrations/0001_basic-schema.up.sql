@@ -110,6 +110,19 @@ create table recipe_type(
     primary key(recipe_id, type_id)
 );
 
+create table join_type(
+    id serial primary key,
+    description varchar(50) unique not null
+);
+
+create table join_pending(
+    id serial primary key,
+    house_id int4 references house(id) on delete cascade,
+    user_id int4 references user_info(id) on delete cascade,
+    type_id int4 references join_type(id) not null,
+    unique (house_id, user_id)
+);
+
 insert into user_info(username, email, password)
 values 
 ('guli', 'gulipek5@gmail.com', 'password');
@@ -401,3 +414,11 @@ values
 insert into schedule(house_id, week_id, type_id, recipe_id)
 values 
 (2,3,3,4);
+
+insert into join_type(description)
+values
+('invitation');
+
+insert into join_type(description)
+values
+('join request');

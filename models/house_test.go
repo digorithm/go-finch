@@ -65,7 +65,7 @@ func TestGetUsers(t *testing.T) {
 	h := newHouseForTest(t)
 	var u1 = createVarsForGetUsers(1, "gulipek5@gmail.com", "password", "guli", 1, "owner")
 	var u2 = createVarsForGetUsers(2, "rod.dearaujo@gmail.com", "password1", "digo", 2, "resident")
-	var u3 = createVarsForGetUsers(4, "iamjoe@gmail.com", "password3", "joe", 3, "not allowed")
+	var u3 = createVarsForGetUsers(4, "iamjoe@gmail.com", "password3", "joe", 3, "blocked")
 	var result []UserOwnTypeRow
 
 	users, err := h.GetHouseUsers(nil, 1)

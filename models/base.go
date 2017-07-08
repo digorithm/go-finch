@@ -321,9 +321,7 @@ func (b *Base) DeleteFromTable(tx *sqlx.Tx, where string) (sql.Result, error) {
 		query = query + " WHERE " + where
 	}
 
-	fmt.Printf("query: %v", query)
 	result, err = tx.Exec(query)
-	fmt.Printf("result: %v", err)
 
 	if wrapInSingleTransaction == true {
 		err = tx.Commit()

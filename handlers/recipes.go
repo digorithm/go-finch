@@ -14,7 +14,6 @@ import (
 )
 
 func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
-	var recipe map[string]interface{}
 
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -23,8 +22,6 @@ func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Missing data in the recipe"))
 		return
 	}
-
-	_ = json.Unmarshal(body, &recipe)
 
 	db := r.Context().Value("db").(*sqlx.DB)
 
