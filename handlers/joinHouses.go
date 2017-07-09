@@ -54,3 +54,15 @@ func GetUserInvitations(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(inviteJSON)
 }
+
+func InviteUser(w http.ResponseWriter, r *http.Request) {
+
+	//joinObj := CreateJoinObj(r)
+
+	//invitation, err := ioutil.ReadAll(r.Body)
+
+	//responseJSON, err := joinObj.addInvitation(nil, invitation)
+
+	w.WriteHeader(http.StatusCreated)
+	//w.Write(responseJSON)
+}

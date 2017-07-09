@@ -110,18 +110,9 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 
 	userObj := CreateUserObj(r)
 
-	var user map[string]interface{}
-
 	body, err := ioutil.ReadAll(r.Body)
-	_ = json.Unmarshal(body, &user)
 
-	email := user["email"].(string)
-	username := user["name"].(string)
-	password := user["password"].(string)
-	//passwordAgain := r.FormValue("PasswordAgain")
-
-	u, err := userObj.Signup(nil, email, username, password)
-	userJSON, err := json.Marshal(u)
+	userJSON, err := userObj.Signup(nil, body)
 
 	if err != nil {
 		fmt.Printf("%v", err)

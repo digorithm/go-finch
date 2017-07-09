@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"encoding/json"
+
 	"github.com/buger/jsonparser"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
@@ -84,7 +86,15 @@ func (u *User) GetUserByEmailAndPassword(tx *sqlx.Tx, email, password string) (*
 }
 
 // Signup create a new record of user.
-func (u *User) Signup(tx *sqlx.Tx, email, username, password string) (*UserRow, error) {
+func (u *User) Signup(tx *sqlx.Tx, body []byte) ([]byte, error) {
+
+	var user map[string]interface{}
+
+	_ = json.Unmarshal(body, &user)
+
+	email := user["email"].(string)
+	username := user["name"].(string)
+	password := user["password"].(string)
 
 	if email == "" {
 		return nil, errors.New("Email cannot be blank.")
@@ -114,7 +124,10 @@ func (u *User) Signup(tx *sqlx.Tx, email, username, password string) (*UserRow, 
 		return nil, err
 	}
 
-	return u.userRowFromSqlResult(tx, sqlResult)
+	res, err := u.userRowFromSqlResult(tx, sqlResult)
+	userJSON, err := json.Marshal(res)
+
+	return userJSON, err
 }
 
 // UpdateEmailAndPasswordById updates user email and password.

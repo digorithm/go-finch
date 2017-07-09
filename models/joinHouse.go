@@ -139,3 +139,7 @@ func buildHouseInviteJSONResponse(inviter, invitees []Person) []byte {
 
 	return finalUsersJSON
 }
+
+/*func addInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
+
+}*/

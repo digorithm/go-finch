@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -24,7 +23,6 @@ func TestGetHouseInvitationsEndpoint(t *testing.T) {
 
 	RouterForTest().ServeHTTP(response, request)
 
-	fmt.Printf("response body: %v", response.Body)
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 
 }
@@ -42,7 +40,26 @@ func TestGetUserInvitationsEndpoint(t *testing.T) {
 
 	RouterForTest().ServeHTTP(response, request)
 
-	fmt.Printf("response body: %v", response.Body)
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 
 }
+
+/*func TestInviteUserEndpoint(t *testing.T) {
+
+	invitation := []byte(`{"house_id":3, "user_id":2}`)
+	req, _ := http.NewRequest("POST", "/invitations/join", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+	body, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	var i map[string]interface{}
+	_ = json.Unmarshal(body, &i)
+
+	//deleteUser(t, i["ID"].(float64))
+	assert.Equal(t, 201, response.Code, "OK response is expected")
+}*/

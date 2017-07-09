@@ -34,6 +34,7 @@ func RouterForTest() *mux.Router {
 
 	router.HandleFunc("/invitations/users/{user_id}", GetUserInvitations).Methods("GET")
 	router.HandleFunc("/invitations/houses/{house_id}", GetHouseInvitations).Methods("GET")
+	//router.HandleFunc("/invitations/join", InviteUser).Methods("POST")
 
 	return router
 }
