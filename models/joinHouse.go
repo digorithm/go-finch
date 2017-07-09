@@ -45,10 +45,51 @@ func CreatePerson(data []interface{}) []Person {
 
 }
 
-/*func (j *Join) GetUserInvitations(tx *sqlx.Tx, userID int64) ([]byte, error) {
-SELECT U.ID, U.USERNAME FROM USER_INFO U INNER JOIN MEMBER_OF M ON U.ID = M.USER_ID WHERE M.HOUSE_ID = 3 AND M.OWN_TYPE = 1
-SELECT U.ID, U.USERNAME FROM USER_INFO U INNER JOIN JOIN_PENDING P ON P.USER_ID = U.ID WHERE P.TYPE_ID = 1 AND P.HOUSE_ID = 3
-}*/
+func (j *Join) GetUserInvitations(tx *sqlx.Tx, userID int64) ([]byte, error) {
+
+	// queryInvitee gets all the invites
+	query := "SELECT U1.ID, U1.USERNAME, U2.ID, U2.USERNAME, H.ID, H.NAME FROM USER_INFO U1 INNER JOIN JOIN_PENDING P ON P.USER_ID = U1.ID INNER JOIN HOUSE H ON P.HOUSE_ID = H.ID INNER JOIN MEMBER_OF M ON M.HOUSE_ID = H.ID INNER JOIN USER_INFO U2 ON M.USER_ID = U2.ID WHERE P.USER_ID = $1 AND M.OWN_TYPE = 1 AND P.TYPE_ID = 1"
+
+	userI, err := j.GetCompoundModel(tx, query, userID)
+	if err != nil {
+		fmt.Printf("userI: %v", err)
+	}
+
+	finalJSON := buildUserInviteJSONResponse(userI)
+
+	return finalJSON, err
+}
+
+func buildUserInviteJSONResponse(userI []interface{}) []byte {
+
+	finalUsers := make([]map[string]interface{}, 0, 0)
+
+	for _, user := range userI {
+
+		v := reflect.ValueOf(user)
+
+		invitee := make(map[string]interface{})
+		inviter := make(map[string]interface{})
+		house := make(map[string]interface{})
+		finalGroup := make(map[string]interface{})
+
+		invitee["id"] = v.Index(0).Interface().(int64)
+		invitee["name"] = v.Index(1).Interface().(string)
+		inviter["id"] = v.Index(2).Interface().(int64)
+		inviter["name"] = v.Index(3).Interface().(string)
+		house["house_id"] = v.Index(4).Interface().(int64)
+		house["house_name"] = v.Index(5).Interface().(string)
+		finalGroup["invited_user"] = invitee
+		finalGroup["invited_by"] = inviter
+		finalGroup["invited_to"] = house
+
+		finalUsers = append(finalUsers, finalGroup)
+	}
+
+	finalUsersJSON, _ := json.MarshalIndent(finalUsers, "", "	")
+
+	return finalUsersJSON
+}
 
 func (j *Join) GetHouseInvitations(tx *sqlx.Tx, houseID int64) ([]byte, error) {
 
@@ -68,13 +109,13 @@ func (j *Join) GetHouseInvitations(tx *sqlx.Tx, houseID int64) ([]byte, error) {
 	inviter := CreatePerson(inviterI)
 	invitees := CreatePerson(inviteeI)
 
-	finalJSON := buildInviteJSONResponse(inviter, invitees)
+	finalJSON := buildHouseInviteJSONResponse(inviter, invitees)
 
 	return finalJSON, err
 
 }
 
-func buildInviteJSONResponse(inviter, invitees []Person) []byte {
+func buildHouseInviteJSONResponse(inviter, invitees []Person) []byte {
 
 	finalUsers := make([]map[string]interface{}, 0, 0)
 

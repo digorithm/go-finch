@@ -28,3 +28,21 @@ func TestGetHouseInvitationsEndpoint(t *testing.T) {
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 
 }
+
+func TestGetUserInvitationsEndpoint(t *testing.T) {
+
+	endpoint := "/invitations/users/6"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	fmt.Printf("response body: %v", response.Body)
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+
+}

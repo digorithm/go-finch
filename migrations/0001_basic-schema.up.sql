@@ -139,6 +139,14 @@ insert into user_info(username, email, password)
 values 
 ('joe', 'iamjoe@gmail.com', 'password3');
 
+insert into user_info(username, email, password)
+values 
+('daniel', 'daniel@gmail.com', 'passwordD');
+
+insert into user_info(username, email, password)
+values 
+('larissa', 'larissa@gmail.com', 'Bony');
+
 insert into weekday(day)
 values
 ('Monday');
@@ -194,6 +202,14 @@ values
 insert into house(name, grocery_day, household_number)
 values
 ('Spaceship', 'Sunday', 1);
+
+insert into house(name, grocery_day, household_number)
+values
+('5775 Toronto Rd', 'Wednesday', 5);
+
+insert into house(name, grocery_day, household_number)
+values
+('Cray cray', 'Tuesday', 3);
 
 insert into recipe(name, serves_for)
 values
@@ -427,6 +443,28 @@ insert into member_of(user_id, house_id, own_type)
 values
 (4, 3, 1);
 
+insert into member_of(user_id, house_id, own_type)
+values
+(3, 5, 1);
+
+insert into member_of(user_id, house_id, own_type)
+values
+(2, 4, 1);
+
+insert into member_of(user_id, house_id, own_type)
+values
+(5, 2, 1);
+
 insert into join_pending(house_id, user_id, type_id)
 values
 (3, 3, 1);
+
+insert into join_pending(house_id, user_id, type_id)
+values
+(2, 6, 1);
+
+insert into join_pending(house_id, user_id, type_id)
+values
+(1, 6, 1);
+
+

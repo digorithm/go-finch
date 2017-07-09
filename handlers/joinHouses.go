@@ -37,3 +37,20 @@ func GetHouseInvitations(w http.ResponseWriter, r *http.Request) {
 	w.Write(inviteJSON)
 
 }
+
+func GetUserInvitations(w http.ResponseWriter, r *http.Request) {
+	joinObj := CreateJoinObj(r)
+
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	inviteJSON, err := joinObj.GetUserInvitations(nil, int64(userID))
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(inviteJSON)
+}
