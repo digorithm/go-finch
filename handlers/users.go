@@ -15,7 +15,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func createUserObj(r *http.Request) *models.User {
+func CreateUserObj(r *http.Request) *models.User {
 	db := r.Context().Value("db").(*sqlx.DB)
 
 	userObj := models.NewUser(db)
@@ -25,7 +25,7 @@ func createUserObj(r *http.Request) *models.User {
 
 func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
-	userObj := createUserObj(r)
+	userObj := CreateUserObj(r)
 
 	users, err := userObj.AllUsers(nil)
 
@@ -49,7 +49,7 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := strconv.Atoi(vars["user_id"])
 
-	userObj := createUserObj(r)
+	userObj := CreateUserObj(r)
 
 	if err != nil {
 		fmt.Println(err)
@@ -108,7 +108,7 @@ func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
 
 func PostSignup(w http.ResponseWriter, r *http.Request) {
 
-	userObj := createUserObj(r)
+	userObj := CreateUserObj(r)
 
 	var user map[string]interface{}
 
@@ -138,7 +138,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
-	userObj := createUserObj(r)
+	userObj := CreateUserObj(r)
 
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["user_id"])

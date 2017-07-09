@@ -422,3 +422,11 @@ values
 insert into join_type(description)
 values
 ('join request');
+
+insert into member_of(user_id, house_id, own_type)
+values
+(4, 3, 1);
+
+insert into join_pending(house_id, user_id, type_id)
+values
+(3, 3, 1);

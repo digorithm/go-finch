@@ -13,6 +13,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+func CreateRecipeObj(r *http.Request) *models.Recipe {
+	db := r.Context().Value("db").(*sqlx.DB)
+	recipeObj := models.NewRecipe(db)
+
+	return recipeObj
+}
+
 func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -23,10 +30,8 @@ func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	userObj := models.NewUser(db)
-	recipeObj := models.NewRecipe(db)
+	userObj := CreateUserObj(r)
+	recipeObj := CreateRecipeObj(r)
 
 	authorID := r.URL.Query()["author"]
 
@@ -64,9 +69,7 @@ func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	recipeObj := models.NewRecipe(db)
+	recipeObj := CreateRecipeObj(r)
 
 	vars := mux.Vars(r)
 
@@ -90,9 +93,8 @@ func DeleteRecipesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateRecipesHandler(w http.ResponseWriter, r *http.Request) {
-	db := r.Context().Value("db").(*sqlx.DB)
 
-	recipeObj := models.NewRecipe(db)
+	recipeObj := CreateRecipeObj(r)
 
 	vars := mux.Vars(r)
 
@@ -143,9 +145,7 @@ func UpdateRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	recipeObj := models.NewRecipe(db)
+	recipeObj := CreateRecipeObj(r)
 
 	stringSearch := r.URL.Query()["name"]
 
@@ -190,9 +190,7 @@ func GetRecipeByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	recipeID, err := strconv.Atoi(vars["recipe_id"])
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	recipeObj := models.NewRecipe(db)
+	recipeObj := CreateRecipeObj(r)
 
 	if err != nil {
 		fmt.Println(err)
@@ -235,10 +233,8 @@ func GetHouseRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	houseID, err := strconv.Atoi(vars["house_id"])
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	houseObj := models.NewHouse(db)
-	recipeObj := models.NewRecipe(db)
+	houseObj := CreateHouseObj(r)
+	recipeObj := CreateRecipeObj(r)
 
 	if err != nil {
 		fmt.Println(err)
@@ -277,10 +273,8 @@ func GetUserRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := strconv.Atoi(vars["user_id"])
 
-	db := r.Context().Value("db").(*sqlx.DB)
-
-	userObj := models.NewUser(db)
-	recipeObj := models.NewRecipe(db)
+	userObj := CreateUserObj(r)
+	recipeObj := CreateRecipeObj(r)
 
 	if err != nil {
 		fmt.Println(err)
