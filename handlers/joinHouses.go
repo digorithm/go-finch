@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -57,12 +58,38 @@ func GetUserInvitations(w http.ResponseWriter, r *http.Request) {
 
 func InviteUser(w http.ResponseWriter, r *http.Request) {
 
-	//joinObj := CreateJoinObj(r)
+	joinObj := CreateJoinObj(r)
 
-	//invitation, err := ioutil.ReadAll(r.Body)
+	invitation, err := ioutil.ReadAll(r.Body)
 
-	//responseJSON, err := joinObj.addInvitation(nil, invitation)
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	responseJSON, err := joinObj.AddInvitation(nil, invitation)
 
 	w.WriteHeader(http.StatusCreated)
-	//w.Write(responseJSON)
+	w.Write(responseJSON)
+}
+
+func DeleteInvitation(w http.ResponseWriter, r *http.Request) {
+
+	joinObj := CreateJoinObj(r)
+
+	vars := mux.Vars(r)
+	inviteID, err := strconv.Atoi(vars["invite_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	err = joinObj.DeleteInvitation(nil, int64(inviteID))
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

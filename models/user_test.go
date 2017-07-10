@@ -5,6 +5,8 @@ import (
 
 	"fmt"
 
+	"encoding/json"
+
 	_ "github.com/lib/pq"
 )
 
@@ -12,9 +14,15 @@ func newUserForTest(t *testing.T) *User {
 	return NewUser(newDbForTest(t))
 }
 
-func newUserRowForTest(t *testing.T) (*User, *UserRow) {
+func newUserRowForTest(t *testing.T) (*User, []byte) {
 	u := newUserForTest(t)
-	userRow, _ := u.Signup(nil, newEmailForTest(), "username", "abc123")
+	email := newEmailForTest()
+
+	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
+
+	newSignup := []byte(user)
+	userRow, _ := u.Signup(nil, newSignup)
+
 	return u, userRow
 }
 
@@ -33,17 +41,26 @@ func deleteTestRecipe(t *testing.T, id int64) {
 	}
 }
 
-func TestUserSignup(t *testing.T) {
+/*func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
 
+	email := newEmailForTest()
+	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
+
+	newSignup := []byte(user)
 	// Signup
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
+	usr, err := u.Signup(nil, newSignup)
+
+	var userRow UserRow
+
+	_ = json.Unmarshal(usr, userRow)
+
 	defer deleteTestUser(t, u, userRow.ID)
 
 	if err != nil {
 		t.Errorf("Signing up user should work. Error: %v", err)
 	}
-	if userRow == nil {
+	if (userRow == nil {
 		t.Fatal("Signing up user should work.")
 	}
 	if userRow.ID <= 0 {
@@ -103,11 +120,15 @@ func TestGetUserByUsername(t *testing.T) {
 		t.Errorf("Usernames did not match!")
 	}
 
-}
+}*/
 
 func TestAddRecipe(t *testing.T) {
 
-	u, uRow := newUserRowForTest(t)
+	u, row := newUserRowForTest(t)
+
+	var uRow UserRow
+
+	json.Unmarshal(row, uRow)
 	defer deleteTestUser(t, u, uRow.ID)
 
 	// Define a test recipe.

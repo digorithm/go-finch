@@ -22,5 +22,13 @@ func TestGetHouseInvites(t *testing.T) {
 		t.Errorf("Getting house invitations should work. Error: %v", err)
 	}
 
-	fmt.Println(result)
+}
+
+func TestAddInvitation(t *testing.T) {
+
+	j := newJoinForTest(t)
+
+	inviteJSON := []byte(`{"house_id": 2, "user_id": 3}`)
+
+	j.addInvitation(nil, inviteJSON)
 }

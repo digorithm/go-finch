@@ -6,6 +6,9 @@ import (
 
 	"reflect"
 
+	"database/sql"
+
+	"github.com/buger/jsonparser"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -140,6 +143,41 @@ func buildHouseInviteJSONResponse(inviter, invitees []Person) []byte {
 	return finalUsersJSON
 }
 
-/*func addInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
+func (j *Join) AddInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 
-}*/
+	inviteEntry := make(map[string]interface{})
+
+	inviteEntry["type_id"] = 1
+	inviteEntry["house_id"], _ = jsonparser.GetInt(inviteJSON, "house_id")
+	inviteEntry["user_id"], _ = jsonparser.GetInt(inviteJSON, "user_id")
+
+	res, err := j.InsertIntoTable(tx, inviteEntry)
+
+	resultJSON := buildAddInviteResponseJSON(res)
+
+	return resultJSON, err
+
+}
+
+func (j *Join) DeleteInvitation(tx *sqlx.Tx, inviteID int64) error {
+
+	_, err := j.DeleteById(tx, inviteID)
+
+	return err
+}
+
+func buildAddInviteResponseJSON(res sql.Result) []byte {
+
+	finalInvite := make([]map[string]interface{}, 0, 0)
+	inviteID, _ := res.LastInsertId()
+
+	result := make(map[string]interface{})
+
+	result["invite_id"] = inviteID
+	result["message"] = "waiting for user to accept invitation"
+
+	finalInvite = append(finalInvite, result)
+
+	finalInviteJSON, _ := json.Marshal(finalInvite)
+	return finalInviteJSON
+}
