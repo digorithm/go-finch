@@ -143,6 +143,45 @@ func UpdateRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UpdateRecipeStepIngredientHandler(w http.ResponseWriter, r *http.Request) {
+
+	recipeObj := CreateRecipeObj(r)
+
+	vars := mux.Vars(r)
+
+	recipeID, err := strconv.Atoi(vars["recipe_id"])
+	StepIDToUpdate, err := strconv.Atoi(vars["step_id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	ToUpdate := make(map[string]interface{})
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	recipeObj.UpdateRecipeStepIngredient(int64(recipeID), int64(StepIDToUpdate), body)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing data to update the recipe"))
+		return
+	}
+
+	err = json.Unmarshal(body, &ToUpdate)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid json request"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	w.Write([]byte("Recipe updated"))
+
+}
+
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
 	recipeObj := CreateRecipeObj(r)

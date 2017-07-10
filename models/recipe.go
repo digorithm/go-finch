@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	"github.com/buger/jsonparser"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -240,6 +241,67 @@ func (r *Recipe) GetMealTypeByName(tx *sqlx.Tx, name string) (*MealRow, error) {
 	err := r.db.Get(mealType, query, name)
 
 	return mealType, err
+}
+
+func (r *Recipe) UpdateRecipeStepIngredient(RecipeID, StepID int64, JSONRequest []byte) {
+
+	// First we delete the step_id from the database
+
+	query := "delete from step_ingredient where step_id = $1 and recipe_id = $2"
+	_, err := r.db.Exec(query, StepID, RecipeID)
+
+	query = "delete from step where id = $1 and recipe_id = $2"
+	_, err = r.db.Exec(query, StepID, RecipeID)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var step_db Base
+	step_db.db = r.db
+	step_db.table = "step"
+	step_db.hasID = true
+
+	var step_ingredient_db Base
+	step_ingredient_db.db = r.db
+	step_ingredient_db.table = "step_ingredient"
+	step_ingredient_db.hasID = false
+
+	ingredientObj := NewIngredient(r.db)
+
+	stepData := make(map[string]interface{})
+	stepData["recipe_id"] = RecipeID
+	stepData["id"], _ = jsonparser.GetInt(JSONRequest, "step_id")
+	stepData["text"], _ = jsonparser.GetString(JSONRequest, "text")
+
+	_, err = step_db.InsertIntoTable(nil, stepData)
+
+	if err != nil {
+		fmt.Printf("Error while adding step into DB. Error: %v", err)
+	}
+	jsonparser.ArrayEach(JSONRequest, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+
+		stepIngredientData := make(map[string]interface{})
+		stepIngredientData["recipe_id"] = stepData["recipe_id"]
+		stepIngredientData["unit_id"], _ = jsonparser.GetInt(value, "unit")
+		stepIngredientData["amount"], _ = jsonparser.GetFloat(value, "amount")
+		stepIngredientData["step_id"] = stepData["id"]
+
+		// Check if ingredient ID exists in the DB
+		stepIngredientDataName, _ := jsonparser.GetString(value, "name")
+		iRow, _ := ingredientObj.GetByName(nil, stepIngredientDataName)
+		if iRow == nil {
+			addedIRow, _ := ingredientObj.AddIngredient(nil, stepIngredientDataName)
+			stepIngredientData["ingredient_id"] = addedIRow.ID
+		} else {
+			stepIngredientData["ingredient_id"] = iRow.ID
+		}
+		_, err = step_ingredient_db.InsertIntoTable(nil, stepIngredientData)
+		if err != nil {
+			fmt.Printf("Error while adding step ingredient into DB. Error: %v", err)
+		}
+
+	}, "step_ingredients")
 }
 
 // TODO: func (r *Recipe) GetNutritionalFacts(tx *sqlx.Tx, recipe_id int64) ()

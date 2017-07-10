@@ -73,6 +73,7 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/recipes/{recipe_id}", handlers.GetRecipeByIDHandler).Methods("GET")
 	router.HandleFunc("/recipes/{recipe_id}", handlers.DeleteRecipesHandler).Methods("DELETE")
 	router.HandleFunc("/recipes/{recipe_id}/{field}", handlers.UpdateRecipesHandler).Methods("PUT")
+	router.HandleFunc("/recipes/{recipe_id}/step/{step_id}", handlers.UpdateRecipeStepIngredientHandler).Methods("PUT")
 	router.HandleFunc("/recipes", handlers.GetRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes", handlers.AddRecipesHandler).Methods("POST")
 
