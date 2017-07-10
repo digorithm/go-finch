@@ -17,13 +17,16 @@ func newUserForTest(t *testing.T) *User {
 func newUserRowForTest(t *testing.T) (*User, []byte) {
 	u := newUserForTest(t)
 	email := newEmailForTest()
+	//var userRow *UserRow
 
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
 	newSignup := []byte(user)
-	userRow, _ := u.Signup(nil, newSignup)
+	row, _ := u.Signup(nil, newSignup)
 
-	return u, userRow
+	//_ = json.Unmarshal(row, userRow)
+
+	return u, row
 }
 
 func deleteTestUser(t *testing.T, u *User, id int64) {
@@ -41,26 +44,25 @@ func deleteTestRecipe(t *testing.T, id int64) {
 	}
 }
 
-/*func TestUserSignup(t *testing.T) {
+func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
 
 	email := newEmailForTest()
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
 	newSignup := []byte(user)
-	// Signup
 	usr, err := u.Signup(nil, newSignup)
 
-	var userRow UserRow
+	var userRow *UserRow
 
-	_ = json.Unmarshal(usr, userRow)
+	_ = json.Unmarshal(usr, &userRow)
 
 	defer deleteTestUser(t, u, userRow.ID)
 
 	if err != nil {
 		t.Errorf("Signing up user should work. Error: %v", err)
 	}
-	if (userRow == nil {
+	if userRow == nil {
 		t.Fatal("Signing up user should work.")
 	}
 	if userRow.ID <= 0 {
@@ -71,7 +73,16 @@ func deleteTestRecipe(t *testing.T, id int64) {
 func TestGetUserById(t *testing.T) {
 	u := newUserForTest(t)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
+	email := newEmailForTest()
+	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
+
+	newSignup := []byte(user)
+	usr, err := u.Signup(nil, newSignup)
+
+	var userRow *UserRow
+
+	_ = json.Unmarshal(usr, &userRow)
+
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetById(nil, userRow.ID)
@@ -88,8 +99,15 @@ func TestGetUserById(t *testing.T) {
 
 func TestGetUserByEmail(t *testing.T) {
 	u := newUserForTest(t)
+	email := newEmailForTest()
+	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
+	newSignup := []byte(user)
+	usr, err := u.Signup(nil, newSignup)
+
+	var userRow *UserRow
+
+	_ = json.Unmarshal(usr, &userRow)
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByEmail(nil, userRow.Email)
@@ -106,8 +124,15 @@ func TestGetUserByEmail(t *testing.T) {
 
 func TestGetUserByUsername(t *testing.T) {
 	u := newUserForTest(t)
+	email := newEmailForTest()
+	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
-	userRow, err := u.Signup(nil, newEmailForTest(), "username", "abc123")
+	newSignup := []byte(user)
+	usr, err := u.Signup(nil, newSignup)
+
+	var userRow *UserRow
+
+	_ = json.Unmarshal(usr, &userRow)
 	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByUsername(nil, userRow.Username)
@@ -120,7 +145,7 @@ func TestGetUserByUsername(t *testing.T) {
 		t.Errorf("Usernames did not match!")
 	}
 
-}*/
+}
 
 func TestAddRecipe(t *testing.T) {
 

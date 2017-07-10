@@ -5,6 +5,8 @@ import (
 
 	"fmt"
 
+	"encoding/json"
+
 	_ "github.com/lib/pq"
 )
 
@@ -22,13 +24,25 @@ func TestGetHouseInvites(t *testing.T) {
 		t.Errorf("Getting house invitations should work. Error: %v", err)
 	}
 
+	fmt.Printf("result get house invite: %v", string(result))
+
 }
 
 func TestAddInvitation(t *testing.T) {
 
 	j := newJoinForTest(t)
+	var v []map[string]interface{}
 
 	inviteJSON := []byte(`{"house_id": 2, "user_id": 3}`)
 
-	j.addInvitation(nil, inviteJSON)
+	res, err := j.AddInvitation(nil, inviteJSON)
+
+	if err != nil {
+		t.Errorf("Adding invitations should work. Error: %v", err)
+	}
+
+	_ = json.Unmarshal(res, &v)
+	id := v[0]["invite_id"].(float64)
+
+	j.DeleteInvitation(nil, int64(id))
 }
