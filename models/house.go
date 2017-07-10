@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -50,6 +51,40 @@ func (h *House) GetByID(tx *sqlx.Tx, id int64) (*HouseRow, error) {
 	err := h.db.Get(house, query, id)
 
 	return house, err
+}
+
+func (h *House) GetFullHouseInformation(tx *sqlx.Tx, id int64) ([]byte, error) {
+	var JSONHouseInformation []byte
+	var err error
+
+	query := "select house.name, house.grocery_day, house.household_number, ui.username, o.description from house join member_of mo on mo.house_id = house.id join user_info ui on ui.id = mo.user_id join ownership o on o.own_type = mo.own_type where house.id = $1"
+
+	ReturnedHouse, err := h.GetCompoundModel(nil, query, id)
+
+	if err != nil {
+		return JSONHouseInformation, err
+	}
+
+	HouseMetadata := make(map[string]interface{})
+
+	HouseMetadata["name"] = ReturnedHouse[0].([]interface{})[0].(string)
+	HouseMetadata["grocery_day"] = ReturnedHouse[0].([]interface{})[1].(string)
+	HouseMetadata["household_number"] = ReturnedHouse[0].([]interface{})[2].(int64)
+
+	Residents := make([]map[string]string, 0, 0)
+
+	for _, res := range ReturnedHouse {
+		Resident := make(map[string]string)
+		Resident["name"] = res.([]interface{})[3].(string)
+		Resident["ownership"] = res.([]interface{})[4].(string)
+		Residents = append(Residents, Resident)
+	}
+
+	HouseMetadata["residents"] = Residents
+
+	JSONHouseInformation, _ = json.MarshalIndent(HouseMetadata, "", "    ")
+
+	return JSONHouseInformation, err
 }
 
 // CreateHouse creates a house and instantiates the schedule for it
