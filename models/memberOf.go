@@ -21,21 +21,21 @@ type Member struct {
 
 //adds to the member_of table the given userID, houseID and
 // the own_type corresponding to "owner"
-func (m *Member) addOwner(tx *sqlx.Tx, houseID, userID int64) {
+func (m *Member) AddOwner(tx *sqlx.Tx, houseID, userID int64) {
 
 	m.addUserHelper(tx, houseID, userID, 1)
 }
 
 //adds to the member_of table the given userID, houseID and
 // the own_type corresponding to "resident"
-func (m *Member) addResident(tx *sqlx.Tx, houseID, userID int64) {
+func (m *Member) AddResident(tx *sqlx.Tx, houseID, userID int64) {
 
 	m.addUserHelper(tx, houseID, userID, 2)
 }
 
 // adds to or updates the member_of table with the given userID,
 // houseID and the own_type corresponding to "blocked"
-func (m *Member) blockUser(tx *sqlx.Tx, houseID, userID int64) {
+func (m *Member) BlockUser(tx *sqlx.Tx, houseID, userID int64) {
 
 	m.addUserHelper(tx, houseID, userID, 3)
 }

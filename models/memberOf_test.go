@@ -14,7 +14,7 @@ func newMemberForTest(t *testing.T) *Member {
 func TestAddOwner(t *testing.T) {
 	m := newMemberForTest(t)
 
-	m.addOwner(nil, 3, 5)
+	m.AddOwner(nil, 3, 5)
 
 	where := "HOUSE_ID = 3 AND USER_ID = 5"
 	_, err := m.DeleteFromTable(nil, where)
