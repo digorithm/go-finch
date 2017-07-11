@@ -42,6 +42,23 @@ func TestGetHouseInvitationsEndpoint(t *testing.T) {
 
 }
 
+func TestGetHouseRequestsEndpoint(t *testing.T) {
+
+	endpoint := "/requests/houses/5"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+
+}
+
 func TestGetUserInvitationsEndpoint(t *testing.T) {
 
 	endpoint := "/invitations/users/6"

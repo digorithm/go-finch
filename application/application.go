@@ -92,6 +92,8 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/invitations/respond", handlers.InviteResponseHandler).Methods("POST")
 	router.HandleFunc("/houses/{house_id}/users/{user_id}", handlers.DeleteMemberHandler).Methods("DELETE")
 
+	router.HandleFunc("/requests/houses/{house_id}", handlers.GetHouseJoinsHandler).Methods("GET")
+
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 

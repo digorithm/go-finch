@@ -467,4 +467,14 @@ insert into join_pending(house_id, user_id, type_id)
 values
 (1, 6, 1);
 
+insert into join_pending(house_id, user_id, type_id)
+values
+(1, 5, 2);
+
+insert into join_pending(house_id, user_id, type_id)
+values
+(3, 1, 2);
+
+
+
 

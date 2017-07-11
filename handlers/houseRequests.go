@@ -32,11 +32,29 @@ func GetHouseInvitationsHandler(w http.ResponseWriter, r *http.Request) {
 		libhttp.HandleErrorJson(w, err)
 	}
 
-	inviteJSON, err := joinObj.GetHouseInvitations(nil, int64(houseID))
+	inviteJSON, err := joinObj.GetHouseRequests(nil, int64(houseID), 1)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(inviteJSON)
 
+}
+
+func GetHouseJoinsHandler(w http.ResponseWriter, r *http.Request) {
+
+	joinObj := CreateJoinObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	inviteJSON, err := joinObj.GetHouseRequests(nil, int64(houseID), 2)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(inviteJSON)
 }
 
 func GetUserInvitationsHandler(w http.ResponseWriter, r *http.Request) {

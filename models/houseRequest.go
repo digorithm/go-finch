@@ -94,6 +94,40 @@ func buildUserInviteJSONResponse(userI []interface{}) []byte {
 	return finalUsersJSON
 }
 
+func (j *Join) GetHouseRequests(tx *sqlx.Tx, houseID, reqType int64) ([]byte, error) {
+
+	if reqType == 1 {
+
+		return j.GetHouseInvitations(tx, houseID)
+	} else {
+
+		return j.GetHouseJoins(tx, houseID)
+	}
+}
+
+func (j *Join) GetHouseJoins(tx *sqlx.Tx, houseID int64) ([]byte, error) {
+
+	queryInviter := "SELECT U.ID, U.USERNAME FROM USER_INFO U INNER JOIN MEMBER_OF M ON U.ID = M.USER_ID WHERE M.HOUSE_ID = $1 AND M.OWN_TYPE = 1"
+	queryInvitee := "SELECT U.ID, U.USERNAME FROM USER_INFO U INNER JOIN JOIN_PENDING P ON P.USER_ID = U.ID WHERE P.TYPE_ID = 2 AND P.HOUSE_ID = $1"
+
+	inviterI, err := j.GetCompoundModel(tx, queryInviter, houseID)
+	if err != nil {
+		fmt.Printf("inviterI: %v", err)
+	}
+
+	inviteeI, err := j.GetCompoundModel(tx, queryInvitee, houseID)
+	if err != nil {
+		fmt.Printf("inviteeI: %v", err)
+	}
+
+	inviter := CreatePerson(inviterI)
+	invitees := CreatePerson(inviteeI)
+
+	finalJSON := buildHouseJoinJSONResponse(inviter, invitees)
+
+	return finalJSON, err
+}
+
 func (j *Join) GetHouseInvitations(tx *sqlx.Tx, houseID int64) ([]byte, error) {
 
 	queryInviter := "SELECT U.ID, U.USERNAME FROM USER_INFO U INNER JOIN MEMBER_OF M ON U.ID = M.USER_ID WHERE M.HOUSE_ID = $1 AND M.OWN_TYPE = 1"
@@ -134,6 +168,31 @@ func buildHouseInviteJSONResponse(inviter, invitees []Person) []byte {
 		inviterJ["name"] = inviter[0].Name
 		finalUser["invited_user"] = inviteeJ
 		finalUser["invited_by"] = inviterJ
+
+		finalUsers = append(finalUsers, finalUser)
+	}
+
+	finalUsersJSON, _ := json.MarshalIndent(finalUsers, "", "	")
+
+	return finalUsersJSON
+}
+
+func buildHouseJoinJSONResponse(inviter, invitees []Person) []byte {
+
+	finalUsers := make([]map[string]interface{}, 0, 0)
+
+	for _, invitee := range invitees {
+
+		inviteeJ := make(map[string]interface{})
+		inviterJ := make(map[string]interface{})
+		finalUser := make(map[string]interface{})
+
+		inviteeJ["id"] = invitee.ID
+		inviteeJ["name"] = invitee.Name
+		inviterJ["id"] = inviter[0].ID
+		inviterJ["name"] = inviter[0].Name
+		finalUser["requesting_user"] = inviteeJ
+		finalUser["request_to"] = inviterJ
 
 		finalUsers = append(finalUsers, finalUser)
 	}
