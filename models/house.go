@@ -108,13 +108,13 @@ func (h *House) CreateHouse(tx *sqlx.Tx, name string, groceryDay string, househo
 }
 
 // GetHouseUsers retrieves all users of a given house id and returns user id, email, password, name, ownership id and description
-func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]UserOwnTypeRow, error) {
+func (h *House) GetHouseUsers(tx *sqlx.Tx, houseID int64) ([]HouseUserOwnRow, error) {
 
-	query := "SELECT U.ID, U.EMAIL, U.PASSWORD, U.USERNAME, O.OWN_TYPE, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
+	query := "SELECT M.HOUSE_ID, H.HOUSEHOLD_NUMBER, M.USER_ID, U.USERNAME, O.DESCRIPTION FROM USER_INFO U INNER JOIN MEMBER_OF M ON M.USER_ID = U.ID INNER JOIN HOUSE H ON M.HOUSE_ID = H.ID INNER JOIN OWNERSHIP O ON O.OWN_TYPE = M.OWN_TYPE WHERE M.HOUSE_ID = $1"
 
 	data, err := h.GetCompoundModel(tx, query, houseID)
 
-	users := createUserOwnTypeRows(data)
+	users := createHouseUserOwnRows(data)
 
 	if err != nil {
 		fmt.Printf("%v", err)

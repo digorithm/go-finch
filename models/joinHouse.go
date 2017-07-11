@@ -159,6 +159,74 @@ func (j *Join) AddInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 
 }
 
+func (j *Join) FinalizeResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error) {
+
+	response := make(map[string]interface{})
+
+	response["accepts"], _ = jsonparser.GetBoolean(responseJSON, "accepts")
+	response["invite_id"], _ = jsonparser.GetInt(responseJSON, "invite_id")
+	accepts := response["accepts"]
+	ID := response["invite_id"]
+
+	var resp []byte
+	var err error
+
+	if accepts.(bool) {
+
+		query := "SELECT P.HOUSE_ID, P.USER_ID FROM JOIN_PENDING P WHERE ID = $1"
+		res, err := j.GetCompoundModel(tx, query, ID.(int64))
+
+		if err != nil {
+			fmt.Printf("getInvitation: %v", err)
+		}
+
+		v := reflect.ValueOf(res[0])
+		houseID := v.Index(0).Interface().(int64)
+		userID := v.Index(1).Interface().(int64)
+
+		m := NewMember(j.db)
+		h := NewHouse(j.db)
+		m.AddResident(tx, houseID, userID)
+
+		resp, err = h.GetFullHouseInformation(nil, houseID)
+
+	} else {
+
+		resp = []byte(`{"message":"user rejected invitation"}`)
+
+	}
+
+	j.DeleteInvitation(tx, ID.(int64))
+
+	return resp, err
+}
+
+func buildAcceptInviteJSON(users []HouseUserOwnRow) []byte {
+
+	finalUser := make(map[string]interface{})
+	finalUser["id"] = users[0].HID
+	finalUser["household_number"] = users[0].HouseNumber
+	members := make([]map[string]interface{}, 0, 0)
+
+	for _, user := range users {
+
+		member := make(map[string]interface{})
+		member["id"] = user.UID
+		member["name"] = user.Username
+		member["ownership"] = user.OwnType
+		fmt.Printf("member: %v", member)
+
+		members = append(members, member)
+	}
+
+	finalUser["users"] = members
+	fmt.Printf("typeOf: %v", reflect.TypeOf(members))
+	fmt.Printf("finalUser: %v", finalUser)
+	finalUsersJSON, _ := json.Marshal(finalUser)
+
+	return finalUsersJSON
+}
+
 func (j *Join) DeleteInvitation(tx *sqlx.Tx, inviteID int64) error {
 
 	_, err := j.DeleteById(tx, inviteID)

@@ -20,6 +20,14 @@ func CreateHouseObj(r *http.Request) *models.House {
 	return houseObj
 }
 
+func CreateMemberObj(r *http.Request) *models.Member {
+	db := r.Context().Value("db").(*sqlx.DB)
+
+	memberObj := models.NewMember(db)
+
+	return memberObj
+}
+
 func GetHouseHandler(w http.ResponseWriter, r *http.Request) {
 
 	HouseObj := CreateHouseObj(r)
@@ -46,7 +54,7 @@ func GetHouseHandler(w http.ResponseWriter, r *http.Request) {
 func PostHouseHandler(w http.ResponseWriter, r *http.Request) {
 
 	HouseObj := CreateHouseObj(r)
-	MemberOf := models.NewMember(r.Context().Value("db").(*sqlx.DB))
+	MemberOf := CreateMemberObj(r)
 
 	body, err := ioutil.ReadAll(r.Body)
 

@@ -6,15 +6,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func createVarsForGetUsers(id int64, email string, pWord string, uName string, ownT int64, desc string) UserOwnTypeRow {
-	var user UserOwnTypeRow
+func createVarsForGetUsers(hID, hNum, uID int64, uName, oType string) HouseUserOwnRow {
+	var user HouseUserOwnRow
 
-	user.ID = id
-	user.Email = email
-	user.Password = pWord
+	user.HID = hID
+	user.HouseNumber = hNum
+	user.UID = uID
 	user.Username = uName
-	user.OwnType = ownT
-	user.Description = desc
+	user.OwnType = oType
 
 	return user
 }
@@ -63,10 +62,10 @@ func TestHouseCRUD(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 
 	h := newHouseForTest(t)
-	var u1 = createVarsForGetUsers(1, "gulipek5@gmail.com", "password", "guli", 1, "owner")
-	var u2 = createVarsForGetUsers(2, "rod.dearaujo@gmail.com", "password1", "digo", 2, "resident")
-	var u3 = createVarsForGetUsers(4, "iamjoe@gmail.com", "password3", "joe", 3, "blocked")
-	var result []UserOwnTypeRow
+	var u1 = createVarsForGetUsers(1, 2, 1, "guli", "owner")
+	var u2 = createVarsForGetUsers(1, 2, 2, "digo", "resident")
+	var u3 = createVarsForGetUsers(1, 2, 4, "joe", "blocked")
+	var result []HouseUserOwnRow
 
 	users, err := h.GetHouseUsers(nil, 1)
 	if err != nil {

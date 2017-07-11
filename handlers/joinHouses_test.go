@@ -15,6 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type AcceptResponse struct {
+	ID        int64 `json:"id"`
+	Household int64 `json:"household_number"`
+	Users     []struct {
+		ID        int64  `json:"id"`
+		Name      string `json:"name"`
+		Ownership string `json:"ownership"`
+	} `json:"users"`
+}
+
 func TestGetHouseInvitationsEndpoint(t *testing.T) {
 
 	endpoint := "/invitations/houses/3"
@@ -74,6 +84,46 @@ func TestInviteUserEndpoint(t *testing.T) {
 	assert.Equal(t, 201, response.Code, "OK response is expected")
 }
 
+func TestRespondInvite(t *testing.T) {
+
+	inviteID := int64(mockInvite(t))
+
+	inv := fmt.Sprintf(`{"invite_id":%v, "accepts":true}`, inviteID)
+	invitation := []byte(inv)
+	req, _ := http.NewRequest("POST", "/invitations/respond", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+
+	deleteMember(t)
+
+}
+
+func mockInvite(t *testing.T) float64 {
+
+	invitation := []byte(`{"house_id":4, "user_id":1}`)
+	req, _ := http.NewRequest("POST", "/invitations/join", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+	body, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	var i []map[string]interface{}
+
+	err = json.Unmarshal(body, &i)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	return i[0]["invite_id"].(float64)
+
+}
+
 func deleteInvite(t *testing.T, inviteID float64) {
 
 	endpoint := fmt.Sprintf("/invitations/%v", inviteID)
@@ -87,7 +137,22 @@ func deleteInvite(t *testing.T, inviteID float64) {
 
 	RouterForTest().ServeHTTP(response, request)
 
-	fmt.Printf("response code for delete: %v", response.Code)
 	assert.Equal(t, 204, response.Code, "OK response is expected")
 
+}
+
+func deleteMember(t *testing.T) {
+
+	endpoint := "/houses/4/users/1"
+	method := "DELETE"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 204, response.Code, "OK response is expected")
 }

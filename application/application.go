@@ -79,16 +79,18 @@ func (app *Application) Mux() *gorilla_mux.Router {
 
 	router.HandleFunc("/users", handlers.GetUsersHandler).Methods("GET")
 	router.HandleFunc("/users/{user_id}", handlers.GetUserByIDHandler).Methods("GET")
-	router.HandleFunc("/users", handlers.PostSignup).Methods("POST")
+	router.HandleFunc("/users", handlers.PostSignupHandler).Methods("POST")
 
 	router.HandleFunc("/houses/{house_id}", handlers.GetHouseHandler).Methods("GET")
 	router.HandleFunc("/houses", handlers.PostHouseHandler).Methods("POST")
 
-	router.HandleFunc("/users/{user_id}", handlers.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/users/{user_id}", handlers.DeleteUserHandler).Methods("DELETE")
 
-	router.HandleFunc("/invitations/users/{user_id}", handlers.GetUserInvitations).Methods("GET")
-	router.HandleFunc("/invitations/houses/{house_id}", handlers.GetHouseInvitations).Methods("GET")
-	router.HandleFunc("/invitations/join", handlers.InviteUser).Methods("POST")
+	router.HandleFunc("/invitations/users/{user_id}", handlers.GetUserInvitationsHandler).Methods("GET")
+	router.HandleFunc("/invitations/houses/{house_id}", handlers.GetHouseInvitationsHandler).Methods("GET")
+	router.HandleFunc("/invitations/join", handlers.InviteUserHandler).Methods("POST")
+	router.HandleFunc("/invitations/respond", handlers.InviteResponseHandler).Methods("POST")
+	router.HandleFunc("/houses/{house_id}/users/{user_id}", handlers.DeleteMemberHandler).Methods("DELETE")
 
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))

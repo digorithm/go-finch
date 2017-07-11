@@ -141,3 +141,16 @@ func createOwnerRow(data []interface{}) *OwnerRow {
 
 	return own
 }
+
+func createMemberOfRow(data []interface{}) MemberOfRow {
+
+	var member MemberOfRow
+
+	v := reflect.ValueOf(data[0])
+
+	member.HouseID = v.Index(0).Interface().(int64)
+	member.UserID = v.Index(1).Interface().(int64)
+	member.OwnType = v.Index(2).Interface().(int64)
+
+	return member
+}

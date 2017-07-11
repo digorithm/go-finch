@@ -20,7 +20,7 @@ func CreateJoinObj(r *http.Request) *models.Join {
 	return joinObj
 }
 
-func GetHouseInvitations(w http.ResponseWriter, r *http.Request) {
+func GetHouseInvitationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	joinObj := CreateJoinObj(r)
 
@@ -39,7 +39,7 @@ func GetHouseInvitations(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetUserInvitations(w http.ResponseWriter, r *http.Request) {
+func GetUserInvitationsHandler(w http.ResponseWriter, r *http.Request) {
 	joinObj := CreateJoinObj(r)
 
 	vars := mux.Vars(r)
@@ -56,7 +56,7 @@ func GetUserInvitations(w http.ResponseWriter, r *http.Request) {
 	w.Write(inviteJSON)
 }
 
-func InviteUser(w http.ResponseWriter, r *http.Request) {
+func InviteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	joinObj := CreateJoinObj(r)
 
@@ -73,7 +73,23 @@ func InviteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseJSON)
 }
 
-func DeleteInvitation(w http.ResponseWriter, r *http.Request) {
+func InviteResponseHandler(w http.ResponseWriter, r *http.Request) {
+	joinObj := CreateJoinObj(r)
+	response, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	res, err := joinObj.FinalizeResponse(nil, response)
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write(res)
+
+}
+
+func DeleteInvitationHandler(w http.ResponseWriter, r *http.Request) {
 
 	joinObj := CreateJoinObj(r)
 
@@ -90,6 +106,24 @@ func DeleteInvitation(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func DeleteMemberHandler(w http.ResponseWriter, r *http.Request) {
+
+	memberObj := CreateMemberObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	memberObj.DeleteMember(nil, int64(houseID), int64(userID))
 
 	w.WriteHeader(http.StatusNoContent)
 }

@@ -106,7 +106,7 @@ func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
 	tmpl.Execute(w, nil)
 }*/
 
-func PostSignup(w http.ResponseWriter, r *http.Request) {
+func PostSignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	userObj := CreateUserObj(r)
 
@@ -127,7 +127,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	//PostLogin(w, r)
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	userObj := CreateUserObj(r)
 

@@ -30,16 +30,18 @@ func RouterForTest() *mux.Router {
 
 	router.HandleFunc("/users", GetUsersHandler).Methods("GET")
 	router.HandleFunc("/users/{user_id}", GetUserByIDHandler).Methods("GET")
-	router.HandleFunc("/users", PostSignup).Methods("POST")
-	router.HandleFunc("/users/{user_id}", DeleteUser).Methods("DELETE")
+	router.HandleFunc("/users", PostSignupHandler).Methods("POST")
+	router.HandleFunc("/users/{user_id}", DeleteUserHandler).Methods("DELETE")
 
 	router.HandleFunc("/houses/{house_id}", GetHouseHandler).Methods("GET")
 	router.HandleFunc("/houses", PostHouseHandler).Methods("POST")
+	router.HandleFunc("/houses/{house_id}/users/{user_id}", DeleteMemberHandler).Methods("DELETE")
 
-	router.HandleFunc("/invitations/users/{user_id}", GetUserInvitations).Methods("GET")
-	router.HandleFunc("/invitations/houses/{house_id}", GetHouseInvitations).Methods("GET")
-	router.HandleFunc("/invitations/join", InviteUser).Methods("POST")
-	router.HandleFunc("/invitations/{invite_id}", DeleteInvitation).Methods("DELETE")
+	router.HandleFunc("/invitations/users/{user_id}", GetUserInvitationsHandler).Methods("GET")
+	router.HandleFunc("/invitations/houses/{house_id}", GetHouseInvitationsHandler).Methods("GET")
+	router.HandleFunc("/invitations/join", InviteUserHandler).Methods("POST")
+	router.HandleFunc("/invitations/{invite_id}", DeleteInvitationHandler).Methods("DELETE")
+	router.HandleFunc("/invitations/respond", InviteResponseHandler).Methods("POST")
 
 	return router
 }

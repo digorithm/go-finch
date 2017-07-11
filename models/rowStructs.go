@@ -22,8 +22,20 @@ type UserHouseRow struct {
 }
 
 type UserOwnTypeRow struct {
-	UserRow
-	OwnerRow
+	ID          int64  `db:"id"`
+	Email       string `db:"email"`
+	Password    string `db:"password"`
+	Username    string `db:"username"`
+	OwnType     int64  `db:"own_type"`
+	Description string `db:"description"`
+}
+
+type HouseUserOwnRow struct {
+	HID         int64  `db:"house_id"`
+	HouseNumber int64  `db:"household_number"`
+	UID         int64  `db:"user_id"`
+	Username    string `db:"username"`
+	OwnType     string `db:"description"`
 }
 
 type FullRecipeRow struct {
@@ -40,20 +52,19 @@ type RecipeTypeNameRow struct {
 	TypeName string `db:"type"`
 }
 
-func createUserOwnTypeRows(data []interface{}) []UserOwnTypeRow {
-	var users []UserOwnTypeRow
-	var row UserOwnTypeRow
+func createHouseUserOwnRows(data []interface{}) []HouseUserOwnRow {
+	var users []HouseUserOwnRow
+	var row HouseUserOwnRow
 
 	for i := 0; i < len(data); i++ {
 
 		v := reflect.ValueOf(data[i])
 
-		row.ID = v.Index(0).Interface().(int64)
-		row.Email = v.Index(1).Interface().(string)
-		row.Password = v.Index(2).Interface().(string)
+		row.HID = v.Index(0).Interface().(int64)
+		row.HouseNumber = v.Index(1).Interface().(int64)
+		row.UID = v.Index(2).Interface().(int64)
 		row.Username = v.Index(3).Interface().(string)
-		row.OwnType = v.Index(4).Interface().(int64)
-		row.Description = v.Index(5).Interface().(string)
+		row.OwnType = v.Index(4).Interface().(string)
 
 		users = append(users, row)
 	}
