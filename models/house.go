@@ -57,7 +57,7 @@ func (h *House) GetFullHouseInformation(tx *sqlx.Tx, id int64) ([]byte, error) {
 	var JSONHouseInformation []byte
 	var err error
 
-	query := "select house.name, house.grocery_day, house.household_number, ui.username, o.description from house join member_of mo on mo.house_id = house.id join user_info ui on ui.id = mo.user_id join ownership o on o.own_type = mo.own_type where house.id = $1"
+	query := "select house.name, house.id, house.grocery_day, house.household_number, ui.username, o.description from house join member_of mo on mo.house_id = house.id join user_info ui on ui.id = mo.user_id join ownership o on o.own_type = mo.own_type where house.id = $1"
 
 	ReturnedHouse, err := h.GetCompoundModel(nil, query, id)
 
@@ -68,15 +68,16 @@ func (h *House) GetFullHouseInformation(tx *sqlx.Tx, id int64) ([]byte, error) {
 	HouseMetadata := make(map[string]interface{})
 
 	HouseMetadata["name"] = ReturnedHouse[0].([]interface{})[0].(string)
-	HouseMetadata["grocery_day"] = ReturnedHouse[0].([]interface{})[1].(string)
-	HouseMetadata["household_number"] = ReturnedHouse[0].([]interface{})[2].(int64)
+	HouseMetadata["id"] = ReturnedHouse[0].([]interface{})[1].(int64)
+	HouseMetadata["grocery_day"] = ReturnedHouse[0].([]interface{})[2].(string)
+	HouseMetadata["household_number"] = ReturnedHouse[0].([]interface{})[3].(int64)
 
 	Residents := make([]map[string]string, 0, 0)
 
 	for _, res := range ReturnedHouse {
 		Resident := make(map[string]string)
-		Resident["name"] = res.([]interface{})[3].(string)
-		Resident["ownership"] = res.([]interface{})[4].(string)
+		Resident["name"] = res.([]interface{})[4].(string)
+		Resident["ownership"] = res.([]interface{})[5].(string)
 		Residents = append(Residents, Resident)
 	}
 
