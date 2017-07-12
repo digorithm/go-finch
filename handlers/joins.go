@@ -121,7 +121,24 @@ func InviteResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write(res)
+}
 
+func RequestJoinHandler(w http.ResponseWriter, r *http.Request) {
+
+	joinObj := CreateJoinObj(r)
+
+	invitation, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	fmt.Printf("invitation: %v", string(invitation))
+	responseJSON, err := joinObj.AddJoinRequest(nil, invitation)
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write(responseJSON)
 }
 
 func DeleteInvitationHandler(w http.ResponseWriter, r *http.Request) {

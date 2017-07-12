@@ -275,6 +275,22 @@ func (j *Join) AddInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 
 }
 
+func (j *Join) AddJoinRequest(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
+
+	inviteEntry := make(map[string]interface{})
+
+	inviteEntry["type_id"] = 2
+	inviteEntry["house_id"], _ = jsonparser.GetInt(inviteJSON, "house_id")
+	inviteEntry["user_id"], _ = jsonparser.GetInt(inviteJSON, "user_id")
+
+	res, err := j.InsertIntoTable(tx, inviteEntry)
+
+	resultJSON := buildAddJoinResponseJSON(res)
+
+	return resultJSON, err
+
+}
+
 func (j *Join) FinalizeResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error) {
 
 	response := make(map[string]interface{})
@@ -352,7 +368,6 @@ func (j *Join) DeleteInvitation(tx *sqlx.Tx, inviteID int64) error {
 
 func buildAddInviteResponseJSON(res sql.Result) []byte {
 
-	finalInvite := make([]map[string]interface{}, 0, 0)
 	inviteID, _ := res.LastInsertId()
 
 	result := make(map[string]interface{})
@@ -360,8 +375,19 @@ func buildAddInviteResponseJSON(res sql.Result) []byte {
 	result["invite_id"] = inviteID
 	result["message"] = "waiting for user to accept invitation"
 
-	finalInvite = append(finalInvite, result)
+	finalInviteJSON, _ := json.Marshal(result)
+	return finalInviteJSON
+}
 
-	finalInviteJSON, _ := json.Marshal(finalInvite)
+func buildAddJoinResponseJSON(res sql.Result) []byte {
+
+	inviteID, _ := res.LastInsertId()
+
+	result := make(map[string]interface{})
+
+	result["invite_id"] = inviteID
+	result["message"] = "waiting for owner to accept join request"
+
+	finalInviteJSON, _ := json.Marshal(result)
 	return finalInviteJSON
 }

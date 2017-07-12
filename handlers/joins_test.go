@@ -93,6 +93,31 @@ func TestGetUserJoinsEndpoint(t *testing.T) {
 
 }
 
+func TestRequestJoinEndpoint(t *testing.T) {
+
+	invitation := []byte(`{"house_id":6, "user_id":3}`)
+	req, _ := http.NewRequest("POST", "/requests/join", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+	body, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	var i map[string]interface{}
+
+	err = json.Unmarshal(body, &i)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	deleteInvite(t, i["invite_id"].(float64))
+	assert.Equal(t, 201, response.Code, "OK response is expected")
+}
+
 func TestInviteUserEndpoint(t *testing.T) {
 
 	invitation := []byte(`{"house_id":3, "user_id":2}`)
@@ -106,7 +131,7 @@ func TestInviteUserEndpoint(t *testing.T) {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	var i []map[string]interface{}
+	var i map[string]interface{}
 
 	err = json.Unmarshal(body, &i)
 
@@ -114,7 +139,7 @@ func TestInviteUserEndpoint(t *testing.T) {
 		fmt.Println(err)
 	}
 
-	deleteInvite(t, i[0]["invite_id"].(float64))
+	deleteInvite(t, i["invite_id"].(float64))
 	assert.Equal(t, 201, response.Code, "OK response is expected")
 }
 
@@ -147,14 +172,14 @@ func mockInvite(t *testing.T) float64 {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	var i []map[string]interface{}
+	var i map[string]interface{}
 
 	err = json.Unmarshal(body, &i)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	return i[0]["invite_id"].(float64)
+	return i["invite_id"].(float64)
 
 }
 
