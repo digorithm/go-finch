@@ -76,6 +76,23 @@ func TestGetUserInvitationsEndpoint(t *testing.T) {
 
 }
 
+func TestGetUserJoinsEndpoint(t *testing.T) {
+
+	endpoint := "/requests/users/1"
+	method := "GET"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+
+}
+
 func TestInviteUserEndpoint(t *testing.T) {
 
 	invitation := []byte(`{"house_id":3, "user_id":2}`)

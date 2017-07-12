@@ -68,7 +68,24 @@ func GetUserInvitationsHandler(w http.ResponseWriter, r *http.Request) {
 		libhttp.HandleErrorJson(w, err)
 	}
 
-	inviteJSON, err := joinObj.GetUserInvitations(nil, int64(userID))
+	inviteJSON, err := joinObj.GetUserRequests(nil, int64(userID), 1)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(inviteJSON)
+}
+
+func GetUserJoinsHandler(w http.ResponseWriter, r *http.Request) {
+	joinObj := CreateJoinObj(r)
+
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["user_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	inviteJSON, err := joinObj.GetUserRequests(nil, int64(userID), 2)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(inviteJSON)

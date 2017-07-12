@@ -48,6 +48,17 @@ func CreatePerson(data []interface{}) []Person {
 
 }
 
+func (j *Join) GetUserRequests(tx *sqlx.Tx, userID, reqType int64) ([]byte, error) {
+
+	if reqType == 1 {
+
+		return j.GetUserInvitations(tx, userID)
+	} else {
+
+		return j.GetUserJoins(tx, userID)
+	}
+}
+
 func (j *Join) GetUserInvitations(tx *sqlx.Tx, userID int64) ([]byte, error) {
 
 	// queryInvitee gets all the invites
@@ -59,6 +70,21 @@ func (j *Join) GetUserInvitations(tx *sqlx.Tx, userID int64) ([]byte, error) {
 	}
 
 	finalJSON := buildUserInviteJSONResponse(userI)
+
+	return finalJSON, err
+}
+
+func (j *Join) GetUserJoins(tx *sqlx.Tx, userID int64) ([]byte, error) {
+
+	// queryInvitee gets all the invites
+	query := "SELECT U1.ID, U1.USERNAME, U2.ID, U2.USERNAME, H.ID, H.NAME FROM USER_INFO U1 INNER JOIN JOIN_PENDING P ON P.USER_ID = U1.ID INNER JOIN HOUSE H ON P.HOUSE_ID = H.ID INNER JOIN MEMBER_OF M ON M.HOUSE_ID = H.ID INNER JOIN USER_INFO U2 ON M.USER_ID = U2.ID WHERE P.USER_ID = $1 AND M.OWN_TYPE = 1 AND P.TYPE_ID = 2"
+
+	userI, err := j.GetCompoundModel(tx, query, userID)
+	if err != nil {
+		fmt.Printf("userI: %v", err)
+	}
+
+	finalJSON := buildUserJoinJSONResponse(userI)
 
 	return finalJSON, err
 }
@@ -85,6 +111,37 @@ func buildUserInviteJSONResponse(userI []interface{}) []byte {
 		finalGroup["invited_user"] = invitee
 		finalGroup["invited_by"] = inviter
 		finalGroup["invited_to"] = house
+
+		finalUsers = append(finalUsers, finalGroup)
+	}
+
+	finalUsersJSON, _ := json.MarshalIndent(finalUsers, "", "	")
+
+	return finalUsersJSON
+}
+
+func buildUserJoinJSONResponse(userI []interface{}) []byte {
+
+	finalUsers := make([]map[string]interface{}, 0, 0)
+
+	for _, user := range userI {
+
+		v := reflect.ValueOf(user)
+
+		requester := make(map[string]interface{})
+		requestingTo := make(map[string]interface{})
+		house := make(map[string]interface{})
+		finalGroup := make(map[string]interface{})
+
+		requester["id"] = v.Index(0).Interface().(int64)
+		requester["name"] = v.Index(1).Interface().(string)
+		requestingTo["id"] = v.Index(2).Interface().(int64)
+		requestingTo["name"] = v.Index(3).Interface().(string)
+		house["house_id"] = v.Index(4).Interface().(int64)
+		house["house_name"] = v.Index(5).Interface().(string)
+		finalGroup["requesting_user"] = requester
+		finalGroup["requested_house"] = house
+		finalGroup["house_owner"] = requestingTo
 
 		finalUsers = append(finalUsers, finalGroup)
 	}
