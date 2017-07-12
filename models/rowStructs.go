@@ -12,8 +12,8 @@ type HouseScheduleRow struct {
 
 type HouseStorageRow struct {
 	ItemInStorageRow
-	IngName  string `db:"name"`
-	UnitName string `db:"name"`
+	IngName  string `db:"name" json:"ingredient"`
+	UnitName string `db:"name" json:"unit"`
 }
 
 type UserHouseRow struct {
