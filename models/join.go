@@ -268,7 +268,11 @@ func (j *Join) AddInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 	inviteEntry["user_id"], _ = jsonparser.GetInt(inviteJSON, "user_id")
 
 	res, err := j.InsertIntoTable(tx, inviteEntry)
+	if err != nil {
+		fmt.Printf("addInvite fail: %v", err)
+	}
 
+	fmt.Printf("res: %v", res)
 	resultJSON := buildAddInviteResponseJSON(res)
 
 	return resultJSON, err

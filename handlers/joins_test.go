@@ -95,7 +95,7 @@ func TestGetUserJoinsEndpoint(t *testing.T) {
 
 func TestRequestJoinEndpoint(t *testing.T) {
 
-	invitation := []byte(`{"house_id":6, "user_id":3}`)
+	invitation := []byte(`{"house_id":5, "user_id":3}`)
 	req, _ := http.NewRequest("POST", "/requests/join", bytes.NewBuffer(invitation))
 
 	request := SetTestDBEnv(req)

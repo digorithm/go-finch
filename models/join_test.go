@@ -31,7 +31,7 @@ func TestGetHouseInvites(t *testing.T) {
 func TestAddInvitation(t *testing.T) {
 
 	j := newJoinForTest(t)
-	var v []map[string]interface{}
+	var v map[string]interface{}
 
 	inviteJSON := []byte(`{"house_id": 2, "user_id": 3}`)
 
@@ -42,7 +42,7 @@ func TestAddInvitation(t *testing.T) {
 	}
 
 	_ = json.Unmarshal(res, &v)
-	id := v[0]["invite_id"].(float64)
+	id := v["invite_id"].(float64)
 
 	j.DeleteInvitation(nil, int64(id))
 }

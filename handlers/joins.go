@@ -123,7 +123,7 @@ func InviteResponseHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func RequestJoinHandler(w http.ResponseWriter, r *http.Request) {
+func AddRequestJoinHandler(w http.ResponseWriter, r *http.Request) {
 
 	joinObj := CreateJoinObj(r)
 
