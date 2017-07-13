@@ -83,7 +83,7 @@ func (r *Recipe) GetFullRecipe(tx *sqlx.Tx, recipeID int64) ([]FullRecipeRow, er
 	FullRecipe = createFullRecipeRows(data)
 
 	if err != nil {
-		fmt.Printf("%v", err)
+		fmt.Printf("Get Full Recipe failed: %v", err)
 	}
 
 	return FullRecipe, err

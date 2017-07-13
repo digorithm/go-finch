@@ -33,10 +33,10 @@ func (u *Unit) GetAllUnits(tx *sqlx.Tx) ([]byte, error) {
 		fmt.Printf("getAllUnits failed: %v", err)
 	}
 
-	return AllUnitsJSON(data), err
+	return AllFixedTablesJSON(data), err
 }
 
-func AllUnitsJSON(data []interface{}) []byte {
+func AllFixedTablesJSON(data []interface{}) []byte {
 
 	allUnits := make(map[string]interface{})
 
@@ -50,8 +50,6 @@ func AllUnitsJSON(data []interface{}) []byte {
 		allUnits[key] = v.Index(0).Interface().(int64)
 
 	}
-
-	fmt.Printf("final list: %v", allUnits)
 
 	allUnitsJSON, _ := json.Marshal(allUnits)
 	return allUnitsJSON

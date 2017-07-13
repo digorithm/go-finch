@@ -3,8 +3,6 @@ package models
 import (
 	"testing"
 
-	"fmt"
-
 	"encoding/json"
 
 	_ "github.com/lib/pq"
@@ -18,13 +16,13 @@ func TestGetHouseInvites(t *testing.T) {
 
 	j := newJoinForTest(t)
 
-	result, err := j.GetHouseInvitations(nil, 3)
+	_, err := j.GetHouseInvitations(nil, 3)
 
 	if err != nil {
 		t.Errorf("Getting house invitations should work. Error: %v", err)
 	}
 
-	fmt.Printf("result get house invite: %v", string(result))
+	//fmt.Printf("result get house invite: %v", string(result))
 
 }
 

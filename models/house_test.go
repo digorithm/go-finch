@@ -28,12 +28,13 @@ func createVarsForGetRecipes(id int64, name string, serves int64) RecipeRow {
 	return recipe
 }
 
-func createVarsForGetSchedule(day string, typem string, name string) HouseScheduleRow {
+func createVarsForGetSchedule(day string, typem string, name string, rid int64) HouseScheduleRow {
 	var schedule HouseScheduleRow
 
 	schedule.Week = day
 	schedule.Type = typem
 	schedule.Recipe = name
+	schedule.RID = rid
 
 	return schedule
 }

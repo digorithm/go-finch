@@ -8,6 +8,7 @@ type HouseScheduleRow struct {
 	Week   string `db:"day"`
 	Type   string `db:"type"`
 	Recipe string `db:"name"`
+	RID    int64  `db:"id"`
 }
 
 type HouseStorageRow struct {
@@ -126,7 +127,7 @@ func createHouseScheduleRows(data []interface{}) []HouseScheduleRow {
 		row.Week = v.Index(0).Interface().(string)
 		row.Type = v.Index(1).Interface().(string)
 		row.Recipe = v.Index(2).Interface().(string)
-
+		row.RID = v.Index(3).Interface().(int64)
 		schedule = append(schedule, row)
 	}
 

@@ -103,8 +103,17 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/requests/join", handlers.RequestJoinHandler).Methods("POST")
 	router.HandleFunc("/requests/respond", handlers.RespondRequestJoinHandler).Methods("POST")
 
+	// WORKS FOR BOTH INVITE AND REQUEST
 	router.HandleFunc("/invitations/{invite_id}", handlers.DeleteRequestHandler).Methods("DELETE")
 	router.HandleFunc("/units", handlers.GetAllUnitsHandler).Methods("GET")
+
+	router.HandleFunc("/schedules/{house_id}", handlers.GetScheduleHandler).Methods("GET")
+	router.HandleFunc("/schedules/{house_id}", handlers.ModifyScheduleHandler).Methods("POST")
+	//router.HandleFunc("/schedules/new/{house_id}", handlers.NewFullScheduleHandler).Methods("GET")
+
+	router.HandleFunc("/meals", handlers.GetMealTypesHandler).Methods("GET")
+
+	router.HandleFunc("/days", handlers.GetDaysHandler).Methods("GET")
 
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))

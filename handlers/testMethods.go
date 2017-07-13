@@ -52,9 +52,18 @@ func RouterForTest() *mux.Router {
 	router.HandleFunc("/requests/join", RequestJoinHandler).Methods("POST")
 	router.HandleFunc("/requests/respond", RespondRequestJoinHandler).Methods("POST")
 
+	// WORKS FOR BOTH INVITE AND REQUEST
 	router.HandleFunc("/invitations/{invite_id}", DeleteRequestHandler).Methods("DELETE")
 
 	router.HandleFunc("/units", GetAllUnitsHandler).Methods("GET")
+
+	router.HandleFunc("/schedules/{house_id}", GetScheduleHandler).Methods("GET")
+	router.HandleFunc("/schedules/{house_id}", ModifyScheduleHandler).Methods("POST")
+	//router.HandleFunc("/schedules/new/{house_id}", NewFullScheduleHandler).Methods("GET")
+
+	router.HandleFunc("/meals", GetMealTypesHandler).Methods("GET")
+
+	router.HandleFunc("/days", GetDaysHandler).Methods("GET")
 
 	return router
 }
