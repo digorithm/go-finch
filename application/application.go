@@ -46,6 +46,7 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 	middle := interpose.New()
 	middle.Use(middlewares.SetDB(app.db))
 	middle.Use(middlewares.SetSessionStore(app.sessionStore))
+	middle.Use(middlewares.Log())
 
 	middle.UseHandler(app.Mux())
 

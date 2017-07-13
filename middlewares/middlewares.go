@@ -2,11 +2,14 @@
 package middlewares
 
 import (
+	"log"
 	"net/http"
+	"time"
+
+	"context"
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
-	"context"
 )
 
 func SetDB(db *sqlx.DB) func(http.Handler) http.Handler {
@@ -32,7 +35,7 @@ func SetSessionStore(sessionStore sessions.Store) func(http.Handler) http.Handle
 // MustLogin is a middleware that checks existence of current user.
 func MustLogin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		sessionStore := req.Context().Value( "sessionStore").(sessions.Store)
+		sessionStore := req.Context().Value("sessionStore").(sessions.Store)
 		session, _ := sessionStore.Get(req, "meal_planner-session")
 		userRowInterface := session.Values["user"]
 
@@ -43,4 +46,18 @@ func MustLogin(next http.Handler) http.Handler {
 
 		next.ServeHTTP(res, req)
 	})
+}
+
+func Log() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			startTime := time.Now()
+
+			next.ServeHTTP(w, r)
+
+			duration := time.Now().Sub(startTime)
+
+			log.Printf("Address:: %s -- '%s' '%s' -- response time:: %v", r.RemoteAddr, r.Method, r.URL, duration)
+		})
+	}
 }
