@@ -15,16 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type AcceptResponse struct {
-	ID        int64 `json:"id"`
-	Household int64 `json:"household_number"`
-	Users     []struct {
-		ID        int64  `json:"id"`
-		Name      string `json:"name"`
-		Ownership string `json:"ownership"`
-	} `json:"users"`
-}
-
 func TestGetHouseInvitationsEndpoint(t *testing.T) {
 
 	endpoint := "/invitations/houses/3"
