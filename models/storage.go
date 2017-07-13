@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -103,4 +104,32 @@ func (i *ItemInStorage) GetStorageIngredient(tx *sqlx.Tx, houseID, ingID int64) 
 
 	return storage, err
 
+}
+
+func (i *ItemInStorage) AddIngredientList(JSONRequest []byte, HouseID int64) error {
+
+	Ingredients := make([]map[string]interface{}, 0, 0)
+
+	IngredientObj := NewIngredient(i.db)
+
+	_ = json.Unmarshal(JSONRequest, &Ingredients)
+
+	for _, Ingredient := range Ingredients {
+
+		// Check if ingredient exists in the database
+		IRow, _ := IngredientObj.GetByName(nil, Ingredient["name"].(string))
+
+		// If not, add it to the database
+		if IRow == nil {
+			IRow, _ = IngredientObj.AddIngredient(nil, Ingredient["name"].(string))
+		}
+
+		_, err := i.UpdateStorage(nil, int64(HouseID), IRow.ID, Ingredient["amount"].(float64), int64(Ingredient["unit"].(float64)))
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
