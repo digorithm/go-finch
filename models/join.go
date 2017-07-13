@@ -295,7 +295,7 @@ func (j *Join) AddJoinRequest(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 
 }
 
-func (j *Join) FinalizeResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error) {
+func (j *Join) FinalizeInviteResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error) {
 
 	response := make(map[string]interface{})
 
@@ -332,9 +332,52 @@ func (j *Join) FinalizeResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error
 
 	}
 
-	j.DeleteInvitation(tx, ID.(int64))
+	j.DeleteRequest(tx, ID.(int64))
 
 	return resp, err
+}
+
+func (j *Join) FinalizeJoinResponse(tx *sqlx.Tx, responseJSON []byte) ([]byte, error) {
+
+	response := make(map[string]interface{})
+
+	response["accepts"], _ = jsonparser.GetBoolean(responseJSON, "accepts")
+	response["invite_id"], _ = jsonparser.GetInt(responseJSON, "invite_id")
+	accepts := response["accepts"]
+	ID := response["invite_id"]
+
+	var resp []byte
+	var err error
+
+	if accepts.(bool) {
+
+		query := "SELECT P.HOUSE_ID, P.USER_ID FROM JOIN_PENDING P WHERE ID = $1"
+		res, err := j.GetCompoundModel(tx, query, ID.(int64))
+
+		if err != nil {
+			fmt.Printf("getInvitation: %v", err)
+		}
+
+		v := reflect.ValueOf(res[0])
+		houseID := v.Index(0).Interface().(int64)
+		userID := v.Index(1).Interface().(int64)
+
+		m := NewMember(j.db)
+		h := NewHouse(j.db)
+		m.AddResident(tx, houseID, userID)
+
+		resp, err = h.GetFullHouseInformation(nil, houseID)
+
+	} else {
+
+		resp = []byte(`{"message":"owner rejected join request"}`)
+
+	}
+
+	j.DeleteRequest(tx, ID.(int64))
+
+	return resp, err
+
 }
 
 func buildAcceptInviteJSON(users []HouseUserOwnRow) []byte {
@@ -363,7 +406,7 @@ func buildAcceptInviteJSON(users []HouseUserOwnRow) []byte {
 	return finalUsersJSON
 }
 
-func (j *Join) DeleteInvitation(tx *sqlx.Tx, inviteID int64) error {
+func (j *Join) DeleteRequest(tx *sqlx.Tx, inviteID int64) error {
 
 	_, err := j.DeleteById(tx, inviteID)
 

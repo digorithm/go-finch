@@ -44,12 +44,14 @@ func RouterForTest() *mux.Router {
 	router.HandleFunc("/invitations/users/{user_id}", GetUserInvitationsHandler).Methods("GET")
 	router.HandleFunc("/invitations/houses/{house_id}", GetHouseInvitationsHandler).Methods("GET")
 	router.HandleFunc("/invitations/join", InviteUserHandler).Methods("POST")
-	router.HandleFunc("/invitations/{invite_id}", DeleteInvitationHandler).Methods("DELETE")
 	router.HandleFunc("/invitations/respond", InviteResponseHandler).Methods("POST")
 
 	router.HandleFunc("/requests/houses/{house_id}", GetHouseJoinsHandler).Methods("GET")
 	router.HandleFunc("/requests/users/{user_id}", GetUserJoinsHandler).Methods("GET")
-	router.HandleFunc("/requests/join", AddRequestJoinHandler).Methods("POST")
+	router.HandleFunc("/requests/join", RequestJoinHandler).Methods("POST")
+	router.HandleFunc("/requests/respond", RespondRequestJoinHandler).Methods("POST")
+
+	router.HandleFunc("/invitations/{invite_id}", DeleteRequestHandler).Methods("DELETE")
 
 	return router
 }

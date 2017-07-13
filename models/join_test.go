@@ -44,5 +44,5 @@ func TestAddInvitation(t *testing.T) {
 	_ = json.Unmarshal(res, &v)
 	id := v["invite_id"].(float64)
 
-	j.DeleteInvitation(nil, int64(id))
+	j.DeleteRequest(nil, int64(id))
 }

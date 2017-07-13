@@ -159,6 +159,45 @@ func TestRespondInvite(t *testing.T) {
 
 }
 
+func TestRespondJoinReq(t *testing.T) {
+
+	inviteID := int64(mockRequest(t))
+
+	inv := fmt.Sprintf(`{"invite_id":%v, "accepts":true}`, inviteID)
+	invitation := []byte(inv)
+	req, _ := http.NewRequest("POST", "/requests/respond", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+
+	deleteMember(t)
+
+}
+
+func mockRequest(t *testing.T) float64 {
+
+	invitation := []byte(`{"house_id":4, "user_id":1}`)
+	req, _ := http.NewRequest("POST", "/requests/join", bytes.NewBuffer(invitation))
+
+	request := SetTestDBEnv(req)
+	response := httptest.NewRecorder()
+	RouterForTest().ServeHTTP(response, request)
+	body, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	var i map[string]interface{}
+
+	err = json.Unmarshal(body, &i)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	return i["invite_id"].(float64)
+}
+
 func mockInvite(t *testing.T) float64 {
 
 	invitation := []byte(`{"house_id":4, "user_id":1}`)
