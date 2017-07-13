@@ -62,10 +62,10 @@ type StepIngredientRow struct {
 }
 
 type ItemInStorageRow struct {
-	HouseID int64   `db:"house_id"`
-	IngID   int64   `db:"ingredient_id"`
-	Amount  float64 `db:"amount`
-	UnitID  int64   `db:"unit_id"`
+	HouseID int64   `db:"house_id" json:"house_id"`
+	IngID   int64   `db:"ingredient_id" json:"ingredient_id"`
+	Amount  float64 `db:"amount" json:"amount"`
+	UnitID  int64   `db:"unit_id" json:"unit_id"`
 }
 
 type UserRecipeRow struct {
