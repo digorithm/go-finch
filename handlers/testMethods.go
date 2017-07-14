@@ -58,7 +58,9 @@ func RouterForTest() *mux.Router {
 	router.HandleFunc("/units", GetAllUnitsHandler).Methods("GET")
 
 	router.HandleFunc("/schedules/{house_id}", GetScheduleHandler).Methods("GET")
+	router.HandleFunc("/schedules/{house_id}", DeleteScheduleHandler).Methods("DELETE")
 	router.HandleFunc("/schedules/{house_id}", ModifyScheduleHandler).Methods("POST")
+	router.HandleFunc("/schedules/create/{house_id}", CreateScheduleHandler).Methods("POST")
 	//router.HandleFunc("/schedules/new/{house_id}", NewFullScheduleHandler).Methods("GET")
 
 	router.HandleFunc("/meals", GetMealTypesHandler).Methods("GET")

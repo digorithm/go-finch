@@ -81,6 +81,8 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/users", handlers.GetUsersHandler).Methods("GET")
 	router.HandleFunc("/users/{user_id}", handlers.GetUserByIDHandler).Methods("GET")
 	router.HandleFunc("/users", handlers.PostSignupHandler).Methods("POST")
+	router.HandleFunc("/users/{user_id}", handlers.DeleteUserHandler).Methods("DELETE")
+
 
 	router.HandleFunc("/houses/{house_id}", handlers.GetHouseHandler).Methods("GET")
 	router.HandleFunc("/houses", handlers.PostHouseHandler).Methods("POST")
@@ -89,8 +91,6 @@ func (app *Application) Mux() *gorilla_mux.Router {
 
 	router.HandleFunc("/storages/{house_id}", handlers.GetStoragesHandler).Methods("GET")
 	router.HandleFunc("/storages/{house_id}", handlers.PostStoragesHandler).Methods("POST")
-
-	router.HandleFunc("/users/{user_id}", handlers.DeleteUserHandler).Methods("DELETE")
 
 	router.HandleFunc("/invitations/users/{user_id}", handlers.GetUserInvitationsHandler).Methods("GET")
 	router.HandleFunc("/invitations/houses/{house_id}", handlers.GetHouseInvitationsHandler).Methods("GET")
@@ -108,7 +108,9 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/units", handlers.GetAllUnitsHandler).Methods("GET")
 
 	router.HandleFunc("/schedules/{house_id}", handlers.GetScheduleHandler).Methods("GET")
+	router.HandleFunc("/schedules/{house_id}", handlers.DeleteScheduleHandler).Methods("DELETE")
 	router.HandleFunc("/schedules/{house_id}", handlers.ModifyScheduleHandler).Methods("POST")
+	router.HandleFunc("/schedules/create/{house_id}", handlers.CreateScheduleHandler).Methods("POST")
 	//router.HandleFunc("/schedules/new/{house_id}", handlers.NewFullScheduleHandler).Methods("GET")
 
 	router.HandleFunc("/meals", handlers.GetMealTypesHandler).Methods("GET")

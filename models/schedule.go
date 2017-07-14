@@ -262,6 +262,24 @@ func (s *Schedule) CreateFullSchedule(tx *sqlx.Tx, houseID int64) {
 	}
 }
 
+func (s *Schedule) DeleteSchedule(tx *sqlx.Tx, houseID int64) bool {
+
+	where := fmt.Sprintf("house_id = %v", houseID)
+	sRes, err := s.DeleteFromTable(tx, where)
+
+	if err != nil {
+		fmt.Printf("Error in DeleteSchedule: %v", err)
+	}
+
+	res, _ := sRes.RowsAffected()
+	if res == 28 {
+		return true
+	}
+
+	return false
+
+}
+
 func (s *Schedule) InsertMissingSchedule(tx *sqlx.Tx, houseID int64, schedule []ScheduleRow) {
 
 	var k int

@@ -27,7 +27,8 @@ func GetMealTypesHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := scheduleObj.GetMeals(nil)
 
 	if err != nil {
-		fmt.Printf("getAllUnitsHandler failed: %v", err)
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -41,11 +42,68 @@ func GetDaysHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := scheduleObj.GetDays(nil)
 
 	if err != nil {
-		fmt.Printf("getAllUnitsHandler failed: %v", err)
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
+}
+
+func CreateScheduleHandler(w http.ResponseWriter, r *http.Request) {
+
+	scheduleObj := CreateScheduleObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	created := scheduleObj.CreateHouseSchedule(nil, int64(houseID))
+
+	var response []byte
+
+	if created {
+		response = []byte(`{"message":"Schedule for the house successfully created"}`)
+		w.WriteHeader(http.StatusCreated)
+	} else {
+		response = []byte(`{"message":"Failed to create schedule"}`)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Write(response)
+
+}
+
+func DeleteScheduleHandler(w http.ResponseWriter, r *http.Request) {
+
+	scheduleObj := CreateScheduleObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+	}
+
+	deleted := scheduleObj.DeleteSchedule(nil, int64(houseID))
+
+	var response []byte
+
+	if deleted {
+		response = []byte(`{"message":"Schedule for the house successfully deleted"}`)
+		w.WriteHeader(http.StatusOK)
+	} else {
+		response = []byte(`{"message":"Failed to delete schedule"}`)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Write(response)
+
 }
 
 func GetScheduleHandler(w http.ResponseWriter, r *http.Request) {

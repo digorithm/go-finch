@@ -85,3 +85,35 @@ func TestGetAllDaysEndpoint(t *testing.T) {
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 
 }
+
+func TestCreateScheduleEndpoint(t *testing.T) {
+
+	endpoint := "/schedules/create/5"
+	method := "POST"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 201, response.Code, "OK response is expected")
+}
+
+func TestDeleteScheduleEndpoint(t *testing.T) {
+
+	endpoint := "/schedules/5"
+	method := "DELETE"
+
+	request, _ := http.NewRequest(method, endpoint, nil)
+
+	request = SetTestDBEnv(request)
+
+	response := httptest.NewRecorder()
+
+	RouterForTest().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+}
