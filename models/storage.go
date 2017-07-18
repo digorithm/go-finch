@@ -21,9 +21,11 @@ type ItemInStorage struct {
 	Base
 }
 
+// GetHouseStorage gets the house id, ingredient id, amount and unit of the ingredient,
+// the name of the ingredient and the unit id of the house
 func (i *ItemInStorage) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
-	query := "SELECT S.HOUSE_ID, I.ID, S.AMOUNT, S.UNIT_ID, I.NAME, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
+	query := "SELECT S.HOUSE_ID, I.ID, I.NAME AS INAME, S.AMOUNT, S.UNIT_ID, I.NAME, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
 
 	data, err := i.GetCompoundModel(tx, query, houseID)
 
@@ -36,6 +38,8 @@ func (i *ItemInStorage) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStor
 	return storage, err
 }
 
+// AddIngToStorage adds to the storage of the given house_id
+// the ingredient and the new amount it should have
 func (i *ItemInStorage) AddIngToStorage(tx *sqlx.Tx, houseID int64, ingID int64, amount float64, unitID int64) (ItemInStorageRow, error) {
 
 	data := make(map[string]interface{})
@@ -90,7 +94,7 @@ func (i *ItemInStorage) GetStorageIngredient(tx *sqlx.Tx, houseID, ingID int64) 
 
 	var storage ItemInStorageRow
 
-	query := fmt.Sprintf("SELECT * FROM ITEM_IN_STORAGE WHERE HOUSE_ID = %v AND INGREDIENT_ID = $1", houseID)
+	query := fmt.Sprintf("SELECT S.HOUSE_ID, S.INGREDIENT_ID, I.NAME, S.AMOUNT, S.UNIT_ID FROM ITEM_IN_STORAGE S INNER JOIN INGREDIENT I ON I.ID = S.INGREDIENT_ID WHERE S.HOUSE_ID = %v AND S.INGREDIENT_ID = $1 ORDER BY S.INGREDIENT_ID", houseID)
 
 	res, err := i.GetCompoundModel(tx, query, ingID)
 

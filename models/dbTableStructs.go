@@ -64,6 +64,7 @@ type StepIngredientRow struct {
 type ItemInStorageRow struct {
 	HouseID int64   `db:"house_id" json:"house_id"`
 	IngID   int64   `db:"ingredient_id" json:"ingredient_id"`
+	IngName string  `db:"iname" json:"ingredient_name"`
 	Amount  float64 `db:"amount" json:"amount"`
 	UnitID  int64   `db:"unit_id" json:"unit_id"`
 }
@@ -123,8 +124,9 @@ func createItemInStorage(data []interface{}) ItemInStorageRow {
 
 	item.HouseID = v.Index(0).Interface().(int64)
 	item.IngID = v.Index(1).Interface().(int64)
-	item.Amount = v.Index(2).Interface().(float64)
-	item.UnitID = v.Index(3).Interface().(int64)
+	item.IngName = v.Index(2).Interface().(string)
+	item.Amount = v.Index(3).Interface().(float64)
+	item.UnitID = v.Index(4).Interface().(int64)
 
 	return item
 

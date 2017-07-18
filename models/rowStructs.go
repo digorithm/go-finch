@@ -82,10 +82,11 @@ func createHouseStorageRows(data []interface{}) []HouseStorageRow {
 
 		row.HouseID = v.Index(0).Interface().(int64)
 		row.IngID = v.Index(1).Interface().(int64)
-		row.Amount = v.Index(2).Interface().(float64)
-		row.UnitID = v.Index(3).Interface().(int64)
-		row.IngName = v.Index(4).Interface().(string)
-		row.UnitName = v.Index(5).Interface().(string)
+		row.IngName = v.Index(2).Interface().(string)
+		row.Amount = v.Index(3).Interface().(float64)
+		row.UnitID = v.Index(4).Interface().(int64)
+		row.IngName = v.Index(5).Interface().(string)
+		row.UnitName = v.Index(6).Interface().(string)
 
 		storage = append(storage, row)
 	}

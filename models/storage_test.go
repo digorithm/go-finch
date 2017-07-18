@@ -29,7 +29,7 @@ func newStorageForTest(t *testing.T) *ItemInStorage {
 	return NewItemInStorage(newDbForTest(t))
 }
 
-func TestInsertStorage(t *testing.T) {
+func TestAddIngToStorage(t *testing.T) {
 
 	s := newStorageForTest(t)
 	h := newHouseForTest(t)
@@ -86,6 +86,32 @@ func TestUpdateStorage(t *testing.T) {
 	_, err = h.DeleteById(nil, house.ID)
 	if err != nil {
 		t.Fatalf("Deleting house by id should not fail. Error: %v", err)
+	}
+
+}
+
+func TestGetStorageIngredient(t *testing.T) {
+
+	s := newStorageForTest(t)
+
+	res, err := s.GetHouseStorage(nil, 3)
+
+	if err != nil {
+		t.Errorf("GetHouseStorage failed:%v", err)
+	}
+
+	var expected ItemInStorageRow
+
+	expected.HouseID = 3
+	expected.IngID = 2
+	expected.IngName = "milk"
+	expected.Amount = 0
+	expected.UnitID = 2
+
+	_, equal := checkStorageItem(expected, res[0].HouseID, res[0].IngID, res[0].Amount, res[0].UnitID)
+
+	if !equal {
+		t.Errorf("Updating storage failed. Got: %v, Want: %v", res[0], expected)
 	}
 
 }

@@ -287,10 +287,6 @@ insert into ingredient(name, carb_per_100g, protein_per_100g, fat_per_100g, fibe
 values
 ('baking powder', 28, 0, 0, 0.2, 53);
 
-insert into ingredient(id, name, carb_per_100g, protein_per_100g, fat_per_100g, fiber_per_100g, calories_per_100g)
-values
-(0,'empty', 0, 0, 0, 0, 0);
-
 insert into step(recipe_id, id, text)
 values 
 (1, 1, 'peel and cut the potatoes into an inch thick disks');
