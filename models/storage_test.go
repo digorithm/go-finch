@@ -3,6 +3,8 @@ package models
 import (
 	"testing"
 
+	"fmt"
+
 	_ "github.com/lib/pq"
 )
 
@@ -90,7 +92,7 @@ func TestUpdateStorage(t *testing.T) {
 
 }
 
-func TestGetStorageIngredient(t *testing.T) {
+func TestGetHouseStorage(t *testing.T) {
 
 	s := newStorageForTest(t)
 
@@ -113,5 +115,94 @@ func TestGetStorageIngredient(t *testing.T) {
 	if !equal {
 		t.Errorf("Updating storage failed. Got: %v, Want: %v", res[0], expected)
 	}
+
+}
+
+func TestGetStorageIngredient(t *testing.T) {
+
+	s := newStorageForTest(t)
+
+	item, err := s.GetStorageIngredient(nil, 1, 1)
+
+	if err != nil {
+		t.Errorf("GetStorageIngredient failed:%v", err)
+	}
+
+	var expected ItemInStorageRow
+
+	expected.HouseID = 1
+	expected.IngID = 1
+	expected.IngName = "potato"
+	expected.Amount = 5
+	expected.UnitID = 8
+
+	_, equal := checkStorageItem(expected, item.HouseID, item.IngID, item.Amount, item.UnitID)
+
+	if !equal {
+		t.Errorf("Getting the item failed. Got: %v, Want: %v", item, expected)
+	}
+
+}
+
+func TestNewIngAddList(t *testing.T) {
+	s := newStorageForTest(t)
+	i := newIngredientForTest(t)
+
+	ingredient := []byte(`[{"name":"blueberry", "amount": 1	,"unit": 2 }]`)
+
+	s.AddIngredientList(ingredient, 2)
+
+	item, err := i.GetByName(nil, "blueberry")
+
+	if err != nil {
+		t.Errorf("GetByName failed:%v", err)
+	}
+
+	ing, err := s.GetStorageIngredient(nil, 2, item.ID)
+
+	if err != nil {
+		t.Errorf("GetStorageIngredient failed:%v", err)
+	}
+
+	expected, equal := checkStorageItem(ing, 2, item.ID, 1, 2)
+
+	if !equal {
+		t.Errorf("Adding new item failed. Got: %v, Want: %v", ing, expected)
+	}
+
+	i.DeleteById(nil, item.ID)
+
+}
+
+func TestExistingAddIngredient(t *testing.T) {
+
+	s := newStorageForTest(t)
+	i := newIngredientForTest(t)
+
+	ingredient := []byte(`[{"name":"parmesan cheese", "amount":250, "unit":10 }]`)
+
+	s.AddIngredientList(ingredient, 2)
+
+	item, err := i.GetByName(nil, "parmesan cheese")
+
+	if err != nil {
+		t.Errorf("GetByName failed:%v", err)
+	}
+
+	ing, err := s.GetStorageIngredient(nil, 2, item.ID)
+
+	if err != nil {
+		t.Errorf("GetStorageIngredient failed:%v", err)
+	}
+
+	expected, equal := checkStorageItem(ing, 2, 3, 250, 10)
+
+	if !equal {
+		t.Errorf("Adding new item failed. Got: %v, Want: %v", ing, expected)
+	}
+
+	where := fmt.Sprintf("house_id = %v and ingredient_id = %v", 2, item.ID)
+
+	s.DeleteFromTable(nil, where)
 
 }

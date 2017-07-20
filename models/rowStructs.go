@@ -13,7 +13,6 @@ type HouseScheduleRow struct {
 
 type HouseStorageRow struct {
 	ItemInStorageRow
-	IngName  string `db:"name" json:"ingredient"`
 	UnitName string `db:"name" json:"unit"`
 }
 
@@ -85,8 +84,7 @@ func createHouseStorageRows(data []interface{}) []HouseStorageRow {
 		row.IngName = v.Index(2).Interface().(string)
 		row.Amount = v.Index(3).Interface().(float64)
 		row.UnitID = v.Index(4).Interface().(int64)
-		row.IngName = v.Index(5).Interface().(string)
-		row.UnitName = v.Index(6).Interface().(string)
+		row.UnitName = v.Index(5).Interface().(string)
 
 		storage = append(storage, row)
 	}

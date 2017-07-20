@@ -21,11 +21,41 @@ type ItemInStorage struct {
 	Base
 }
 
+//AddIngredientList adds all the ingredients received from the clientside to the house's storage
+//if the ingredient received is not in the ingredient table, we add it to the table
+func (i *ItemInStorage) AddIngredientList(JSONRequest []byte, HouseID int64) error {
+
+	Ingredients := make([]map[string]interface{}, 0, 0)
+
+	IngredientObj := NewIngredient(i.db)
+
+	_ = json.Unmarshal(JSONRequest, &Ingredients)
+
+	for _, Ingredient := range Ingredients {
+
+		// Check if ingredient exists in the database
+		IRow, _ := IngredientObj.GetByName(nil, Ingredient["name"].(string))
+
+		// If not, add it to the database
+		if IRow == nil {
+			IRow, _ = IngredientObj.AddIngredient(nil, Ingredient["name"].(string))
+		}
+
+		_, err := i.UpdateStorage(nil, int64(HouseID), IRow.ID, Ingredient["amount"].(float64), int64(Ingredient["unit"].(float64)))
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // GetHouseStorage gets the house id, ingredient id, amount and unit of the ingredient,
 // the name of the ingredient and the unit id of the house
 func (i *ItemInStorage) GetHouseStorage(tx *sqlx.Tx, houseID int64) ([]HouseStorageRow, error) {
 
-	query := "SELECT S.HOUSE_ID, I.ID, I.NAME AS INAME, S.AMOUNT, S.UNIT_ID, I.NAME, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
+	query := "SELECT S.HOUSE_ID, I.ID, I.NAME, S.AMOUNT, S.UNIT_ID, U.NAME FROM INGREDIENT I INNER JOIN ITEM_IN_STORAGE S ON I.ID = S.INGREDIENT_ID INNER JOIN UNIT U ON U.ID = S.UNIT_ID WHERE S.HOUSE_ID = $1"
 
 	data, err := i.GetCompoundModel(tx, query, houseID)
 
@@ -110,30 +140,66 @@ func (i *ItemInStorage) GetStorageIngredient(tx *sqlx.Tx, houseID, ingID int64) 
 
 }
 
-func (i *ItemInStorage) AddIngredientList(JSONRequest []byte, HouseID int64) error {
+func (i *ItemInStorage) DeleteStorage(tx *sqlx.Tx, houseID int64) error {
 
-	Ingredients := make([]map[string]interface{}, 0, 0)
+	where := fmt.Sprintf("house_id = %v", houseID)
+	_, err := i.DeleteFromTable(tx, where)
 
-	IngredientObj := NewIngredient(i.db)
+	if err != nil {
+		return fmt.Errorf("Delete Storage Failed: %v", err)
+	}
 
-	_ = json.Unmarshal(JSONRequest, &Ingredients)
+	res, err := i.GetHouseStorage(tx, houseID)
 
-	for _, Ingredient := range Ingredients {
-
-		// Check if ingredient exists in the database
-		IRow, _ := IngredientObj.GetByName(nil, Ingredient["name"].(string))
-
-		// If not, add it to the database
-		if IRow == nil {
-			IRow, _ = IngredientObj.AddIngredient(nil, Ingredient["name"].(string))
-		}
-
-		_, err := i.UpdateStorage(nil, int64(HouseID), IRow.ID, Ingredient["amount"].(float64), int64(Ingredient["unit"].(float64)))
-
-		if err != nil {
-			return err
-		}
+	if res != nil {
+		return fmt.Errorf("Delete Storage Failed")
 	}
 
 	return nil
+}
+
+func (i *ItemInStorage) DeleteStorageItems(tx *sqlx.Tx, respJSON []byte, houseID int64) ([]byte, error) {
+
+	items := make([]map[string]interface{}, 0, 0)
+
+	ingredient := NewIngredient(i.db)
+
+	err := json.Unmarshal(respJSON, &items)
+
+	if err != nil {
+		err = fmt.Errorf("Unmarshal Failed: %v", err)
+	}
+
+	for _, item := range items {
+
+		res, err := ingredient.GetByName(tx, item["name"].(string))
+
+		if err != nil {
+			err = fmt.Errorf("Finding Ingredient Failed: %v", err)
+		}
+
+		where := fmt.Sprintf("house_id = %v and ingredient_id = %v", houseID, res.ID)
+
+		val, err := i.DeleteFromTable(tx, where)
+
+		aff, _ := val.RowsAffected()
+
+		if aff != 1 {
+			err = fmt.Errorf("Delete Storage Item Failed: %v", err)
+		}
+	}
+
+	storage, er := i.GetHouseStorage(tx, houseID)
+
+	if er != nil {
+		err = fmt.Errorf("Getting House Storage Failed: %v", er)
+	}
+
+	StorageJSON, er := json.Marshal(storage)
+
+	if er != nil {
+		err = fmt.Errorf("Getting House Storage Failed: %v", er)
+	}
+
+	return StorageJSON, err
 }

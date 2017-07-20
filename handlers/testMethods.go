@@ -41,6 +41,8 @@ func RouterForTest() *mux.Router {
 
 	router.HandleFunc("/storages/{house_id}", GetStoragesHandler).Methods("GET")
 	router.HandleFunc("/storages/{house_id}", PostStoragesHandler).Methods("POST")
+	router.HandleFunc("/storages/all/{house_id}", DeleteHouseStorage).Methods("DELETE")
+	router.HandleFunc("/storages/{house_id}", DeleteFromStorage).Methods("DELETE")
 
 	router.HandleFunc("/invitations/users/{user_id}", GetUserInvitationsHandler).Methods("GET")
 	router.HandleFunc("/invitations/houses/{house_id}", GetHouseInvitationsHandler).Methods("GET")

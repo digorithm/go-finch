@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"encoding/json"
 
+	"github.com/digorithm/meal_planner/libhttp"
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -94,6 +96,53 @@ func PostStoragesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	w.Write(StorageJSON)
+}
+
+func DeleteHouseStorage(w http.ResponseWriter, r *http.Request) {
+
+	storageObj := CreateStorageObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing house id"))
+		return
+	}
+
+	err = storageObj.DeleteStorage(nil, int64(houseID))
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Failed To Delete House Storage"))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
+
+}
+
+func DeleteFromStorage(w http.ResponseWriter, r *http.Request) {
+
+	storageObj := CreateStorageObj(r)
+
+	vars := mux.Vars(r)
+	houseID, err := strconv.Atoi(vars["house_id"])
+
+	items, err := ioutil.ReadAll(r.Body)
+
+	resJSON, err := storageObj.DeleteStorageItems(nil, items, int64(houseID))
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		libhttp.HandleErrorJson(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(resJSON)
+
 }

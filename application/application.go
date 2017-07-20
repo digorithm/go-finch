@@ -83,7 +83,6 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/users", handlers.PostSignupHandler).Methods("POST")
 	router.HandleFunc("/users/{user_id}", handlers.DeleteUserHandler).Methods("DELETE")
 
-
 	router.HandleFunc("/houses/{house_id}", handlers.GetHouseHandler).Methods("GET")
 	router.HandleFunc("/houses", handlers.PostHouseHandler).Methods("POST")
 	router.HandleFunc("/houses/{house_id}", handlers.DeleteHouseHandler).Methods("DELETE")
@@ -91,6 +90,8 @@ func (app *Application) Mux() *gorilla_mux.Router {
 
 	router.HandleFunc("/storages/{house_id}", handlers.GetStoragesHandler).Methods("GET")
 	router.HandleFunc("/storages/{house_id}", handlers.PostStoragesHandler).Methods("POST")
+	router.HandleFunc("/storages/all/{house_id}", handlers.DeleteHouseStorage).Methods("DELETE")
+	router.HandleFunc("/storages/{house_id}", handlers.DeleteFromStorage).Methods("DELETE")
 
 	router.HandleFunc("/invitations/users/{user_id}", handlers.GetUserInvitationsHandler).Methods("GET")
 	router.HandleFunc("/invitations/houses/{house_id}", handlers.GetHouseInvitationsHandler).Methods("GET")

@@ -272,7 +272,6 @@ func (j *Join) AddInvitation(tx *sqlx.Tx, inviteJSON []byte) ([]byte, error) {
 		fmt.Printf("addInvite fail: %v", err)
 	}
 
-	fmt.Printf("res: %v", res)
 	resultJSON := buildAddInviteResponseJSON(res)
 
 	return resultJSON, err
