@@ -78,11 +78,11 @@ func TestPostStorageEndpoint(t *testing.T) {
 	var res []map[string]interface{}
 	_ = json.Unmarshal(body, &res)
 
-	assert.Equal(t, res[0]["ingredient_name"], "apple")
-	assert.Equal(t, res[0]["amount"].(float64), 800.0)
+	assert.Equal(t, res[1]["ingredient_name"], "apple")
+	assert.Equal(t, res[1]["amount"].(float64), 800.0)
 
-	assert.Equal(t, res[1]["ingredient_name"], "pasta")
-	assert.Equal(t, res[1]["amount"].(float64), 500.0)
+	assert.Equal(t, res[0]["ingredient_name"], "pasta")
+	assert.Equal(t, res[0]["amount"].(float64), 500.0)
 
 	DeleteStorage2(t)
 
