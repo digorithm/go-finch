@@ -38,7 +38,7 @@ func (i *ItemInStorage) AddIngredientList(JSONRequest []byte, HouseID int64) err
 
 		// If not, add it to the database
 		if IRow == nil {
-			IRow, _ = IngredientObj.AddIngredient(nil, Ingredient["name"].(string))
+			IRow, _, _ = IngredientObj.AddIngredient(nil, Ingredient["name"].(string))
 		}
 
 		_, err := i.UpdateStorage(nil, int64(HouseID), IRow.ID, Ingredient["amount"].(float64), int64(Ingredient["unit"].(float64)))

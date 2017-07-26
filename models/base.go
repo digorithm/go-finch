@@ -97,10 +97,7 @@ func (b *Base) InsertIntoTable(tx *sqlx.Tx, data map[string]interface{}) (sql.Re
 	} else {
 		// This else is dangerous, if any weird bug happens, look here!
 		// #TODO: better abstraction for this kind of thing
-		_, err = tx.Exec(query, values...)
-		if err != nil {
-			return nil, err
-		}
+		tx.MustExec(query, values...)
 	}
 
 	if wrapInSingleTransaction == true {
@@ -367,8 +364,6 @@ func (b *Base) DeleteById(tx *sqlx.Tx, id int64) (sql.Result, error) {
 func (b *Base) GetCompoundModelWithStringSearch(tx *sqlx.Tx, query, stringSearch string) ([]interface{}, error) {
 
 	rows, err := b.db.Queryx(query, stringSearch)
-
-	fmt.Printf("ROws:: %v", rows)
 
 	if err != nil {
 		fmt.Printf("%v", err)

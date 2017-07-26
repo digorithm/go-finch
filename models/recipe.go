@@ -291,7 +291,7 @@ func (r *Recipe) UpdateRecipeStepIngredient(RecipeID, StepID int64, JSONRequest 
 		stepIngredientDataName, _ := jsonparser.GetString(value, "name")
 		iRow, _ := ingredientObj.GetByName(nil, stepIngredientDataName)
 		if iRow == nil {
-			addedIRow, _ := ingredientObj.AddIngredient(nil, stepIngredientDataName)
+			addedIRow, _, _ := ingredientObj.AddIngredient(nil, stepIngredientDataName)
 			stepIngredientData["ingredient_id"] = addedIRow.ID
 		} else {
 			stepIngredientData["ingredient_id"] = iRow.ID

@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -58,7 +59,7 @@ func (i *Ingredient) AddIngredients(tx *sqlx.Tx, ingredients []string) ([]int64,
 		iRow, err := i.GetByName(tx, ing)
 		if iRow == nil && err != nil {
 			// Add ingredient to db
-			iRow, err = i.AddIngredient(tx, ing)
+			iRow, err, _ = i.AddIngredient(tx, ing)
 			if err != nil {
 				fmt.Printf("Error: %v", err)
 			}
@@ -68,7 +69,7 @@ func (i *Ingredient) AddIngredients(tx *sqlx.Tx, ingredients []string) ([]int64,
 	return insertedIDs, err
 }
 
-func (i *Ingredient) AddIngredient(tx *sqlx.Tx, name string) (*IngredientRow, error) {
+func (i *Ingredient) AddIngredient(tx *sqlx.Tx, name string) (*IngredientRow, error, int64) {
 	data := make(map[string]interface{})
 	data["name"] = name
 	// TODO: get ingredient nutrients externally, for we just insert any number
@@ -83,5 +84,7 @@ func (i *Ingredient) AddIngredient(tx *sqlx.Tx, name string) (*IngredientRow, er
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 	}
-	return i.ingredientRowFromSqlResult(tx, result)
+	InsertedID, err := result.LastInsertId()
+	IRow, err := i.ingredientRowFromSqlResult(tx, result)
+	return IRow, err, InsertedID
 }

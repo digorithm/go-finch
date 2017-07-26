@@ -153,7 +153,14 @@ func TestAddRecipe(t *testing.T) {
 
 	var uRow UserRow
 
-	json.Unmarshal(row, uRow)
+	err := json.Unmarshal(row, &uRow)
+
+	fmt.Printf("u:: %v\n", uRow)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	defer deleteTestUser(t, u, uRow.ID)
 
 	// Define a test recipe.

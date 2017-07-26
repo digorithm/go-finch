@@ -207,6 +207,9 @@ func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte, userID int64) ([]FullRe
 
 	// Add recipe metadata to DB
 
+	// Create actual transaction
+	tx = u.db.MustBegin()
+
 	recipeResult, err := u.addJsonRecipeTable(tx, jsonRecipe)
 	if err != nil {
 		return FullRecipe, err
@@ -236,6 +239,12 @@ func (u *User) AddRecipe(tx *sqlx.Tx, jsonRecipe []byte, userID int64) ([]FullRe
 	userRecipeData["user_id"] = userID
 	userRecipeData["recipe_id"] = recipeId
 	user_recipe_db.InsertIntoTable(tx, userRecipeData)
+
+	err = tx.Commit()
+
+	if err != nil {
+		return nil, err
+	}
 
 	FullRecipe, err = recipeObj.GetFullRecipe(tx, recipeId)
 
@@ -304,16 +313,19 @@ func (u *User) addJsonIngredientStepTable(tx *sqlx.Tx, recipeId int64, jsonData 
 
 			// Check if ingredient ID exists in the DB
 			stepIngredientDataName, _ := jsonparser.GetString(value, "name")
-			iRow, _ := ingredientObj.GetByName(tx, stepIngredientDataName)
+			iRow, _ := ingredientObj.GetByName(nil, stepIngredientDataName)
 			if iRow == nil {
-				addedIRow, _ := ingredientObj.AddIngredient(tx, stepIngredientDataName)
-				stepIngredientData["ingredient_id"] = addedIRow.ID
+				_, _, IngID := ingredientObj.AddIngredient(tx, stepIngredientDataName)
+				stepIngredientData["ingredient_id"] = IngID
 			} else {
 				stepIngredientData["ingredient_id"] = iRow.ID
 			}
 			stepIngredientResult, err = step_ingredient_db.InsertIntoTable(tx, stepIngredientData)
+
 			if err != nil {
 				fmt.Printf("Error while adding step ingredient into DB. Error: %v", err)
+
+				fmt.Printf("Data:: %v \n\n\n\n\n", string(value))
 			}
 		}, "step_ingredients")
 	}, "steps")
