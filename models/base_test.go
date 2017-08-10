@@ -2,12 +2,13 @@ package models
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/digorithm/meal_planner/libstring"
 	"github.com/digorithm/meal_planner/libunix"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"os"
-	"testing"
 )
 
 func newEmailForTest() string {
@@ -83,6 +84,9 @@ func TestNewTransactionIfNeeded(t *testing.T) {
 
 func TestCreateDeleteGeneric(t *testing.T) {
 	base := newBaseForTest(t)
+	tearDown := TestSetup(t, base.db)
+	defer tearDown(t, base.db)
+
 	base.table = "user_info"
 
 	data := make(map[string]interface{})
@@ -112,6 +116,8 @@ func TestCreateDeleteGeneric(t *testing.T) {
 
 func TestCreateDeleteById(t *testing.T) {
 	base := newBaseForTest(t)
+	tearDown := TestSetup(t, base.db)
+	defer tearDown(t, base.db)
 	base.table = "user_info"
 
 	// INSERT INTO users (...) VALUES (...)
@@ -141,6 +147,8 @@ func TestCreateDeleteById(t *testing.T) {
 func TestCreateUpdateGenericDelete(t *testing.T) {
 	base := newBaseForTest(t)
 	base.table = "user_info"
+	tearDown := TestSetup(t, base.db)
+	defer tearDown(t, base.db)
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
@@ -178,6 +186,8 @@ func TestCreateUpdateGenericDelete(t *testing.T) {
 func TestCreateUpdateByIDDelete(t *testing.T) {
 	base := newBaseForTest(t)
 	base.table = "user_info"
+	tearDown := TestSetup(t, base.db)
+	defer tearDown(t, base.db)
 
 	// INSERT INTO users (...) VALUES (...)
 	data := make(map[string]interface{})
@@ -214,6 +224,8 @@ func TestCreateUpdateByIDDelete(t *testing.T) {
 func TestCreateUpdateByKeyValueStringDelete(t *testing.T) {
 	base := newBaseForTest(t)
 	base.table = "user_info"
+	tearDown := TestSetup(t, base.db)
+	defer tearDown(t, base.db)
 
 	originalEmail := newEmailForTest()
 

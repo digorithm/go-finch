@@ -15,6 +15,8 @@ func newJoinForTest(t *testing.T) *Join {
 func TestGetHouseInvites(t *testing.T) {
 
 	j := newJoinForTest(t)
+	tearDown := TestSetup(t, j.db)
+	defer tearDown(t, j.db)
 
 	_, err := j.GetHouseInvitations(nil, 3)
 
@@ -29,6 +31,9 @@ func TestGetHouseInvites(t *testing.T) {
 func TestAddInvitation(t *testing.T) {
 
 	j := newJoinForTest(t)
+	tearDown := TestSetup(t, j.db)
+	defer tearDown(t, j.db)
+
 	var v map[string]interface{}
 
 	inviteJSON := []byte(`{"house_id": 2, "user_id": 3}`)

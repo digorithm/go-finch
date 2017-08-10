@@ -1,8 +1,9 @@
 package models
 
 import (
-	_ "github.com/lib/pq"
 	"testing"
+
+	_ "github.com/lib/pq"
 )
 
 func newIngredientForTest(t *testing.T) *Ingredient {
@@ -56,7 +57,7 @@ func deleteTestIngredient(t *testing.T, i *Ingredient, id int64) {
 func TestGetIngredientById(t *testing.T) {
 
 	returned_ingredient, ingredientObj := createTestIngredient(t, "beans")
-	defer deleteTestIngredient(t, ingredientObj, returned_ingredient.ID)
+	deleteTestIngredient(t, ingredientObj, returned_ingredient.ID)
 }
 
 func TestGetIngredientByName(t *testing.T) {
@@ -64,7 +65,6 @@ func TestGetIngredientByName(t *testing.T) {
 	expected_normal_name := "beans"
 
 	returned_ingredient, ingredientObj := createTestIngredient(t, expected_normal_name)
-	defer deleteTestIngredient(t, ingredientObj, returned_ingredient.ID)
 
 	// test normal case
 	returned_ingredient_row, err := ingredientObj.GetByName(nil, expected_normal_name)
@@ -78,4 +78,6 @@ func TestGetIngredientByName(t *testing.T) {
 		t.Errorf("Expected: %v", expected_normal_name)
 		t.Errorf("Actual: %v", returned_ingredient_row.Name)
 	}
+
+	deleteTestIngredient(t, ingredientObj, returned_ingredient.ID)
 }

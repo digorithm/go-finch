@@ -40,6 +40,7 @@ func (r *Recipe) GetRecipeType(tx *sqlx.Tx, recipeID int64) ([]string, error) {
 	query := "select type from recipe_type inner join meal_type on meal_type.id = recipe_type.type_id where recipe_type.recipe_id = $1"
 
 	rows, err := r.db.Queryx(query, recipeID)
+	defer rows.Close()
 
 	if err != nil {
 		fmt.Println(err)

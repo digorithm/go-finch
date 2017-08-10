@@ -33,6 +33,8 @@ func allUnitsJSON() map[string]int {
 func TestGetAllUnits(t *testing.T) {
 
 	u := newUnitForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
 
 	res, err := u.GetAllUnits(nil)
 

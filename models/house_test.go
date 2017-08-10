@@ -45,6 +45,8 @@ func newHouseForTest(t *testing.T) *House {
 
 func TestHouseCRUD(t *testing.T) {
 	h := newHouseForTest(t)
+	tearDown := TestSetup(t, h.db)
+	defer tearDown(t, h.db)
 
 	// Create house
 	houseRow, err := h.CreateHouse(nil, "my lovely home", "Monday", 5)
@@ -63,6 +65,9 @@ func TestHouseCRUD(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 
 	h := newHouseForTest(t)
+	tearDown := TestSetup(t, h.db)
+	defer tearDown(t, h.db)
+
 	var u1 = createVarsForGetUsers(1, 2, 1, "guli", "owner")
 	var u2 = createVarsForGetUsers(1, 2, 2, "digo", "resident")
 	var u3 = createVarsForGetUsers(1, 2, 4, "joe", "blocked")
@@ -88,6 +93,9 @@ func TestGetUsers(t *testing.T) {
 func TestGetRecipes(t *testing.T) {
 
 	h := newHouseForTest(t)
+	tearDown := TestSetup(t, h.db)
+	defer tearDown(t, h.db)
+
 	var r1 = createVarsForGetRecipes(2, "Beans with rice", 6)
 	var result []RecipeRow
 
@@ -109,6 +117,8 @@ func TestGetRecipes(t *testing.T) {
 
 func TestUpdateHouseHold(t *testing.T) {
 	h := newHouseForTest(t)
+	tearDown := TestSetup(t, h.db)
+	defer tearDown(t, h.db)
 
 	res, err := h.UpdateHouseHold(nil, 3, 2)
 	if err != nil {

@@ -375,9 +375,11 @@ func (b *Base) GetCompoundModelWithStringSearch(tx *sqlx.Tx, query, stringSearch
 		cols, err := rows.SliceScan()
 		if err != nil {
 			fmt.Printf("%v", err)
+			rows.Close()
 		}
 		results = append(results, cols)
 	}
+	rows.Close()
 	return results, err
 }
 
@@ -395,9 +397,11 @@ func (b *Base) GetCompoundModelWithoutID(tx *sqlx.Tx, query string) ([]interface
 		cols, err := rows.SliceScan()
 		if err != nil {
 			fmt.Printf("%v", err)
+			rows.Close()
 		}
 		results = append(results, cols)
 	}
+	rows.Close()
 	return results, err
 }
 
@@ -415,9 +419,11 @@ func (b *Base) GetCompoundModel(tx *sqlx.Tx, query string, id int64) ([]interfac
 		cols, err := rows.SliceScan()
 		if err != nil {
 			fmt.Printf("%v", err)
+			rows.Close()
 		}
 		results = append(results, cols)
 	}
+	rows.Close()
 	return results, err
 }
 

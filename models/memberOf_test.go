@@ -13,6 +13,8 @@ func newMemberForTest(t *testing.T) *Member {
 
 func TestAddOwner(t *testing.T) {
 	m := newMemberForTest(t)
+	tearDown := TestSetup(t, m.db)
+	defer tearDown(t, m.db)
 
 	m.AddOwner(nil, 3, 5)
 

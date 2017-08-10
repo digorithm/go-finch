@@ -16,6 +16,7 @@ func newUserForTest(t *testing.T) *User {
 
 func newUserRowForTest(t *testing.T) (*User, []byte) {
 	u := newUserForTest(t)
+
 	email := newEmailForTest()
 	//var userRow *UserRow
 
@@ -46,6 +47,8 @@ func deleteTestRecipe(t *testing.T, id int64) {
 
 func TestUserSignup(t *testing.T) {
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
 
 	email := newEmailForTest()
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
@@ -72,6 +75,8 @@ func TestUserSignup(t *testing.T) {
 
 func TestGetUserById(t *testing.T) {
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
 
 	email := newEmailForTest()
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
@@ -82,8 +87,6 @@ func TestGetUserById(t *testing.T) {
 	var userRow *UserRow
 
 	_ = json.Unmarshal(usr, &userRow)
-
-	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetById(nil, userRow.ID)
 
@@ -94,11 +97,15 @@ func TestGetUserById(t *testing.T) {
 	if userRow.ID != returningUserRow.ID {
 		t.Errorf("IDs did not match!")
 	}
+	deleteTestUser(t, u, userRow.ID)
 
 }
 
 func TestGetUserByEmail(t *testing.T) {
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
+
 	email := newEmailForTest()
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
@@ -108,7 +115,6 @@ func TestGetUserByEmail(t *testing.T) {
 	var userRow *UserRow
 
 	_ = json.Unmarshal(usr, &userRow)
-	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByEmail(nil, userRow.Email)
 
@@ -120,10 +126,15 @@ func TestGetUserByEmail(t *testing.T) {
 		t.Errorf("Emails did not match!")
 	}
 
+	deleteTestUser(t, u, userRow.ID)
+
 }
 
 func TestGetUserByUsername(t *testing.T) {
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
+
 	email := newEmailForTest()
 	user := fmt.Sprintf(`{"name":"username", "password":"abc123", "email":"%v"}`, email)
 
@@ -133,7 +144,6 @@ func TestGetUserByUsername(t *testing.T) {
 	var userRow *UserRow
 
 	_ = json.Unmarshal(usr, &userRow)
-	defer deleteTestUser(t, u, userRow.ID)
 
 	returningUserRow, err := u.GetByUsername(nil, userRow.Username)
 
@@ -145,23 +155,23 @@ func TestGetUserByUsername(t *testing.T) {
 		t.Errorf("Usernames did not match!")
 	}
 
+	deleteTestUser(t, u, userRow.ID)
+
 }
 
 func TestAddRecipe(t *testing.T) {
 
 	u, row := newUserRowForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
 
 	var uRow UserRow
 
 	err := json.Unmarshal(row, &uRow)
 
-	fmt.Printf("u:: %v\n", uRow)
-
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	defer deleteTestUser(t, u, uRow.ID)
 
 	// Define a test recipe.
 	// It will come from the client request as a JSON.
@@ -245,12 +255,16 @@ func TestAddRecipe(t *testing.T) {
 	}
 
 	deleteTestRecipe(t, returnedRecipe[0].ID)
+	deleteTestUser(t, u, uRow.ID)
 
 }
 
 func TestGetUserRecipes(t *testing.T) {
 
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
+
 	var r1 = createVarsForGetRecipes(2, "Beans with rice", 6)
 	var r2 = createVarsForGetRecipes(3, "No Flour Pancake", 2)
 	var result []RecipeRow
@@ -274,6 +288,8 @@ func TestGetUserRecipes(t *testing.T) {
 func TestGetMembership(t *testing.T) {
 
 	u := newUserForTest(t)
+	tearDown := TestSetup(t, u.db)
+	defer tearDown(t, u.db)
 
 	own, err := u.getMembership(nil, 2, 1)
 

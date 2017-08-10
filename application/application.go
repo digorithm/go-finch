@@ -29,6 +29,7 @@ func New(config *viper.Viper) (*Application, error) {
 	app.config = config
 	app.dsn = dsn
 	app.db = db
+	app.db.SetMaxIdleConns(10)
 	app.sessionStore = sessions.NewCookieStore([]byte(cookieStoreSecret))
 
 	return app, err

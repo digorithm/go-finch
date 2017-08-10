@@ -14,6 +14,8 @@ func newScheduleForTest(t *testing.T) *Schedule {
 func TestUpdateSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 
 	_, err := s.GetHouseSchedule(nil, 2)
 
@@ -36,6 +38,9 @@ func TestUpdateSchedule(t *testing.T) {
 func TestGetHouseSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
+
 	var s1 = createVarsForGetSchedule("Tuesday", "Breakfast", "No Flour Pancake", 3)
 	var s2 = createVarsForGetSchedule("Wednesday", "Lunch", "Roast Chicken", 4)
 	var s3 = createVarsForGetSchedule("Saturday", "Breakfast", "No Flour Pancake", 3)
@@ -61,6 +66,9 @@ func TestGetHouseSchedule(t *testing.T) {
 func TestCreateFullSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
+
 	h := newHouseForTest(t)
 
 	house, err := h.CreateHouse(nil, "Our Home", "Friday", 2)
@@ -85,6 +93,9 @@ func TestCreateFullSchedule(t *testing.T) {
 func TestInsertMissingSchedule(t *testing.T) {
 
 	s := newScheduleForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
+
 	inserted := s.CreateHouseSchedule(nil, 1)
 
 	if inserted != true {

@@ -34,6 +34,9 @@ func newStorageForTest(t *testing.T) *ItemInStorage {
 func TestAddIngToStorage(t *testing.T) {
 
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
+
 	h := newHouseForTest(t)
 
 	houseRow, err := h.CreateHouse(nil, "Test for Storage", "Wednesday", 10)
@@ -63,6 +66,8 @@ func TestAddIngToStorage(t *testing.T) {
 
 func TestUpdateStorage(t *testing.T) {
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 	h := newHouseForTest(t)
 
 	house, err := h.CreateHouse(nil, "Test For Storage 1", "Monday", 1)
@@ -95,6 +100,8 @@ func TestUpdateStorage(t *testing.T) {
 func TestGetHouseStorage(t *testing.T) {
 
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 
 	res, err := s.GetHouseStorage(nil, 3)
 
@@ -121,6 +128,8 @@ func TestGetHouseStorage(t *testing.T) {
 func TestGetStorageIngredient(t *testing.T) {
 
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 
 	item, err := s.GetStorageIngredient(nil, 1, 1)
 
@@ -146,6 +155,8 @@ func TestGetStorageIngredient(t *testing.T) {
 
 func TestNewIngAddList(t *testing.T) {
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 	i := newIngredientForTest(t)
 
 	ingredient := []byte(`[{"name":"blueberry", "amount": 1	,"unit": 2 }]`)
@@ -177,6 +188,8 @@ func TestNewIngAddList(t *testing.T) {
 func TestExistingAddIngredient(t *testing.T) {
 
 	s := newStorageForTest(t)
+	tearDown := TestSetup(t, s.db)
+	defer tearDown(t, s.db)
 	i := newIngredientForTest(t)
 
 	ingredient := []byte(`[{"name":"parmesan cheese", "amount":250, "unit":10 }]`)
