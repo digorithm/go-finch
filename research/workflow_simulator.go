@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -33,6 +34,11 @@ type Ingredient struct {
 	name   string
 	amount float64
 	unit   float64
+}
+
+type ScheduleSettings struct {
+	Low, Med, High int
+	Days           map[string][]map[string]string
 }
 
 func requestSignUp() ([]byte, error) {
@@ -221,15 +227,13 @@ func requestUpdateStorage(HouseID int64, Storage []byte) ([]byte, error) {
 	return body, err
 }
 
-func SignupTask(wg *sync.WaitGroup, semaphore chan bool, ConcurrentUsers int) {
+func SignupTask(semaphore chan bool, ConcurrentUsers int) {
 
 	// Random number in the range 300 - 1500
 	// This is the wait time between user flows, otherwise it would be concurrent
 	// Thus super fast and would not be representative of a real user-flow behavior
 	r := RandomIntRange(1, 10)
 	time.Sleep(time.Duration(r) * time.Second)
-
-	fmt.Printf("%v users working\n", ConcurrentUsers-len(semaphore))
 
 	// Make signup request
 	SignUpResp, err := requestSignUp()
@@ -300,45 +304,153 @@ func SignupTask(wg *sync.WaitGroup, semaphore chan bool, ConcurrentUsers int) {
 	requestUpdateStorage(HouseID, Storage)
 
 	if err != nil {
-
 		fmt.Println(err)
 	}
 
 	semaphore <- true
-	fmt.Printf("%v users working\n", ConcurrentUsers-len(semaphore))
-	wg.Done()
+}
 
+func getWeekday() string {
+	now := time.Now()
+
+	return now.Weekday().String()
+}
+
+func getDayPeriod() string {
+
+	hour := time.Now().Hour()
+
+	if hour < 12 {
+		return "Morning"
+	} else if hour >= 12 && hour < 17 {
+		return "Afternoon"
+	}
+	return "Night"
+
+}
+
+func readSettings(settingsPath string) ScheduleSettings {
+	file, _ := os.Open(settingsPath)
+	decoder := json.NewDecoder(file)
+	ScheduleSettings := ScheduleSettings{}
+	err := decoder.Decode(&ScheduleSettings)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	return ScheduleSettings
+}
+
+func getConcurrentUsers(schedule ScheduleSettings) int {
+
+	// Default value just in case
+	ConcurrentUsers := RandomIntRange(10, 50)
+	weekday := getWeekday()
+	currentPeriod := getDayPeriod()
+
+	for day := range schedule.Days {
+		if day == weekday {
+			for _, period := range schedule.Days[day] {
+
+				for j, load := range period {
+
+					if j == currentPeriod {
+						switch load {
+						case "low":
+							return schedule.Low
+						case "med":
+							return schedule.Med
+						case "high":
+							return schedule.High
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	return ConcurrentUsers
+}
+
+func monitorSemaphore(ticker *time.Ticker, semaphore chan bool, concurrentUsers int) {
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Printf("%v users working \n", concurrentUsers-len(semaphore))
+		}
+	}
+}
+
+func userSpawner(semaphore chan bool, concurrentUsers int) {
+	fmt.Printf("Spawning %v concurrent users \n", concurrentUsers)
+
+	SpawnerClock := time.NewTicker(1 * time.Second)
+	for {
+		select {
+		case <-SpawnerClock.C:
+			<-semaphore
+			go SignupTask(semaphore, concurrentUsers)
+		}
+	}
+}
+
+func monitorUpdate(wg *sync.WaitGroup, settings ScheduleSettings, concurrentUsers int) {
+	ticker := time.NewTicker(45 * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			newConcurrentUsers := getConcurrentUsers(settings)
+			// if they are different, run wg.Done() to kill previous goroutine
+			if newConcurrentUsers != concurrentUsers {
+				fmt.Printf("Killing previous goroutine. New number of concurrent users:: %v", newConcurrentUsers)
+				wg.Done()
+				return
+			}
+		}
+	}
 }
 
 func main() {
 
-	// We are controlling concurrency by using the semaphore pattern with channels
-	// This means we will only spawn <ConcurrentUsers> users at once.
-	// Once a user is finished with the workflow, we spawn another one
-	ConcurrentUsers := 50
-	Semaphore := make(chan bool, ConcurrentUsers)
+	FirstTime := true
 
-	// Populate the semaphore channel with the right amount of max concurrent users
-	for i := 0; i < ConcurrentUsers; i++ {
-		Semaphore <- true
-	}
-
-	var wg sync.WaitGroup
-	// Function that will spawn the concurrent users
-
-	// TODO: try to improve what's being printed, maybe another goroutine printing the len() every 2s
-	fmt.Printf("Spawning %v concurrent users \n", ConcurrentUsers)
+	var settings ScheduleSettings
 
 	for {
-		time.Sleep(1 * time.Second)
-		<-Semaphore
+		if FirstTime {
+			settings = readSettings("workflow_settings.json")
+		}
+
+		ConcurrentUsers := getConcurrentUsers(settings)
+
+		// We are controlling concurrency by using the semaphore pattern with channels
+		// This means we will only spawn <ConcurrentUsers> users at once.
+		// Once a user is finished with the workflow, we spawn another one
+		Semaphore := make(chan bool, ConcurrentUsers)
+
+		// Populate the semaphore channel with the right amount of max concurrent users
+		for i := 0; i < ConcurrentUsers; i++ {
+			Semaphore <- true
+		}
+
+		var wg sync.WaitGroup
+		// This will periodically check if the current period is different
+		// if it is different, it will kill the current userSpawner and continue the loop
+		// which will spin another userSpawner with new number for concurrentUsers
+		go monitorUpdate(&wg, settings, ConcurrentUsers)
 
 		wg.Add(1)
 
-		go SignupTask(&wg, Semaphore, ConcurrentUsers)
+		// This is to monitor the Semaphore channel, ticker is the frequency to monitor it
+		ticker := time.NewTicker(5 * time.Second)
+		go monitorSemaphore(ticker, Semaphore, ConcurrentUsers)
 
+		// Spin the user spawner
+		go userSpawner(Semaphore, ConcurrentUsers)
+
+		wg.Wait()
+		ticker.Stop()
+
+		FirstTime = false
 	}
-
-	wg.Wait()
-
 }
