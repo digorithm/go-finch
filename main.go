@@ -11,7 +11,6 @@ import (
 	"github.com/tylerb/graceful"
 
 	"github.com/digorithm/meal_planner/application"
-	"github.com/digorithm/meal_planner/libunix"
 	"github.com/digorithm/meal_planner/models"
 )
 
@@ -20,13 +19,10 @@ func init() {
 }
 
 func newConfig() (*viper.Viper, error) {
-	u, err := libunix.CurrentUser()
-	if err != nil {
-		return nil, err
-	}
+	DB_ADDR := "db"
 
 	c := viper.New()
-	c.SetDefault("dsn", fmt.Sprintf("postgres://%v@localhost:5432/meal_planner?sslmode=disable", u))
+	c.SetDefault("dsn", fmt.Sprintf("postgres://%v:%v@%v:5432/meal_planner?sslmode=disable", "rodrigo", "123", DB_ADDR))
 	c.SetDefault("cookie_secret", "bginXRnaDjqwiOwb")
 	c.SetDefault("http_addr", ":8888")
 	c.SetDefault("http_cert_file", "")

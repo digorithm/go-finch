@@ -1,3 +1,15 @@
+# Research and setup
+
+## Running app and pg on docker compose
+
+- Run `docker-compose up --build`
+
+**Important**: You need to manually run the script to build the database by ssh'ing into the pg container and pasting the code. I might automate it in the future, or not.
+
+**Important 2:** if you want to run locally without Docker, go to `main.go` and change `DB_ADDR := "db"` to `DB_ADDR := "locahost"`
+
+---
+
 ## Installation
 
 1. Install PostgreSQL 9.4.x
@@ -64,33 +76,4 @@ pgmgr db migrate
 
 # Show the latest migration version
 pgmgr db version
-```
-
-
-## Vendoring Dependencies
-
-Vendoring is handled by a separate project: [github.com/tools/godep](https://github.com/tools/godep).
-
-Here's a quick tutorial on how to use it. For more details, read the readme [here](https://github.com/tools/godep#godep).
-```
-# Save all your dependencies after running go get ./...
-godep save ./...
-
-# Building with godep
-godep go build
-
-# Running tests with godep
-godep go test ./...
-```
-
-
-## Running in Vagrant
-
-There are two potential gotchas you need to know when running in Vagrant:
-
-1. `GOPATH` is not defined when you ssh into Vagrant. To fix the problem, do `export GOPATH=/go` immediately after ssh.
-
-2. PostgreSQL is not installed inside Vagrant. You must connect to your host PostgreSQL. Here's an example on how to run your application inside vagrant while connecting to your host PostgreSQL:
-```
-GOPATH=/go DSN=postgres://$(whoami)@$(netstat -rn | grep "^0.0.0.0 " | cut -d " " -f10):5432/$PROJECT_NAME?sslmode=disable go run main.go
 ```

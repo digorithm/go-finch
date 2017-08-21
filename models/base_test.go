@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/digorithm/meal_planner/libstring"
-	"github.com/digorithm/meal_planner/libunix"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -19,7 +18,7 @@ func newDbForTest(t *testing.T) *sqlx.DB {
 	var err error
 	pguser, _, pghost, pgport, pgsslmode := os.Getenv("PGUSER"), os.Getenv("PGPASSWORD"), os.Getenv("PGHOST"), os.Getenv("PGPORT"), os.Getenv("PGSSLMODE")
 	if pguser == "" {
-		pguser, err = libunix.CurrentUser()
+		pguser = "rodrigo"
 		if err != nil {
 			t.Fatalf("Getting current user should never fail. Error: %v", err)
 		}

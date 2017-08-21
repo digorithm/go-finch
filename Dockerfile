@@ -1,22 +1,19 @@
-FROM golang
+# golang image where workspace (GOPATH) configured at /go.
+FROM golang:latest
 
-# Fetch dependencies
-RUN go get github.com/tools/godep
-
-# Add project directory to Docker image.
+# Copy the local package files to the container’s workspace.
 ADD . /go/src/github.com/digorithm/meal_planner
 
-ENV USER rodrigo
-ENV HTTP_ADDR :8888
-ENV HTTP_DRAIN_INTERVAL 1s
-ENV COOKIE_SECRET bginXRnaDjqwiOwb
+RUN go install github.com/digorithm/meal_planner
 
-# Replace this with actual PostgreSQL DSN.
-ENV DSN postgres://rodrigo@localhost:5432/meal_planner?sslmode=disable&password=123
+# Run the golang-docker command when the container starts.
+# ENTRYPOINT /go/bin/meal_planner
 
-WORKDIR /go/src/github.com/digorithm/meal_planner
+ADD wait-for-postgres.sh /usr/local/bin/wait-for-postgres.sh
 
-RUN godep go build
+RUN ["chmod", "+x", "/usr/local/bin/wait-for-postgres.sh"]
 
+CMD ["/usr/local/bin/wait-for-postgres.sh", "db:5432", "--", "/go/bin/meal_planner"]
+
+# http server listens on port 8888.
 EXPOSE 8888
-CMD ./meal_planner
