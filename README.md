@@ -8,6 +8,12 @@
 
 **Important 2:** if you want to run locally without Docker, go to `main.go` and change `DB_ADDR := "db"` to `DB_ADDR := "locahost"`
 
+## Monitoring
+
+Instrumentation is being done with Prometheus + Granafa. After running docker compose up you can go to `localhost:3000` and login with admin:pass, you might have to setup the data source to Prometheus by passing the URI `http://prometheus:9090`.
+
+Just in case here's a very good tutorial on setting all this up: https://finestructure.co/blog/2016/5/16/monitoring-with-prometheus-grafana-docker-part-1
+
 ---
 
 ## Installation

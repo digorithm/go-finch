@@ -4,6 +4,7 @@ services:
     image: postgres
     environment:
       - POSTGRES_PASSWORD=123
+  
   app:
     build: .
     container_name: meal_planner
@@ -11,4 +12,26 @@ services:
       - db
     ports:
       - "8888:8888"
+  
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./instrumentation/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '-config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+  
+  node-exporter:
+        image: prom/node-exporter:0.12.0rc1
+        ports:
+            - '9100:9100'
+  grafana:
+        image: grafana/grafana:3.0.0-beta7
+        environment:
+            - GF_SECURITY_ADMIN_PASSWORD=pass
+        depends_on:
+            - prometheus
+        ports:
+            - "3000:3000"
     

@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 
 	"github.com/digorithm/meal_planner/handlers"
@@ -118,6 +119,8 @@ func (app *Application) Mux() *gorilla_mux.Router {
 	router.HandleFunc("/meals", handlers.GetMealTypesHandler).Methods("GET")
 
 	router.HandleFunc("/days", handlers.GetDaysHandler).Methods("GET")
+
+	router.Handle("/metrics", promhttp.Handler())
 
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
