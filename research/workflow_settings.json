@@ -1,7 +1,7 @@
 {
    "Low":10,
-   "Med":20,
-   "High":50,
+   "Med":200,
+   "High":200,
    "Days":{
       "Monday":[
          {

@@ -1,4 +1,5 @@
 -- done
+
 create table meal_type(
     id serial primary key,
     type varchar(50) unique

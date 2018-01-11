@@ -1,2 +1,0 @@
-POST http://localhost:8888/users
-'{"name": "rodrigo", "email": "rod.dearaujo@gmail.com", "password": "hashed_password"}'

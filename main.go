@@ -22,7 +22,7 @@ func newConfig() (*viper.Viper, error) {
 	DB_ADDR := "db"
 
 	c := viper.New()
-	c.SetDefault("dsn", fmt.Sprintf("postgres://%v:%v@%v:5432/meal_planner?sslmode=disable", "rodrigo", "123", DB_ADDR))
+	c.SetDefault("dsn", fmt.Sprintf("postgres://%v:%v@%v:5432/meal_planner?sslmode=disable", "postgres", "123", DB_ADDR))
 	c.SetDefault("cookie_secret", "bginXRnaDjqwiOwb")
 	c.SetDefault("http_addr", ":8888")
 	c.SetDefault("http_cert_file", "")
@@ -77,6 +77,7 @@ func Initialize() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
 }
 
 func main() {

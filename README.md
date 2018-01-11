@@ -8,11 +8,28 @@
 
 **Important 2:** if you want to run locally without Docker, go to `main.go` and change `DB_ADDR := "db"` to `DB_ADDR := "locahost"`
 
+**Important 3:** If running for the first time, make sure init.sql has been executed on the container. Configure grafana /datasources pointing a datasource to prometheus:9090 and import the dash.json to have a complete dashboard
+
 ## Monitoring
 
 Instrumentation is being done with Prometheus + Granafa. After running docker compose up you can go to `localhost:3000` and login with admin:pass, you might have to setup the data source to Prometheus by passing the URI `http://prometheus:9090`.
 
 Just in case here's a very good tutorial on setting all this up: https://finestructure.co/blog/2016/5/16/monitoring-with-prometheus-grafana-docker-part-1
+
+## Big list of interesting metrics to monitor
+
+Remember that for latency and other similar metrics, mean means nothing, focus on 99th percentile.
+
+- System level:
+  - CPU:
+    - User
+    - IOwait (A high iowait means that you are disk or network bound, This query produces a familiar value which is iowait as a percentage of CPU time averaged across all cores in the system and once graphed provides an insight into IO performance.): `avg(irate(node_cpu{job="node-exporter",mode="iowait"}[1m])) * 100`
+    - Idle 
+    - Note: Pass these functions to irate() to get the instant rate to see more details
+  - Memory:
+    - Mem useage in percentage: `((node_memory_MemTotal) - ((node_memory_MemFree+node_memory_Buffers+node_memory_Cached))) / node_memory_MemTotal * 100`
+  - Disk
+    - Still not sure about this
 
 ---
 

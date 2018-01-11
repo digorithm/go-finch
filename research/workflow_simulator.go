@@ -23,11 +23,11 @@ var BaseURL = "http://localhost:8888"
 
 var SignedUsers []int64
 
-func NewHTTPClient() *http.Client {
+func NewHTTPClient() http.Client {
 	tr := &http.Transport{
 		DisableKeepAlives: true,
 	}
-	return &http.Client{Transport: tr}
+	return http.Client{Transport: tr}
 }
 
 type Ingredient struct {
@@ -384,7 +384,7 @@ func monitorSemaphore(ticker *time.Ticker, semaphore chan bool, concurrentUsers 
 func userSpawner(semaphore chan bool, concurrentUsers int) {
 	fmt.Printf("Spawning %v concurrent users \n", concurrentUsers)
 
-	SpawnerClock := time.NewTicker(1 * time.Second)
+	SpawnerClock := time.NewTicker(300 * time.Millisecond)
 	for {
 		select {
 		case <-SpawnerClock.C:

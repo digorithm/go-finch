@@ -8,12 +8,37 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 
 	"github.com/digorithm/meal_planner/handlers"
 	"github.com/digorithm/meal_planner/middlewares"
 )
+
+// Metrics to be monitored
+var PrometheusHTTPRequestCount = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Namespace: "app",
+		Name:      "http_request_count",
+		Help:      "The number of HTTP requests.",
+	},
+	[]string{"method", "endpoint"},
+)
+
+var PrometheusHTTPRequestLatency = prometheus.NewSummaryVec(
+	prometheus.SummaryOpts{
+		Namespace: "app",
+		Name:      "http_request_latency",
+		Help:      "The latency of HTTP requests.",
+	},
+	[]string{"method", "endpoint"},
+)
+
+func init() {
+	prometheus.MustRegister(PrometheusHTTPRequestCount)
+	prometheus.MustRegister(PrometheusHTTPRequestLatency)
+}
 
 // New is the constructor for Application struct.
 func New(config *viper.Viper) (*Application, error) {
@@ -48,7 +73,7 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 	middle := interpose.New()
 	middle.Use(middlewares.SetDB(app.db))
 	middle.Use(middlewares.SetSessionStore(app.sessionStore))
-	middle.Use(middlewares.Log())
+	middle.Use(middlewares.Log(PrometheusHTTPRequestCount, PrometheusHTTPRequestLatency))
 
 	middle.UseHandler(app.Mux())
 
