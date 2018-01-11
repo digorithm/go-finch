@@ -1,11 +1,15 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"reflect"
+	"strconv"
 )
 
 type Value struct {
@@ -58,8 +62,8 @@ func downloadData() (HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, 
 
 	// TODO: document this piece of shit
 
-	UNIXTimeStart := "1515530677"
-	UNIXTimeEnd := "1515530977"
+	UNIXTimeStart := "1515702937"
+	UNIXTimeEnd := "1515703237"
 
 	// HTTP request count
 	HTTPRequestCountURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=sum(irate(app_http_request_count[1m]))&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
@@ -136,10 +140,23 @@ func parseToPrometheusStruct(s []byte) PrometheusJSON {
 	return p
 }
 
-func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, IOTime, CPUUsage, ReadTime, CPUIdle []byte) (dataset string) {
+func uniques(input []int) []int {
+	u := make([]int, 0, len(input))
+	m := make(map[int]bool)
 
-	AnalyzeData := false
+	for _, val := range input {
+		if _, ok := m[val]; !ok {
+			m[val] = true
+			u = append(u, val)
+		}
+	}
 
+	return u
+}
+
+func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, IOTime, CPUUsage, ReadTime, CPUIdle []byte) ([]string, map[int]interface{}) {
+
+	AnalyzeData := true
 	HTTPRequestLatencyStruct := parseToPrometheusStruct(HTTPRequestLatency)
 
 	HTTPRequestCountStruct := parseToPrometheusStruct(HTTPRequestCount)
@@ -172,6 +189,17 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 
 	PrometheusStructs := []PrometheusJSON{HTTPRequestCountStruct, HTTPRequestLatencyStruct, IOWaitStruct, MemoryUsageStruct, WriteTimeStruct, IOTimeStruct, CPUUsageStruct, ReadTimeStruct, CPUIdleStruct}
 
+	// Check if they have the same number of samples
+	NumberOfSamples := make([]int, 0)
+	for _, s := range PrometheusStructs {
+		for _, res := range s.Data.Result {
+			NumberOfSamples = append(NumberOfSamples, len(res.Values))
+		}
+	}
+	if len(uniques(NumberOfSamples)) != 1 {
+		log.Fatal("Number of Samples isn't the same, debug time!")
+	}
+
 	KeysToFeatureName := make(map[int]string)
 	KeysToFeatureName[0] = "workload"
 	KeysToFeatureName[2] = "io_wait"
@@ -184,6 +212,7 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 	featureNames = append(featureNames, "timestamp")
 
 	// Note that it follows the order we built PrometheusStructs
+	// Here we are just creating a slice that contains the feature names
 	for k, s := range PrometheusStructs {
 		for _, res := range s.Data.Result {
 			if res.Metric.Name == "" {
@@ -196,19 +225,110 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 					featureNames = append(featureNames, res.Metric.Name)
 				}
 			}
-			fmt.Println(res.Values)
 		}
 	}
 
-	fmt.Println(featureNames)
+	// This part is tricky, complex, and poorly written
+	datasetStruct := make(map[int]interface{})
 
-	return ""
+	firstIteration := true
+	for k, s := range PrometheusStructs {
+		for i, res := range s.Data.Result {
+			if firstIteration {
+				timestampsValues := make([]interface{}, 0)
+				firstFeatureValues := make([]interface{}, 0)
+				for _, val := range res.Values {
+
+					switch reflect.TypeOf(val).Kind() {
+					case reflect.Slice:
+						s := reflect.ValueOf(val)
+						tsValueRightType := s.Index(0).Interface().(int)
+						firstFeatureValueRightType, _ := strconv.ParseFloat(s.Index(1).Interface().(string), 64)
+
+						timestampsValues = append(timestampsValues, tsValueRightType)
+						firstFeatureValues = append(firstFeatureValues, firstFeatureValueRightType)
+
+					}
+				}
+
+				datasetStruct[0] = timestampsValues
+				datasetStruct[1] = firstFeatureValues
+
+				firstIteration = false
+			} else {
+
+				featureValues := make([]interface{}, 0)
+				for _, val := range res.Values {
+
+					switch reflect.TypeOf(val).Kind() {
+					case reflect.Slice:
+						s := reflect.ValueOf(val)
+						featureValueRightType, _ := strconv.ParseFloat(s.Index(1).Interface().(string), 64)
+
+						featureValues = append(featureValues, featureValueRightType)
+
+					}
+				}
+				// Since we are adding indexes 0 and 1 first because of reasons,
+				// here we either go for k + i (index for result) + 1 (because first index is 0) if the metric is latency, because it's the only metric that have multiple results... or we go for k+3, this 3 is because of reasons I don't quite understand. Changing the dataset might change the way we build it, unfortunately. But since this is an experiment, the features are already defined, so I'm not changing them for now.
+				if PrometheusStructs[k].Data.Result[0].Metric.Name == "app_http_request_latency" {
+					datasetStruct[k+i+1] = featureValues
+				} else {
+					datasetStruct[k+3] = featureValues
+				}
+			}
+		}
+	}
+
+	return featureNames, datasetStruct
+}
+
+func createAndSaveCSV(dataset map[int]interface{}, featureNames []string) {
+	file, err := os.Create("result.csv")
+	checkURLErr(err)
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for k := range featureNames {
+
+		featureString := make([]string, 0)
+		featureString = append(featureString, featureNames[k])
+
+		switch reflect.TypeOf(dataset[k]).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(dataset[k])
+
+			for i := 0; i < s.Len(); i++ {
+				valueString := fmt.Sprintf("%v", s.Index(i))
+				featureString = append(featureString, valueString)
+			}
+			writer.Write(featureString)
+		}
+
+	}
 }
 
 func main() {
 
-	dataset := buildDataset(downloadData())
+	featureNames, dataset := buildDataset(downloadData())
 
-	fmt.Println(dataset)
+	for k, name := range featureNames {
+		fmt.Println(k)
+		fmt.Printf("For feature %v, dataset is:: %v \n\n\n\n", name, dataset[k])
+	}
 
+	createAndSaveCSV(dataset, featureNames)
+
+	csvFile, _ := os.Open("result.csv")
+
+	file, err := os.Create("final_result.csv")
+	checkURLErr(err)
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	transposeCsv(csvFile, file)
 }
