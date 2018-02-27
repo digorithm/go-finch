@@ -6,6 +6,7 @@ services:
       - POSTGRES_PASSWORD=123
     volumes:
       - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql_setting3.conf:/var/lib/postgresql/data/postgresql.conf
   
   app:
     build: .

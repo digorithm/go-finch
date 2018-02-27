@@ -3,7 +3,10 @@ package application
 import (
 	"net/http"
 
+	"fmt"
 	"github.com/carbocation/interpose"
+	"github.com/digorithm/meal_planner/handlers"
+	"github.com/digorithm/meal_planner/middlewares"
 	gorilla_mux "github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -11,9 +14,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
-
-	"github.com/digorithm/meal_planner/handlers"
-	"github.com/digorithm/meal_planner/middlewares"
 )
 
 // Metrics to be monitored
@@ -43,7 +43,7 @@ func init() {
 // New is the constructor for Application struct.
 func New(config *viper.Viper) (*Application, error) {
 	dsn := config.Get("dsn").(string)
-
+	fmt.Printf("### DB:::: %v", dsn)
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, err

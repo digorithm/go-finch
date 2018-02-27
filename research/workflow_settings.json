@@ -1,7 +1,7 @@
 {
-   "Low":10,
-   "Med":200,
-   "High":200,
+   "Low":20,
+   "Med":20,
+   "High":20,
    "Days":{
       "Monday":[
          {
@@ -19,7 +19,7 @@
             "Morning":"med"
          },
          {
-            "Afternoon":"high"
+            "Afternoon":"low"
          },
          {
             "Night":"low"
@@ -27,10 +27,10 @@
       ],
       "Wednesday":[
          {
-            "Morning":"med"
+            "Morning":"low"
          },
          {
-            "Afternoon":"high"
+            "Afternoon":"low"
          },
          {
             "Night":"low"
@@ -38,7 +38,7 @@
       ],
       "Thursday":[
          {
-            "Morning":"med"
+            "Morning":"low"
          },
          {
             "Afternoon":"high"

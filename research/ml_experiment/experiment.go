@@ -1,14 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"reflect"
+	"regexp"
+	"sort"
 	"strconv"
 )
 
@@ -58,12 +62,12 @@ func getBodyFromURL(MetricURL string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func downloadData() (HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, IOTime, CPUUsage, ReadTime, CPUIdle []byte) {
+func downloadData() (HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, CPUUsage, ReadTime, CPUIdle []byte) {
 
 	// TODO: document this piece of shit
 
-	UNIXTimeStart := "1515702937"
-	UNIXTimeEnd := "1515703237"
+	UNIXTimeStart := "1519758804"
+	UNIXTimeEnd := "1519759620"
 
 	// HTTP request count
 	HTTPRequestCountURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=sum(irate(app_http_request_count[1m]))&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
@@ -91,25 +95,19 @@ func downloadData() (HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, 
 	checkURLErr(err)
 
 	// Write time
-	WriteTimeURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=node_disk_write_time_ms&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
+	WriteTimeURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=irate(node_disk_sectors_written[5m])*512&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
 
 	WriteTimeData, err := getBodyFromURL(WriteTimeURL)
 	checkURLErr(err)
 
-	// Ms spent doing IO
-	IOTimeURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=node_disk_io_time_ms&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
-
-	IOTimeData, err := getBodyFromURL(IOTimeURL)
-	checkURLErr(err)
-
 	// CPU usage
-	CPUUsageURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=avg(irate(node_cpu{job='node-exporter',mode='user'}[1m]))*100&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
+	CPUUsageURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=100-(avg%%20by%%20(instance)%%20(irate(node_cpu{job='node-exporter',mode='idle'}[1m]))*100)&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
 
 	CPUUsageData, err := getBodyFromURL(CPUUsageURL)
 	checkURLErr(err)
 
 	// Read time
-	ReadTimeURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=node_disk_read_time_ms&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
+	ReadTimeURL := fmt.Sprintf("http://localhost:9090/api/v1/query_range?query=irate(node_disk_sectors_read[5m])*512&start=%v&end=%v&step=2", UNIXTimeStart, UNIXTimeEnd)
 
 	ReadTimeData, err := getBodyFromURL(ReadTimeURL)
 	checkURLErr(err)
@@ -120,7 +118,7 @@ func downloadData() (HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, 
 	CPUIdleData, err := getBodyFromURL(CPUIdleURL)
 	checkURLErr(err)
 
-	return HTTPRequestCountData, HTTPRequestLatencyData, IOWaitData, MemoryUsageData, WriteTimeData, IOTimeData, CPUUsageData, ReadTimeData, CPUIdleData
+	return HTTPRequestCountData, HTTPRequestLatencyData, IOWaitData, MemoryUsageData, WriteTimeData, CPUUsageData, ReadTimeData, CPUIdleData
 }
 
 func parseToPrometheusStruct(s []byte) PrometheusJSON {
@@ -154,7 +152,9 @@ func uniques(input []int) []int {
 	return u
 }
 
-func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, IOTime, CPUUsage, ReadTime, CPUIdle []byte) ([]string, map[int]interface{}) {
+func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, WriteTime, CPUUsage, ReadTime, CPUIdle []byte) ([]string, map[int]interface{}) {
+
+	// BUG: Every endpoint must be called between the timerange. Otherwise we will have different values. Fix this later, as this isnt an important problem
 
 	AnalyzeData := true
 	HTTPRequestLatencyStruct := parseToPrometheusStruct(HTTPRequestLatency)
@@ -166,8 +166,6 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 	MemoryUsageStruct := parseToPrometheusStruct(MemoryUsage)
 
 	WriteTimeStruct := parseToPrometheusStruct(WriteTime)
-
-	IOTimeStruct := parseToPrometheusStruct(IOTime)
 
 	CPUUsageStruct := parseToPrometheusStruct(CPUUsage)
 
@@ -181,19 +179,21 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 		fmt.Println(IOWaitStruct, "\n\n")
 		fmt.Println(MemoryUsageStruct, "\n\n")
 		fmt.Println(WriteTimeStruct, "\n\n")
-		fmt.Println(IOTimeStruct, "\n\n")
 		fmt.Println(CPUUsageStruct, "\n\n")
 		fmt.Println(ReadTimeStruct, "\n\n")
 		fmt.Println(CPUIdleStruct, "\n\n")
 	}
 
-	PrometheusStructs := []PrometheusJSON{HTTPRequestCountStruct, HTTPRequestLatencyStruct, IOWaitStruct, MemoryUsageStruct, WriteTimeStruct, IOTimeStruct, CPUUsageStruct, ReadTimeStruct, CPUIdleStruct}
+	PrometheusStructs := []PrometheusJSON{HTTPRequestCountStruct, IOWaitStruct, MemoryUsageStruct, WriteTimeStruct, CPUUsageStruct, ReadTimeStruct, CPUIdleStruct, HTTPRequestLatencyStruct}
 
 	// Check if they have the same number of samples
 	NumberOfSamples := make([]int, 0)
 	for _, s := range PrometheusStructs {
 		for _, res := range s.Data.Result {
 			NumberOfSamples = append(NumberOfSamples, len(res.Values))
+			// fmt.Println("Number of samples:: ", len(res.Values))
+			// fmt.Println("Feature:: ", res.Values)
+			// fmt.Println("Feature name:: ", res.Metric.Name, res.Metric.Method, res.Metric.Endpoint)
 		}
 	}
 	if len(uniques(NumberOfSamples)) != 1 {
@@ -202,10 +202,12 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 
 	KeysToFeatureName := make(map[int]string)
 	KeysToFeatureName[0] = "workload"
-	KeysToFeatureName[2] = "io_wait"
-	KeysToFeatureName[3] = "memory_usage"
-	KeysToFeatureName[6] = "cpu_usage"
-	KeysToFeatureName[8] = "cpu_idle"
+	KeysToFeatureName[1] = "io_wait"
+	KeysToFeatureName[2] = "memory_usage"
+	KeysToFeatureName[3] = "disk_write_bytes"
+	KeysToFeatureName[4] = "cpu_usage"
+	KeysToFeatureName[5] = "disk_read_bytes"
+	KeysToFeatureName[6] = "cpu_idle"
 
 	// Create a 1D slice that will hold feature names of the dataset
 	var featureNames []string
@@ -216,18 +218,25 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 	for k, s := range PrometheusStructs {
 		for _, res := range s.Data.Result {
 			if res.Metric.Name == "" {
+
+				fmt.Printf("Key %v Feature name is:: %v \n\n\n", k, KeysToFeatureName[k])
 				featureNames = append(featureNames, KeysToFeatureName[k])
 			} else {
 				if res.Metric.Name == "app_http_request_latency" {
+
+					fmt.Printf("Key %v Feature name is:: %v \n\n\n", k, KeysToFeatureName[k])
 					name := fmt.Sprintf(res.Metric.Name + "_" + res.Metric.Endpoint + "_" + res.Metric.Method + "_" + res.Metric.Quantile)
 					featureNames = append(featureNames, name)
 				} else {
+
+					fmt.Printf("Key %v Feature name is:: %v \n\n\n", k, KeysToFeatureName[k])
+					fmt.Printf("Feature name is:: %v \n\n\n", res.Metric.Name)
 					featureNames = append(featureNames, res.Metric.Name)
 				}
 			}
 		}
 	}
-
+	fmt.Println("Feature names: ", featureNames)
 	// This part is tricky, complex, and poorly written
 	datasetStruct := make(map[int]interface{})
 
@@ -274,7 +283,7 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 				if PrometheusStructs[k].Data.Result[0].Metric.Name == "app_http_request_latency" {
 					datasetStruct[k+i+1] = featureValues
 				} else {
-					datasetStruct[k+3] = featureValues
+					datasetStruct[k+1] = featureValues
 				}
 			}
 		}
@@ -283,8 +292,65 @@ func buildDataset(HTTPRequestCount, HTTPRequestLatency, IOWait, MemoryUsage, Wri
 	return featureNames, datasetStruct
 }
 
-func createAndSaveCSV(dataset map[int]interface{}, featureNames []string) {
-	file, err := os.Create("result.csv")
+// This function will get previously generated datasets and merge them.
+// We need this because in this experiment I will be running a simulation
+// then stoping, generating the dataset, manually tweaking the knobs, and repeat. In the end I want a single dataset
+func mergeDatasets() {
+	files, err := ioutil.ReadDir("./")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("### Creating final dataset and merging all datasets to it ###")
+	finalFile, err := os.Create("dataset.csv")
+	checkURLErr(err)
+
+	writer := csv.NewWriter(finalFile)
+	defer writer.Flush()
+
+	firstIteration := true
+	for _, f := range files {
+		match, err := regexp.MatchString("^final_", f.Name())
+		checkURLErr(err)
+		if match {
+			csvFile, _ := os.Open(f.Name())
+			reader := csv.NewReader(bufio.NewReader(csvFile))
+			if firstIteration {
+				fmt.Println("### Writing first dataset ###")
+				tempDataset, err := reader.ReadAll()
+				checkURLErr(err)
+				writer.WriteAll(tempDataset)
+				firstIteration = false
+			} else {
+				fmt.Println("### Merging another dataset ###")
+				tempDataset, err := reader.ReadAll()
+				checkURLErr(err)
+				writer.WriteAll(tempDataset[1:])
+			}
+		}
+	}
+}
+
+func transposeCSV(fileName string) {
+	fmt.Println("filename:: ", fileName)
+	csvFile, _ := os.Open(fileName)
+
+	file, err := os.Create(fmt.Sprintf("final_%v", fileName))
+	checkURLErr(err)
+	defer file.Close()
+
+	//writer := csv.NewWriter(file)
+	//defer writer.Flush()
+
+	err = transposeCsv(csvFile, file)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func writeToCSV(knobs map[string]float64, dataset map[int]interface{}, featureNames []string, fileName string) {
+
+	file, err := os.Create(fileName)
 	checkURLErr(err)
 	defer file.Close()
 
@@ -293,42 +359,73 @@ func createAndSaveCSV(dataset map[int]interface{}, featureNames []string) {
 
 	for k := range featureNames {
 
+		// This will be written to the csv file
 		featureString := make([]string, 0)
+		// Append name of the feature
 		featureString = append(featureString, featureNames[k])
 
 		switch reflect.TypeOf(dataset[k]).Kind() {
 		case reflect.Slice:
 			s := reflect.ValueOf(dataset[k])
-
 			for i := 0; i < s.Len(); i++ {
 				valueString := fmt.Sprintf("%v", s.Index(i))
 				featureString = append(featureString, valueString)
 			}
 			writer.Write(featureString)
 		}
-
 	}
+
+	// Sort the keys because of this (https://nathanleclaire.com/blog/2014/04/27/a-surprising-feature-of-golang-that-colored-me-impressed/)
+	var keys []string
+	for k := range knobs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// Here we are manually setting the knobs as many time as the number of sample
+	for _, k := range keys {
+		featureString := make([]string, 0)
+		featureString = append(featureString, k, fmt.Sprintf("%v", knobs[k]))
+		switch reflect.TypeOf(dataset[2]).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(dataset[2])
+			NumberOfSamples := s.Len()
+			fmt.Println("Number of samples:: ", NumberOfSamples)
+			for i := 1; i < NumberOfSamples; i++ {
+				featureString = append(featureString, fmt.Sprintf("%v", knobs[k]))
+			}
+		}
+		writer.Write(featureString)
+	}
+}
+
+func createAndSaveCSV(knobs map[string]float64, dataset map[int]interface{}, featureNames []string) {
+
+	fileName := uuid.Must(uuid.NewV4())
+	fileNameString := fmt.Sprintf("%v.csv", fileName)
+
+	writeToCSV(knobs, dataset, featureNames, fileNameString)
+	transposeCSV(fileNameString)
 }
 
 func main() {
 
 	featureNames, dataset := buildDataset(downloadData())
 
-	for k, name := range featureNames {
-		fmt.Println(k)
-		fmt.Printf("For feature %v, dataset is:: %v \n\n\n\n", name, dataset[k])
-	}
+	knobs := make(map[string]float64)
 
-	createAndSaveCSV(dataset, featureNames)
+	knobs["pg_shared_buffers_mb"] = 128
+	knobs["pg_effective_cache_size_mb"] = 128
+	knobs["pg_work_mem_kb"] = 1024
+	knobs["pg_wal_buffers_mb"] = 128
+	knobs["pg_checkpoint_completion_target"] = 0.7
+	knobs["pg_maintenance_work_mem_mb"] = 16
+	knobs["pg_default_statistics_target"] = 100
+	knobs["pg_random_page_cost"] = 4
+	knobs["pg_max_wal_size_gb"] = 2
+	knobs["pg_min_wal_size_mb"] = 1000
 
-	csvFile, _ := os.Open("result.csv")
+	createAndSaveCSV(knobs, dataset, featureNames)
+	mergeDatasets()
 
-	file, err := os.Create("final_result.csv")
-	checkURLErr(err)
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	transposeCsv(csvFile, file)
 }
