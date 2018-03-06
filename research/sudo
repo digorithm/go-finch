@@ -1,3 +1,0 @@
-sudo deb http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main /etc/apt/sources.list
-deb-src http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main /etc/apt/sources.list
-deb http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main /etc/apt/sources.list

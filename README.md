@@ -4,11 +4,9 @@
 
 - Run `docker-compose up --build`
 
-**Important**: You need to manually run the script to build the database by ssh'ing into the pg container and pasting the code. I might automate it in the future, or not.
+**Important:** If running for the first time, make sure init.sql has been executed on the container. Configure grafana /datasources pointing a datasource to prometheus:9090 and import the dash.json to have a complete dashboard
 
-**Important 2:** if you want to run locally without Docker, go to `main.go` and change `DB_ADDR := "db"` to `DB_ADDR := "locahost"`
-
-**Important 3:** If running for the first time, make sure init.sql has been executed on the container. Configure grafana /datasources pointing a datasource to prometheus:9090 and import the dash.json to have a complete dashboard
+**Important**: If something goes wrong with the mapping of host to pgdata, try removing the db image with `docker rm db`.
 
 ## Monitoring
 

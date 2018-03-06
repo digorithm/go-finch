@@ -7,12 +7,12 @@ import (
 
 	"encoding/json"
 
-	"io/ioutil"
-
 	"github.com/digorithm/meal_planner/libhttp"
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"io/ioutil"
+	"time"
 )
 
 func CreateUserObj(r *http.Request) *models.User {
@@ -107,6 +107,9 @@ func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
 }*/
 
 func PostSignupHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Toy Knob
+	time.Sleep(time.Duration((1 / Finch.Knobs.GetInt("k5"))) * time.Millisecond)
 
 	userObj := CreateUserObj(r)
 

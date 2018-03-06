@@ -10,6 +10,7 @@ import (
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 func CreateScheduleObj(r *http.Request) *models.Schedule {
@@ -51,6 +52,9 @@ func GetDaysHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateScheduleHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Toy Knob
+	time.Sleep(time.Duration((1 / Finch.Knobs.GetInt("k4"))) * time.Millisecond)
 
 	scheduleObj := CreateScheduleObj(r)
 

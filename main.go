@@ -11,6 +11,8 @@ import (
 	"github.com/tylerb/graceful"
 
 	"github.com/digorithm/meal_planner/application"
+	"github.com/digorithm/meal_planner/finchgo"
+	"github.com/digorithm/meal_planner/handlers"
 	"github.com/digorithm/meal_planner/models"
 )
 
@@ -35,6 +37,11 @@ func newConfig() (*viper.Viper, error) {
 }
 
 func Initialize() {
+
+	Finch := finchgo.NewFinch("finch_knobs.json")
+	handlers.Finch = Finch
+	application.Finch = Finch
+
 	config, err := newConfig()
 	if err != nil {
 		logrus.Fatal(err)

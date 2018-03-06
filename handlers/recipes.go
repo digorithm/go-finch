@@ -3,10 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"io/ioutil"
+	"time"
 
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
@@ -21,6 +21,9 @@ func CreateRecipeObj(r *http.Request) *models.Recipe {
 }
 
 func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Toy Knob
+	time.Sleep(time.Duration(Finch.Knobs.GetInt("k2")) * time.Millisecond)
 
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -183,6 +186,9 @@ func UpdateRecipeStepIngredientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Toy Knob
+	time.Sleep(time.Duration(Finch.Knobs.GetInt("k1")) * time.Millisecond)
 
 	recipeObj := CreateRecipeObj(r)
 

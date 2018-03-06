@@ -2,16 +2,14 @@
 package middlewares
 
 import (
+	"context"
+	"github.com/digorithm/meal_planner/finchgo"
+	"github.com/gorilla/sessions"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
 	"strings"
 	"time"
-
-	"context"
-
-	"github.com/gorilla/sessions"
-	"github.com/jmoiron/sqlx"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 func SetDB(db *sqlx.DB) func(http.Handler) http.Handler {
@@ -50,7 +48,7 @@ func MustLogin(next http.Handler) http.Handler {
 	})
 }
 
-func Log(HTTPCount *prometheus.CounterVec, HTTPLatency *prometheus.SummaryVec) func(http.Handler) http.Handler {
+func Log(Finch *finchgo.Finch) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			startTime := time.Now()
@@ -59,10 +57,11 @@ func Log(HTTPCount *prometheus.CounterVec, HTTPLatency *prometheus.SummaryVec) f
 
 			duration := time.Now().Sub(startTime)
 			// Convert to ms
-			durationMS := duration.Nanoseconds() / int64(1000000)
+			durationMS := float64(duration.Nanoseconds() / int64(1000000))
 			basePath := strings.Split(r.URL.Path, "/")[1]
-			HTTPCount.WithLabelValues(r.Method, basePath).Inc()
-			HTTPLatency.WithLabelValues(r.Method, basePath).Observe(float64(durationMS))
+
+			Finch.MonitorWorkload(r.Method, basePath)
+			Finch.MonitorLatency(r.Method, basePath, durationMS)
 
 			log.Printf("Address:: %s -- '%s' '%s' -- response time:: %v", r.RemoteAddr, r.Method, r.URL, duration)
 		})

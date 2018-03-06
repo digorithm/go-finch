@@ -5,43 +5,24 @@ import (
 
 	"fmt"
 	"github.com/carbocation/interpose"
+	"github.com/digorithm/meal_planner/finchgo"
 	"github.com/digorithm/meal_planner/handlers"
 	"github.com/digorithm/meal_planner/middlewares"
 	gorilla_mux "github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/spf13/viper"
 )
 
-// Metrics to be monitored
-var PrometheusHTTPRequestCount = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Namespace: "app",
-		Name:      "http_request_count",
-		Help:      "The number of HTTP requests.",
-	},
-	[]string{"method", "endpoint"},
-)
-
-var PrometheusHTTPRequestLatency = prometheus.NewSummaryVec(
-	prometheus.SummaryOpts{
-		Namespace: "app",
-		Name:      "http_request_latency",
-		Help:      "The latency of HTTP requests.",
-	},
-	[]string{"method", "endpoint"},
-)
-
-func init() {
-	prometheus.MustRegister(PrometheusHTTPRequestCount)
-	prometheus.MustRegister(PrometheusHTTPRequestLatency)
-}
+var Finch *finchgo.Finch
 
 // New is the constructor for Application struct.
 func New(config *viper.Viper) (*Application, error) {
+
+	Finch.InitMonitoring()
+
 	dsn := config.Get("dsn").(string)
 	fmt.Printf("### DB:::: %v", dsn)
 	db, err := sqlx.Connect("postgres", dsn)
@@ -73,7 +54,7 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 	middle := interpose.New()
 	middle.Use(middlewares.SetDB(app.db))
 	middle.Use(middlewares.SetSessionStore(app.sessionStore))
-	middle.Use(middlewares.Log(PrometheusHTTPRequestCount, PrometheusHTTPRequestLatency))
+	middle.Use(middlewares.Log(Finch))
 
 	middle.UseHandler(app.Mux())
 
@@ -145,7 +126,11 @@ func (app *Application) Mux() *gorilla_mux.Router {
 
 	router.HandleFunc("/days", handlers.GetDaysHandler).Methods("GET")
 
-	router.Handle("/metrics", promhttp.Handler())
+	router.Handle("/metrics", Finch.HTTPMonitorHandler)
+
+	router.HandleFunc("/startworkflow/{concurrent_users}", handlers.StartWorkflowSimulatorHandler).Methods("POST")
+
+	router.HandleFunc("/stopworkflow/", handlers.StopWorkflowSimulatorHandler).Methods("POST")
 
 	// Path of static files must be last!
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))

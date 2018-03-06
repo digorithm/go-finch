@@ -4,13 +4,16 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
-	"strconv"
-
+	"github.com/digorithm/meal_planner/finchgo"
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"net/http"
+	"strconv"
 )
+
+var WorkflowSimulator = finchgo.NewWorkflowSimulator("http://localhost:8888")
+var Finch *finchgo.Finch
 
 func getCurrentUser(w http.ResponseWriter, r *http.Request) *models.UserRow {
 	sessionStore := r.Context().Value("sessionStore").(sessions.Store)
@@ -44,4 +47,26 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func StartWorkflowSimulatorHandler(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	ConcurrentUsers, err := strconv.Atoi(vars["concurrent_users"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing number of concurrent users"))
+	}
+
+	go WorkflowSimulator.Run(ConcurrentUsers)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func StopWorkflowSimulatorHandler(w http.ResponseWriter, r *http.Request) {
+
+	go WorkflowSimulator.Stop()
+
+	w.WriteHeader(http.StatusOK)
 }
