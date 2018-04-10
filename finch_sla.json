@@ -1,0 +1,43 @@
+[
+  {
+    "sla": "95% of the POST requests to Users should be under 150ms",
+    "endpoint": "/users",
+    "method": "POST",
+    "metric": "latency",
+    "threshold": 150,
+    "agreement": 95
+  },
+  {
+    "sla": "95% of the POST requests to Recipes should be under 1000ms",
+    "endpoint": "/recipes",
+    "method": "POST",
+    "metric": "latency",
+    "threshold": 1000,
+    "agreement": 95
+  },
+  {
+    "sla": "95% of the POST requests to Houses should be under 200ms",
+    "endpoint": "/houses",
+    "method": "POST",
+    "metric": "latency",
+    "threshold": 200,
+    "agreement": 95
+  },
+  {
+    "sla": "95% of the POST requests to Schedules should be under 1500ms",
+    "endpoint": "/schedules",
+    "method": "POST",
+    "metric": "latency",
+    "threshold": 1500,
+    "agreement": 95
+  },
+  {
+    "sla": "95% of GET requests should be under 100ms",
+    "endpoint": "*",
+    "method": "GET",
+    "metric": "latency",
+    "threshold": 100,
+    "agreement": 95
+  }
+
+]

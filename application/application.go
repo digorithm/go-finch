@@ -21,6 +21,7 @@ var Finch *finchgo.Finch
 // New is the constructor for Application struct.
 func New(config *viper.Viper) (*Application, error) {
 
+	// Inject and initialize control loop
 	Finch.InitMonitoring()
 
 	dsn := config.Get("dsn").(string)
@@ -38,7 +39,6 @@ func New(config *viper.Viper) (*Application, error) {
 	app.db = db
 	app.db.SetMaxIdleConns(10)
 	app.sessionStore = sessions.NewCookieStore([]byte(cookieStoreSecret))
-
 	return app, err
 }
 
@@ -62,20 +62,8 @@ func (app *Application) MiddlewareStruct() (*interpose.Middleware, error) {
 }
 
 func (app *Application) Mux() *gorilla_mux.Router {
-	//MustLogin := middlewares.MustLogin
 
 	router := gorilla_mux.NewRouter()
-
-	//router.Handle("/", MustLogin(http.HandlerFunc(handlers.GetHome))).Methods("GET")
-	/*router.HandleFunc("/", handlers.GetMain).Methods("GET")
-
-	router.HandleFunc("/signup", handlers.GetSignup).Methods("GET")
-	router.HandleFunc("/signup", handlers.PostSignup).Methods("POST")
-	router.HandleFunc("/login", handlers.GetLogin).Methods("GET")
-	router.HandleFunc("/login", handlers.PostLogin).Methods("POST")
-	router.HandleFunc("/logout", handlers.GetLogout).Methods("GET")
-
-	router.Handle("/users/{id:[0-9]+}", MustLogin(http.HandlerFunc(handlers.PostPutDeleteUsersID))).Methods("POST", "PUT", "DELETE")*/
 
 	router.HandleFunc("/recipes/house/{house_id}", handlers.GetHouseRecipesHandler).Methods("GET")
 	router.HandleFunc("/recipes/user/{user_id}", handlers.GetUserRecipesHandler).Methods("GET")

@@ -38,7 +38,8 @@ func newConfig() (*viper.Viper, error) {
 
 func Initialize() {
 
-	Finch := finchgo.NewFinch("finch_knobs.json")
+	// Create new instance of Finch, make it global
+	Finch := finchgo.NewFinch("finch_knobs.json", "finch_sla.json")
 	handlers.Finch = Finch
 	application.Finch = Finch
 

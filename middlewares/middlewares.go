@@ -60,6 +60,7 @@ func Log(Finch *finchgo.Finch) func(http.Handler) http.Handler {
 			durationMS := float64(duration.Nanoseconds() / int64(1000000))
 			basePath := strings.Split(r.URL.Path, "/")[1]
 
+			// Inject monitoring loop
 			Finch.MonitorWorkload(r.Method, basePath)
 			Finch.MonitorLatency(r.Method, basePath, durationMS)
 
