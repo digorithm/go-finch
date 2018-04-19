@@ -40,6 +40,7 @@ type Finch struct {
 	RequestHistogram   *prometheus.HistogramVec
 	HTTPRequestCount   *prometheus.CounterVec
 	HTTPRequestLatency *prometheus.SummaryVec
+	KnobsGauge         *prometheus.GaugeVec
 	SLAs               []SLA
 }
 
@@ -139,9 +140,18 @@ func (f *Finch) InitMonitoring() {
 		[]string{"method", "endpoint"},
 	)
 
+	f.KnobsGauge = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: "app",
+		Name:      "knobs",
+		Help:      "Knobs metrics",
+	},
+		[]string{"knob"},
+	)
+
 	prometheus.MustRegister(f.HTTPRequestCount)
 	prometheus.MustRegister(f.HTTPRequestLatency)
 	prometheus.MustRegister(f.RequestHistogram)
+	prometheus.MustRegister(f.KnobsGauge)
 }
 
 func (f *Finch) MonitorWorkload(Method, basePath string) {
@@ -151,6 +161,13 @@ func (f *Finch) MonitorWorkload(Method, basePath string) {
 func (f *Finch) MonitorLatency(Method, basePath string, duration float64) {
 	f.HTTPRequestLatency.WithLabelValues(Method, basePath).Observe(float64(duration))
 	f.RequestHistogram.WithLabelValues(Method, basePath).Observe(float64(duration))
+}
+
+func (f *Finch) MonitorKnobs() {
+	knobs := f.getCurrentKnobs()
+	for knobName, value := range knobs {
+		f.KnobsGauge.WithLabelValues(knobName).Set(float64(value))
+	}
 }
 
 func (f *Finch) Observe() {
@@ -163,6 +180,7 @@ func (f *Finch) Observe() {
 			select {
 			case <-ticker.C:
 				f.getSLAMetrics()
+				fmt.Printf("Knobs are: %v\n", f.getCurrentKnobs())
 				// do stuff
 			case <-quitWatcher:
 				ticker.Stop()
@@ -199,7 +217,9 @@ func (f *Finch) DatasetBuilder() {
 	StartTimeString := strconv.FormatInt(StartTime.Unix(), 10)
 
 	// Collecting metrics from Prometheus: sys metrics, SLIs, not SLAs for now
-	Metrics := []string{"HTTPRequestCount", "HTTPRequestLatency", "IOWait", "MemoryUsage", "WriteTime", "CPUUsage", "ReadTime", "CPUIdle"}
+
+	// TODO: add a new metric here: the knobs, now it will come from prometheus
+	Metrics := []string{"HTTPRequestCount", "HTTPRequestLatency", "IOWait", "MemoryUsage", "WriteTime", "CPUUsage", "ReadTime", "CPUIdle", "Knobs"}
 
 	MetricQueries := buildRangeQueries(Metrics, StartTimeString, EndTimeString)
 
@@ -212,11 +232,6 @@ func (f *Finch) DatasetBuilder() {
 	CurrentKnobs := f.getCurrentKnobs()
 
 	saveDataset(CurrentKnobs, Dataset, FeatureNames)
-
-	// TODO:
-	// 1. Test this, see what it is doing at the moment
-	// 2. Check if it merges multiple datasets
-	// 3. Check the data in the dataset
 
 }
 

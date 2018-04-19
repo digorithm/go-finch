@@ -147,7 +147,11 @@ func buildRangeQueries(Metrics []string, StartTime, EndTime string) map[string]s
 	if contains(Metrics, "CPUIdle") {
 		MetricQuery["CPUIdle"] = fmt.Sprintf("http://%v:%v/api/v1/query_range?query=avg(irate(node_cpu{job='node-exporter',mode='idle'}[1m]))*100&start=%v&end=%v&step=2", domain, port, StartTime, EndTime)
 	}
-
+	/*
+		if contains(Metrics, "Knobs") {
+			MetricQuery["Knobs"] = fmt.Sprintf("http://%v:%v/api/v1/query_range?query=app_knobs&start=%v&end=%v&step=2", domain, port, StartTime, EndTime)
+		}
+	*/
 	return MetricQuery
 }
 
@@ -231,7 +235,7 @@ func buildDataset(MetricStructs map[string]RangePrometheusJSON) ([]string, map[i
 
 	// BUG: Every endpoint must be called between the timerange. Otherwise we will have different values. Fix this later, as this isnt an important problem
 
-	PrometheusStructs := []RangePrometheusJSON{MetricStructs["HTTPRequestCount"], MetricStructs["IOWait"], MetricStructs["MemoryUsage"], MetricStructs["WriteTime"], MetricStructs["CPUUsage"], MetricStructs["ReadTime"], MetricStructs["CPUIdle"], MetricStructs["HTTPRequestLatency"]}
+	PrometheusStructs := []RangePrometheusJSON{MetricStructs["HTTPRequestCount"], MetricStructs["IOWait"], MetricStructs["MemoryUsage"], MetricStructs["WriteTime"], MetricStructs["CPUUsage"], MetricStructs["ReadTime"], MetricStructs["CPUIdle"], MetricStructs["HTTPRequestLatency"], MetricStructs["Knobs"]}
 
 	// Check if they have the same number of samples
 	NumberOfSamples := make([]int, 0)
@@ -256,6 +260,7 @@ func buildDataset(MetricStructs map[string]RangePrometheusJSON) ([]string, map[i
 	KeysToFeatureName[4] = "cpu_usage"
 	KeysToFeatureName[5] = "disk_read_bytes"
 	KeysToFeatureName[6] = "cpu_idle"
+	//KeysToFeatureName[7] = "knobs"
 
 	// Create a 1D slice that will hold feature names of the dataset
 	var featureNames []string

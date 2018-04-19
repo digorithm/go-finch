@@ -63,6 +63,7 @@ func Log(Finch *finchgo.Finch) func(http.Handler) http.Handler {
 			// Inject monitoring loop
 			Finch.MonitorWorkload(r.Method, basePath)
 			Finch.MonitorLatency(r.Method, basePath, durationMS)
+			Finch.MonitorKnobs()
 
 			log.Printf("Address:: %s -- '%s' '%s' -- response time:: %v", r.RemoteAddr, r.Method, r.URL, duration)
 		})
