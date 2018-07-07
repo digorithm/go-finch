@@ -1,6 +1,0 @@
-{
-  "app_http_request_latency_users_POST_0.99": 150,
-  "app_http_request_latency_recipes_POST_0.99": 800,
-  "app_http_request_latency_houses_POST_0.99": 200,
-  "app_http_request_latency_schedules_POST_0.99": 1500
-}

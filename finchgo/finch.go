@@ -3,7 +3,7 @@ package finchgo
 import (
 	"encoding/json"
 	"fmt"
-	//"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 	"github.com/fsnotify/fsnotify"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -181,7 +182,6 @@ func (f *Finch) Observe() {
 			case <-ticker.C:
 				f.getSLAMetrics()
 				fmt.Printf("Knobs are: %v\n", f.getCurrentKnobs())
-				// do stuff
 			case <-quitWatcher:
 				ticker.Stop()
 				return
@@ -190,7 +190,7 @@ func (f *Finch) Observe() {
 	}()
 
 	// After developing/debugging, change to ~15min or so.
-	tickerBuilder := time.NewTicker(15 * time.Minute)
+	tickerBuilder := time.NewTicker(10 * time.Minute)
 	quitBuilder := make(chan struct{})
 
 	// Build dataset periodically
@@ -198,27 +198,80 @@ func (f *Finch) Observe() {
 		for {
 			select {
 			case <-tickerBuilder.C:
-				f.DatasetBuilder()
+				f.DatasetBuilder(true, "-8m")
 			case <-quitBuilder:
 				ticker.Stop()
 				return
 			}
 		}
 	}()
+
+	trainingMode := true
+	// If in training mode, run this Goroutine to tweak knobs periodically
+
+	if trainingMode {
+		tickerTweakKnobs := time.NewTicker(5 * time.Minute)
+		quitTweakKnobs := make(chan struct{})
+
+		go func() {
+			for {
+				select {
+				case <-tickerTweakKnobs.C:
+					f.mutateKnobs()
+				case <-quitTweakKnobs:
+					ticker.Stop()
+				}
+			}
+		}()
+	}
+
 }
 
-func (f *Finch) DatasetBuilder() {
+func (f *Finch) mutateKnobs() {
+	// Read json file containing the knobs
+	KnobsPath := "finch_knobs.json"
+	_, filename, _, _ := runtime.Caller(0)
+	dir, _ := filepath.Split(filepath.Dir(filename))
+	file := filepath.Join(dir, KnobsPath)
+
+	raw, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	var conf map[string]interface{}
+	json.Unmarshal(raw, &conf)
+	for idx, _ := range conf {
+		s := strconv.FormatFloat(conf[idx].(float64), 'f', 0, 64)
+		if len(s) == 4 {
+			newValue, _ := strconv.ParseFloat(strings.TrimSuffix(s, "000"), 64)
+			conf[idx] = newValue
+		} else if len(s) == 1 {
+			extra := "000"
+			newValue, _ := strconv.ParseFloat(s+string(extra), 64)
+			conf[idx] = newValue
+		}
+	}
+	newJson, _ := json.Marshal(conf)
+
+	err = ioutil.WriteFile(file, newJson, 0644)
+}
+
+func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string) {
+
+	/*
+		NegativeStartTime should be a string determining how many minutes/seconds ago you want to start building the dataset. For example: "-5m" will create a dataset from 5min ago to now.
+
+		This method will build the dataset based on a given time series range. If it is training dataset, it will save it as a csv file, and train the models on this dataset. Otherwise, it will just a single row that will be used for predictions.
+	*/
 
 	EndTime := time.Now()
-	// Grab the time from 10 minutes ago
-	StartTime := EndTime.Add(-8 * time.Minute)
+	StartTimeDuration, _ := time.ParseDuration(NegativeStartTime)
+	StartTime := EndTime.Add(StartTimeDuration)
 
 	EndTimeString := strconv.FormatInt(EndTime.Unix(), 10)
 	StartTimeString := strconv.FormatInt(StartTime.Unix(), 10)
 
-	// Collecting metrics from Prometheus: sys metrics, SLIs, not SLAs for now
-
-	// TODO: add a new metric here: the knobs, now it will come from prometheus
 	Metrics := []string{"HTTPRequestCount", "HTTPRequestLatency", "IOWait", "MemoryUsage", "WriteTime", "CPUUsage", "ReadTime", "CPUIdle", "Knobs"}
 
 	MetricQueries := buildRangeQueries(Metrics, StartTimeString, EndTimeString)
@@ -227,12 +280,75 @@ func (f *Finch) DatasetBuilder() {
 
 	MetricStructs := buildStructs(MetricData)
 
-	FeatureNames, Dataset := buildDataset(MetricStructs)
+	buildDataset(MetricStructs, isTrainingDataset)
 
-	CurrentKnobs := f.getCurrentKnobs()
+	if isTrainingDataset {
+		f.trainModels()
+	}
 
-	saveDataset(CurrentKnobs, Dataset, FeatureNames)
+}
 
+func (f *Finch) trainModels() {
+
+	src := "src/github.com/digorithm/meal_planner/finchgo/dataset/dataset.csv"
+	dst := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/dataset.csv"
+	mlComponentDirectory := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/"
+
+	err := copyDatasetFile(src, dst)
+
+	if err != nil {
+		fmt.Printf("Copy failed: %v\n", err)
+		logrus.Fatal(err)
+	}
+
+	cmd := exec.Command("python3", "train_models.py")
+	cmd.Dir = mlComponentDirectory
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(out))
+	// TODO: Find the best way to expose the training report to the user
+}
+
+func (f *Finch) predictOptimalKnobs() (map[string]float64, bool) {
+
+	var successfullyPredicted bool
+
+	src := "src/github.com/digorithm/meal_planner/finchgo/dataset/single.csv"
+	dst := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/single.csv"
+	mlComponentDirectory := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/"
+
+	err := copyDatasetFile(src, dst)
+
+	if err != nil {
+		fmt.Printf("Copy failed: %v\n", err)
+		logrus.Fatal(err)
+	}
+
+	cmd := exec.Command("python3", "-u", "predict_optimal_knobs.py")
+	cmd.Dir = mlComponentDirectory
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var predictedKnobs interface{}
+	err = json.Unmarshal(out, &predictedKnobs)
+
+	if err != nil {
+		fmt.Println(err)
+		successfullyPredicted = false
+		return nil, successfullyPredicted
+	}
+
+	successfullyPredicted = true
+	// Cast type to map[string]float64
+
+	fmt.Printf("Predicted knobs:: %v", predictedKnobs)
 }
 
 func (f *Finch) getCurrentKnobs() map[string]int {
@@ -254,7 +370,6 @@ func (f *Finch) getInstantResult(s []byte) float64 {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-
 	if len(p.Data.Result) == 1 {
 		Value, err := getFloat(p.Data.Result[0].Value[1])
 		if err != nil {
@@ -271,6 +386,7 @@ func (f *Finch) getInstantResult(s []byte) float64 {
 func (f *Finch) getSLAMetrics() {
 
 	SLAQueries := f.buildInstantQueries()
+	adapt := false
 
 	for sla, query := range SLAQueries {
 		body, err := getBodyFromURL(query)
@@ -286,10 +402,18 @@ func (f *Finch) getSLAMetrics() {
 		if (Value * 100.0) < float64(sla.Agreement) {
 			fmt.Printf("### SLA %s-%s violated. Current value: %v \n\n", sla.Method, sla.Endpoint, Value)
 			fmt.Printf("Initiating adaptation process\n")
+			adapt = true
 		}
+
+		// Improve this part. If we already triggered adaptation process and we are seeing current improvements, show that to the user
 
 		// If value is below agreement, call ML component, predict best set of knobs
 
+	}
+
+	if adapt {
+		f.DatasetBuilder(false, "-30s")
+		f.predictOptimalKnobs()
 	}
 
 }
