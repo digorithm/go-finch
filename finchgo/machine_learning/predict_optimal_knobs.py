@@ -23,5 +23,14 @@ finch = FinchML()
 
 final_knob_predictions = finch.predict_optimal_knobs(X, knobs, SLOs)
 
-print(json.dumps(final_knob_predictions))
+
+# For now we are doing this: the knob prediction come as 
+# "app_knob_<KNOB name>", but we want to return just the knob name
+# to the Go component, so we split it by '_' and get the third element
+final_knob_predictions_correct_form = {}
+for knob, value in final_knob_predictions.items():
+  correct_knob_name = knob.split('_')[2]
+  final_knob_predictions_correct_form[correct_knob_name] = value
+
+print(json.dumps(final_knob_predictions_correct_form))
 sys.stdout.flush()

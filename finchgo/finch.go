@@ -181,7 +181,6 @@ func (f *Finch) Observe() {
 			select {
 			case <-ticker.C:
 				f.getSLAMetrics()
-				fmt.Printf("Knobs are: %v\n", f.getCurrentKnobs())
 			case <-quitWatcher:
 				ticker.Stop()
 				return
@@ -332,23 +331,22 @@ func (f *Finch) predictOptimalKnobs() (map[string]float64, bool) {
 	cmd.Dir = mlComponentDirectory
 
 	out, err := cmd.CombinedOutput()
+	fmt.Printf("Out is:: %v", string(out))
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	var predictedKnobs interface{}
+	var predictedKnobs map[string]float64
 	err = json.Unmarshal(out, &predictedKnobs)
+	fmt.Printf("Predicted knobs is :: %v\n", predictedKnobs)
 
 	if err != nil {
-		fmt.Println(err)
 		successfullyPredicted = false
 		return nil, successfullyPredicted
 	}
-
 	successfullyPredicted = true
-	// Cast type to map[string]float64
 
-	fmt.Printf("Predicted knobs:: %v", predictedKnobs)
+	return predictedKnobs, successfullyPredicted
 }
 
 func (f *Finch) getCurrentKnobs() map[string]int {
@@ -406,14 +404,29 @@ func (f *Finch) getSLAMetrics() {
 		}
 
 		// Improve this part. If we already triggered adaptation process and we are seeing current improvements, show that to the user
-
-		// If value is below agreement, call ML component, predict best set of knobs
-
 	}
 
+	// Move adapt caller logic to its own method
 	if adapt {
-		f.DatasetBuilder(false, "-30s")
-		f.predictOptimalKnobs()
+		predictionSuccessful := false
+		predictedOptimalKnobs := make(map[string]float64)
+
+		for !predictionSuccessful {
+			f.DatasetBuilder(false, "-30s")
+			predictedOptimalKnobs, predictionSuccessful = f.predictOptimalKnobs()
+
+			if !predictionSuccessful {
+				fmt.Println("### Not enough data. Will try again in a few seconds ###")
+			}
+
+			time.Sleep(5 * time.Second)
+		}
+
+		fmt.Printf("Predicted knobs:: %v\n", predictedOptimalKnobs)
+		// Move this adaptation mechanism to its own method, this is where it can be something as simple as this, or something more complex like taking an external method and running it to change a certain knob
+		for knob, predictedValue := range predictedOptimalKnobs {
+			f.Knobs.Set(knob, predictedValue)
+		}
 	}
 
 }
