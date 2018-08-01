@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -27,22 +28,24 @@ func NewFinch(KnobsPath, SLAsPath string) *Finch {
 
 	Finch.SetupKnobsConfiguration(KnobsPath)
 	Finch.SetupSLAs(SLAsPath)
-	go Finch.Observe()
-	// go Finch.DatasetBuilder
-	// DatasetBuilder will build a dataset every x min and concatenate to the previously created datasets. It will also call ML component to train models
+	go Finch.StartMAPELoop()
 
 	return Finch
 }
 
 type Finch struct {
-	KnobsPath          string
-	Knobs              *viper.Viper
-	HTTPMonitorHandler http.Handler
-	RequestHistogram   *prometheus.HistogramVec
-	HTTPRequestCount   *prometheus.CounterVec
-	HTTPRequestLatency *prometheus.SummaryVec
-	KnobsGauge         *prometheus.GaugeVec
-	SLAs               []SLA
+	KnobsPath             string
+	Knobs                 *viper.Viper
+	HTTPMonitorHandler    http.Handler
+	RequestHistogram      *prometheus.HistogramVec
+	HTTPRequestCount      *prometheus.CounterVec
+	HTTPRequestLatency    *prometheus.SummaryVec
+	KnobsGauge            *prometheus.GaugeVec
+	SLAs                  []SLA
+	modelsHaveBeenTrained bool
+	// ArtificialBlockingPoints holds knob -> true/false. This bool value determines if the configuration will affect the performance of this system proportially or inversely proportionally to its value
+	artificialBlockingPoints       map[string]bool
+	experimentOptimalConfiguration map[string]float64
 }
 
 type SLA struct {
@@ -91,8 +94,71 @@ func (f *Finch) SetupKnobsConfiguration(KnobsPath string) {
 	if err := viper.ReadInConfig(); err != nil {
 		logrus.Fatalf("Error reading config file, %s", err)
 	}
+	allKnobs := viper.AllSettings()
+
+	// Randomize initial configuration
+	for knob := range allKnobs {
+		var knobRandomValueString string
+
+		knobNumberString := strings.Split(knob, "")[1]
+
+		rand.Seed(time.Now().UnixNano())
+		shouldAddZeroes := rand.Float32() < 0.5
+
+		if shouldAddZeroes {
+			knobRandomValueString = knobNumberString + string("000")
+		} else {
+			knobRandomValueString = knobNumberString
+		}
+		knobRandomValue, _ := strconv.ParseFloat(knobRandomValueString, 64)
+		viper.Set(knob, knobRandomValue)
+	}
+
+	// Setup artificial blocking points
+	randomBlockingPoints := make(map[string]bool)
+
+	for knob := range allKnobs {
+		// Randomly generate bool value
+		rand.Seed(time.Now().UnixNano())
+		randomBlockingPoints[knob] = rand.Float32() < 0.5
+	}
+	f.artificialBlockingPoints = randomBlockingPoints
 
 	logrus.Info("Knobs file loaded")
+
+	fmt.Printf("### Random blocking points:: %v ###\n### Current configuration after randomization:: %v ###\n", f.artificialBlockingPoints, viper.AllSettings())
+
+	// Checking optimal configuration given randomization
+	optimalConfiguration := make(map[string]float64)
+	for knob, value := range allKnobs {
+		valueString := strconv.FormatFloat(value.(float64), 'f', 0, 64)
+		if f.artificialBlockingPoints[knob] {
+			// it is proportional
+			if len(valueString) == 1 {
+				// Correct value, leave as is
+				correctValue, _ := strconv.ParseFloat(valueString, 64)
+				optimalConfiguration[knob] = correctValue
+			} else {
+				// Incorrect value, remove 3 zeroes
+				correctValue, _ := strconv.ParseFloat(strings.TrimSuffix(valueString, "000"), 64)
+				optimalConfiguration[knob] = correctValue
+			}
+		} else {
+			// it is inversely proportional
+			if len(valueString) == 1 {
+				// Incorrect value, add 3 zeroes
+				extra := "000"
+				correctValue, _ := strconv.ParseFloat(valueString+string(extra), 64)
+				optimalConfiguration[knob] = correctValue
+			} else {
+				// Correct value, leave as is
+				correctValue, _ := strconv.ParseFloat(valueString, 64)
+				optimalConfiguration[knob] = correctValue
+			}
+		}
+	}
+	fmt.Printf("### Optimal configuration:: %v ###\n", optimalConfiguration)
+	f.experimentOptimalConfiguration = optimalConfiguration
 
 	// Watch for file changes
 	viper.WatchConfig()
@@ -171,52 +237,33 @@ func (f *Finch) MonitorKnobs() {
 	}
 }
 
-func (f *Finch) Observe() {
+func (f *Finch) StartMAPELoop() {
+	trainingMode := true
+
+	trainingAccuracyChannel := make(chan float64, 1)
+
 	ticker := time.NewTicker(5 * time.Second)
 	quitWatcher := make(chan struct{})
-
 	// Watch metrics
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				f.getSLAMetrics()
-			case <-quitWatcher:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
+	go f.MAPELoop(ticker, quitWatcher, trainingAccuracyChannel)
 
-	// After developing/debugging, change to ~15min or so.
-	tickerBuilder := time.NewTicker(10 * time.Minute)
+	// Build dataset every 15 minutes
+	tickerBuilder := time.NewTicker(20 * time.Minute)
 	quitBuilder := make(chan struct{})
+	go f.contextBuilderLoop(tickerBuilder, quitBuilder, trainingAccuracyChannel)
 
-	// Build dataset periodically
-	go func() {
-		for {
-			select {
-			case <-tickerBuilder.C:
-				f.DatasetBuilder(true, "-8m")
-			case <-quitBuilder:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-
-	trainingMode := true
 	// If in training mode, run this Goroutine to tweak knobs periodically
-
 	if trainingMode {
-		tickerTweakKnobs := time.NewTicker(5 * time.Minute)
+		tickerTweakKnobs := time.NewTicker(10 * time.Minute)
 		quitTweakKnobs := make(chan struct{})
 
 		go func() {
 			for {
 				select {
 				case <-tickerTweakKnobs.C:
-					f.mutateKnobs()
+					if !f.modelsHaveBeenTrained {
+						f.mutateKnobs()
+					}
 				case <-quitTweakKnobs:
 					ticker.Stop()
 				}
@@ -226,37 +273,168 @@ func (f *Finch) Observe() {
 
 }
 
-func (f *Finch) mutateKnobs() {
-	// Read json file containing the knobs
-	KnobsPath := "finch_knobs.json"
-	_, filename, _, _ := runtime.Caller(0)
-	dir, _ := filepath.Split(filepath.Dir(filename))
-	file := filepath.Join(dir, KnobsPath)
+func (f *Finch) MAPELoop(ticker *time.Ticker, quitWatcher chan struct{}, trainingAccuracyChannel chan float64) {
+	SLAMetricsHistory := make(map[SLA][]float64)
 
-	raw, err := ioutil.ReadFile(file)
-	if err != nil {
-		fmt.Println(err.Error())
+	// System states
+	adaptationWasCarried := false
+	isImproving := false
+	f.modelsHaveBeenTrained = false
+
+	currentTrainingAccuracy := 0.0
+
+	for {
+		select {
+		case <-ticker.C:
+			currentSLAMetrics := f.getSLAMetrics()
+			SLAMetricsHistory = f.appendSLAMetricsHistory(SLAMetricsHistory, currentSLAMetrics)
+
+			f.logSLAMetrics(currentSLAMetrics)
+
+			if f.checkForViolation(currentSLAMetrics) {
+				fmt.Println("### SLA violated ###")
+
+				if f.modelsHaveBeenTrained {
+					// Only create adaptation plans if we have trained models
+					fmt.Printf("### Models have been trained. Current accuracy:: %v ### \n", currentTrainingAccuracy)
+					if adaptationWasCarried {
+						// Analyze SLAMetricsHistory. If there's an improvement
+						// set adaptationWasCarried to true, this will prevent the next if statement to execute the adaptation again
+						// If there's no improvement, set adaptationWasCarried to false, this will make it try to adapt again
+						isImproving = f.checkForImprovement(SLAMetricsHistory)
+						fmt.Printf("### Improvement after deploying adaptation:: %v ###\n", isImproving)
+						if !isImproving {
+							adaptationWasCarried = false
+						}
+					}
+
+					if !adaptationWasCarried {
+						predictedOptimalKnobs := f.predictOptimalKnobs()
+						fmt.Printf("### Predicted optimal knobs:: %v ###\n", predictedOptimalKnobs)
+						f.checkExperimentPrecision(predictedOptimalKnobs)
+
+						f.carryAdaptationPlan(predictedOptimalKnobs)
+
+						logrus.Infof("### Adaptation has been carried out ###")
+
+						adaptationWasCarried = true
+					}
+				} else {
+					fmt.Println("### Waiting for models to be trained ### ")
+				}
+			} else {
+				fmt.Println("### SLAs are in agreement ###")
+			}
+
+		case accuracy := <-trainingAccuracyChannel:
+			// Received training result from contextBuilderLoop goroutine
+			f.modelsHaveBeenTrained = true
+			currentTrainingAccuracy = accuracy
+
+		case <-quitWatcher:
+			ticker.Stop()
+			return
+		}
+	}
+}
+
+func (f *Finch) contextBuilderLoop(tickerBuilder *time.Ticker, quitBuilder chan struct{}, trainingAccuracyChannel chan float64) {
+	for {
+		select {
+		case <-tickerBuilder.C:
+			trainingAccuracy, success := f.DatasetBuilder(true, "-20m")
+			if success {
+				trainingAccuracyChannel <- trainingAccuracy
+			}
+		case <-quitBuilder:
+			tickerBuilder.Stop()
+			return
+		}
+	}
+}
+
+func (f *Finch) checkForImprovement(History map[SLA][]float64) bool {
+	pastDataPoints := 5
+
+	for _, values := range History {
+		if len(values) < pastDataPoints+2 {
+			// Not enough history
+			return true
+		}
+		// currentValue := values[len(values)-1]
+		pastDataPointsValues := values[len(values)-pastDataPoints : len(values)-1]
+
+		// fmt.Printf("Past data points:: %v\n", pastDataPointsValues)
+
+		successiveDiffs := make([]float64, 0)
+
+		for idx := range pastDataPointsValues {
+			if idx != len(pastDataPointsValues)-1 {
+				currentDiff := pastDataPointsValues[idx+1] - pastDataPointsValues[idx]
+				successiveDiffs = append(successiveDiffs, currentDiff)
+			}
+		}
+
+		// fmt.Printf("Successive diffs:: %v\n", successiveDiffs)
+		// check if the sum successive diffs is positive
+		sum := 0.0
+		for _, value := range successiveDiffs {
+			sum += value
+		}
+
+		// IF it's positive, that means there's an improvement going on
+		if sum > 0.0 {
+			return true
+		} else {
+			return false
+		}
+		// fmt.Printf("Sum of successive diffs:: %v\n", sum)
 	}
 
-	var conf map[string]interface{}
-	json.Unmarshal(raw, &conf)
-	for idx, _ := range conf {
-		s := strconv.FormatFloat(conf[idx].(float64), 'f', 0, 64)
+	return true
+}
+
+func (f *Finch) appendSLAMetricsHistory(History map[SLA][]float64, currentMetrics map[SLA]float64) map[SLA][]float64 {
+
+	for sla, currentValue := range currentMetrics {
+		History[sla] = append(History[sla], currentValue)
+	}
+
+	return History
+}
+
+func (f *Finch) logSLAMetrics(SLAMetrics map[SLA]float64) {
+	for sla, value := range SLAMetrics {
+		logrus.WithFields(logrus.Fields{
+			"SLA":       sla.SLA,
+			"Endpoint":  sla.Endpoint,
+			"Method":    sla.Method,
+			"Threshold": sla.Threshold,
+			"Agreement": sla.Agreement,
+		}).Infof("Current SLA value:: %v", value)
+	}
+}
+
+func (f *Finch) mutateKnobs() {
+	fmt.Println("### Mutating knobs ###")
+
+	currentKnobs := f.Knobs.AllSettings()
+
+	for knob, value := range currentKnobs {
+		s := strconv.FormatFloat(value.(float64), 'f', 0, 64)
+		f.Knobs.Set(knob, value)
 		if len(s) == 4 {
 			newValue, _ := strconv.ParseFloat(strings.TrimSuffix(s, "000"), 64)
-			conf[idx] = newValue
+			f.Knobs.Set(knob, newValue)
 		} else if len(s) == 1 {
 			extra := "000"
 			newValue, _ := strconv.ParseFloat(s+string(extra), 64)
-			conf[idx] = newValue
+			f.Knobs.Set(knob, newValue)
 		}
 	}
-	newJson, _ := json.Marshal(conf)
-
-	err = ioutil.WriteFile(file, newJson, 0644)
 }
 
-func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string) {
+func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string) (float64, bool) {
 
 	/*
 		NegativeStartTime should be a string determining how many minutes/seconds ago you want to start building the dataset. For example: "-5m" will create a dataset from 5min ago to now.
@@ -282,12 +460,17 @@ func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string)
 	buildDataset(MetricStructs, isTrainingDataset)
 
 	if isTrainingDataset {
-		f.trainModels()
+		fmt.Println("### Initiating training process ###")
+		trainingAverage, success := f.trainModels()
+		if success {
+			fmt.Printf("### Models training average accuracy:: %v ### \n", trainingAverage)
+			return trainingAverage, success
+		}
 	}
-
+	return 0.0, false
 }
 
-func (f *Finch) trainModels() {
+func (f *Finch) trainModels() (float64, bool) {
 
 	src := "src/github.com/digorithm/meal_planner/finchgo/dataset/dataset.csv"
 	dst := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/dataset.csv"
@@ -296,57 +479,77 @@ func (f *Finch) trainModels() {
 	err := copyDatasetFile(src, dst)
 
 	if err != nil {
-		fmt.Printf("Copy failed: %v\n", err)
+		fmt.Printf("Train model copy failed: %v\n", err)
 		logrus.Fatal(err)
 	}
+
+	var trainingScores []float64
+	trainingSuccessful := false
 
 	cmd := exec.Command("python3", "train_models.py")
 	cmd.Dir = mlComponentDirectory
 
 	out, err := cmd.CombinedOutput()
+
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(string(out))
-	// TODO: Find the best way to expose the training report to the user
+	err = json.Unmarshal(out, &trainingScores)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	// If all good, set as successful
+	trainingSuccessful = true
+
+	trainingAverage := getTrainingAverage(trainingScores)
+
+	return trainingAverage, trainingSuccessful
+
 }
 
-func (f *Finch) predictOptimalKnobs() (map[string]float64, bool) {
+func (f *Finch) predictOptimalKnobs() map[string]float64 {
 
-	var successfullyPredicted bool
-
-	src := "src/github.com/digorithm/meal_planner/finchgo/dataset/single.csv"
-	dst := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/single.csv"
-	mlComponentDirectory := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/"
-
-	err := copyDatasetFile(src, dst)
-
-	if err != nil {
-		fmt.Printf("Copy failed: %v\n", err)
-		logrus.Fatal(err)
-	}
-
-	cmd := exec.Command("python3", "-u", "predict_optimal_knobs.py")
-	cmd.Dir = mlComponentDirectory
-
-	out, err := cmd.CombinedOutput()
-	fmt.Printf("Out is:: %v", string(out))
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	predictionSuccessful := false
 	var predictedKnobs map[string]float64
-	err = json.Unmarshal(out, &predictedKnobs)
-	fmt.Printf("Predicted knobs is :: %v\n", predictedKnobs)
 
-	if err != nil {
-		successfullyPredicted = false
-		return nil, successfullyPredicted
+	for !predictionSuccessful {
+		f.DatasetBuilder(false, "-30s")
+
+		src := "src/github.com/digorithm/meal_planner/finchgo/dataset/single.csv"
+		dst := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/single.csv"
+		mlComponentDirectory := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/"
+
+		err := copyDatasetFile(src, dst)
+
+		if err != nil {
+			fmt.Printf("Predict knobs copy failed: %v\n", err)
+			logrus.Fatal(err)
+		}
+
+		cmd := exec.Command("python3", "-u", "predict_optimal_knobs.py")
+		cmd.Dir = mlComponentDirectory
+
+		out, _ := cmd.CombinedOutput()
+
+		err = json.Unmarshal(out, &predictedKnobs)
+
+		if err != nil || len(predictedKnobs) == 0 {
+			fmt.Println(err)
+			predictionSuccessful = false
+		} else {
+			predictionSuccessful = true
+		}
+
+		if !predictionSuccessful {
+			fmt.Println("### Not enough data. Will try again in a few seconds ###")
+		}
+
+		time.Sleep(5 * time.Second)
 	}
-	successfullyPredicted = true
 
-	return predictedKnobs, successfullyPredicted
+	return predictedKnobs
 }
 
 func (f *Finch) getCurrentKnobs() map[string]int {
@@ -381,10 +584,19 @@ func (f *Finch) getInstantResult(s []byte) float64 {
 
 }
 
-func (f *Finch) getSLAMetrics() {
+func (f *Finch) checkForViolation(SLAMetrics map[SLA]float64) bool {
+	for sla, currentValue := range SLAMetrics {
+		if currentValue < float64(sla.Agreement) {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *Finch) getSLAMetrics() map[SLA]float64 {
 
 	SLAQueries := f.buildInstantQueries()
-	adapt := false
+	SLAMetrics := make(map[SLA]float64)
 
 	for sla, query := range SLAQueries {
 		body, err := getBodyFromURL(query)
@@ -393,42 +605,16 @@ func (f *Finch) getSLAMetrics() {
 			logrus.Fatalf("Couldn't get SLA metrics:: %v", err)
 		}
 
-		Value := f.getInstantResult(body)
-
-		fmt.Printf("Metrics for SLA %s-%s:: %v \n \n", sla.Method, sla.Endpoint, (Value * 100.0))
-
-		if (Value * 100.0) < float64(sla.Agreement) {
-			fmt.Printf("### SLA %s-%s violated. Current value: %v \n\n", sla.Method, sla.Endpoint, Value)
-			fmt.Printf("Initiating adaptation process\n")
-			adapt = true
-		}
-
-		// Improve this part. If we already triggered adaptation process and we are seeing current improvements, show that to the user
+		currentValue := f.getInstantResult(body)
+		SLAMetrics[sla] = currentValue * 100.0
 	}
+	return SLAMetrics
+}
 
-	// Move adapt caller logic to its own method
-	if adapt {
-		predictionSuccessful := false
-		predictedOptimalKnobs := make(map[string]float64)
-
-		for !predictionSuccessful {
-			f.DatasetBuilder(false, "-30s")
-			predictedOptimalKnobs, predictionSuccessful = f.predictOptimalKnobs()
-
-			if !predictionSuccessful {
-				fmt.Println("### Not enough data. Will try again in a few seconds ###")
-			}
-
-			time.Sleep(5 * time.Second)
-		}
-
-		fmt.Printf("Predicted knobs:: %v\n", predictedOptimalKnobs)
-		// Move this adaptation mechanism to its own method, this is where it can be something as simple as this, or something more complex like taking an external method and running it to change a certain knob
-		for knob, predictedValue := range predictedOptimalKnobs {
-			f.Knobs.Set(knob, predictedValue)
-		}
+func (f *Finch) carryAdaptationPlan(predictedOptimalKnobs map[string]float64) {
+	for knob, predictedValue := range predictedOptimalKnobs {
+		f.Knobs.Set(knob, predictedValue)
 	}
-
 }
 
 func (f *Finch) buildInstantQueries() map[SLA]string {
@@ -457,4 +643,22 @@ func (f *Finch) buildInstantQueries() map[SLA]string {
 	}
 
 	return SLAQueries
+}
+
+func (f *Finch) ArtificialBlockingPoint(knob string) {
+	if f.artificialBlockingPoints[knob] {
+		// True means the blocking time is proportial to the knob value. The higher the value, the more it blocks
+		sleepFor := time.Duration(f.Knobs.GetInt(knob)) * time.Millisecond
+		time.Sleep(sleepFor)
+	} else {
+		// And the inverse is true
+		sleepFor := time.Duration((1.0/f.Knobs.GetFloat64(knob))*10000) * time.Millisecond
+		time.Sleep(sleepFor)
+	}
+}
+
+func (f *Finch) checkExperimentPrecision(predictedKnobs map[string]float64) {
+	for knob, value := range predictedKnobs {
+		fmt.Printf("### Knob %v :: predicted = %v | correct = %v ###\n", knob, value, f.experimentOptimalConfiguration[knob])
+	}
 }

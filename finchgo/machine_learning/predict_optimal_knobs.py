@@ -1,5 +1,6 @@
 from finch_ml import FinchML
 import pandas as pd
+import numpy as np
 import json
 import sys
 
@@ -30,7 +31,7 @@ final_knob_predictions = finch.predict_optimal_knobs(X, knobs, SLOs)
 final_knob_predictions_correct_form = {}
 for knob, value in final_knob_predictions.items():
   correct_knob_name = knob.split('_')[2]
-  final_knob_predictions_correct_form[correct_knob_name] = value
+  final_knob_predictions_correct_form[correct_knob_name] = np.float32(value).item()
 
 print(json.dumps(final_knob_predictions_correct_form))
 sys.stdout.flush()

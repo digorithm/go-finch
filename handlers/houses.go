@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
@@ -53,8 +52,7 @@ func GetHouseHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostHouseHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Toy Knob
-	time.Sleep(time.Duration(Finch.Knobs.GetInt("k3")) * time.Millisecond)
+	Finch.ArtificialBlockingPoint("k3")
 
 	HouseObj := CreateHouseObj(r)
 	MemberOf := CreateMemberObj(r)

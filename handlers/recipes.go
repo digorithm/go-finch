@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/digorithm/meal_planner/models"
 	"github.com/gorilla/mux"
@@ -22,8 +21,7 @@ func CreateRecipeObj(r *http.Request) *models.Recipe {
 
 func AddRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Toy Knob
-	time.Sleep(time.Duration(Finch.Knobs.GetInt("k2")) * time.Millisecond)
+	Finch.ArtificialBlockingPoint("k2")
 
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -187,8 +185,7 @@ func UpdateRecipeStepIngredientHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetRecipesHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Toy Knob
-	time.Sleep(time.Duration(Finch.Knobs.GetInt("k1")) * time.Millisecond)
+	Finch.ArtificialBlockingPoint("k1")
 
 	recipeObj := CreateRecipeObj(r)
 

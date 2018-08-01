@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"io/ioutil"
-	"time"
 )
 
 func CreateUserObj(r *http.Request) *models.User {
@@ -108,8 +107,7 @@ func buildAllUsersJSONResponse(users []*models.UserRow) []byte {
 
 func PostSignupHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Toy Knob
-	time.Sleep(time.Duration((1 / Finch.Knobs.GetInt("k5"))) * time.Millisecond)
+	Finch.ArtificialBlockingPoint("k5")
 
 	userObj := CreateUserObj(r)
 

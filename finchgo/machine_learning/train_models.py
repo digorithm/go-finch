@@ -3,7 +3,12 @@ Simple script to call the method that will train all models. The dataset used wi
 """
 
 from finch_ml import FinchML
+import json
+import sys
 
 finch = FinchML()
 
-finch.train_models()
+sli_knob_models, sli_models, scores = finch.train_models()
+
+print(json.dumps(scores))
+sys.stdout.flush()

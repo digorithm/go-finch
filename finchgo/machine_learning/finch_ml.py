@@ -35,14 +35,14 @@ class FinchML:
     self.Dataset = self.preprocess_data(dataset)
 
     sli_models = self.train_sli_models()
-    sli_knob_models = self.train_sli_to_knob_models()
+    sli_knob_models, scores = self.train_sli_to_knob_models()
 
     self.SLI_models = sli_models
     self.SLI_knob_models = sli_knob_models
 
     self.save_models(sli_models, sli_knob_models)
 
-    return sli_knob_models, sli_models
+    return sli_knob_models, sli_models, scores
   
   def save_models(self, sli_models={}, sli_knob_models={}):
 
@@ -177,7 +177,7 @@ class FinchML:
   def preprocess_data(self, original_dataset):
     remove_timestamp = False
     # make a list of desired features, drop anything other than these feats
-    features = ["recipes", "houses", "schedules", "storages", "users", "CPUIdle", "CPUUsage", "HTTPRequestCount", "IOWait", "MemoryUsage"]
+    features = ["recipes", "houses", "schedules", "users"]
 
     all_features = original_dataset.keys().tolist()
     
@@ -243,11 +243,12 @@ class FinchML:
   def preprocess_to_predict_sli_to_knob(self, original_dataset, sli):
 
     knob_features = [k for k in original_dataset.keys() if "knob" in k]
+    sli_name = sli.split('_')[-2]
     
     if len(original_dataset.shape) == 1:
-      dataset = original_dataset.drop([r for r in original_dataset.keys() if (r in knob_features) or (r.startswith("app") and r != sli)])
+      dataset = original_dataset.drop([r for r in original_dataset.keys() if (r in knob_features) or (r.startswith("app") and (sli_name not in r))])
     else:
-      dataset = original_dataset.drop([r for r in original_dataset.keys() if (r in knob_features) or (r.startswith("app") and r != sli)], 1)
+      dataset = original_dataset.drop([r for r in original_dataset.keys() if (r in knob_features) or (r.startswith("app") and (sli_name not in r))], 1)
 
     return dataset
 
@@ -258,24 +259,32 @@ class FinchML:
     for each of the considered knobs.
     """
     sli_knobs = {}
+    debugging = False 
     
     non_knob_features = [k for k in self.Dataset.keys() if "knob" not in k]
     knob_features = [k for k in self.Dataset.keys() if "knob" in k]
 
+    scores_results = []
+
     for sli in self.Dataset.keys():
       if "0.99" in sli:
+        
+        # Get endpoint name, ex: 'houses'
+        sli_name = sli.split('_')[-2]
         sli_knobs[sli] = {}
         for knob in knob_features:
           y = self.Dataset[knob]
-          X = self.Dataset.drop([r for r in self.Dataset.keys() if (r in knob_features) or (r.startswith("app") and r != sli)], 1)
+          X = self.Dataset.drop([r for r in self.Dataset.keys() if (r in knob_features) or (r.startswith("app") and (sli_name not in r))], 1)
           
           regr = linear_model.LogisticRegression(C=.5, penalty='l1', tol=0.01, n_jobs=4)
 
           cv = ShuffleSplit(n_splits=3, test_size=0.2, random_state=42)
-          
           scores = cross_val_score(regr, X, y, cv=cv)
 
-          print("Accuracy for %s -> %s: %0.2f (+/- %0.2f)" % (sli, knob, scores.mean(), scores.std() * 2))
+          if debugging:
+            print("Accuracy for %s -> %s: %0.2f (+/- %0.2f)" % (sli, knob, scores.mean(), scores.std() * 2))
+
+          scores_results.append(scores.mean())
           
           # Now train the actual model with the whole dataset
 
@@ -284,7 +293,7 @@ class FinchML:
           model.fit(X, y)
           sli_knobs[sli][knob] = model
 
-    return sli_knobs
+    return sli_knobs, scores_results
 
   def train_sli_models(self):
     """
@@ -294,6 +303,8 @@ class FinchML:
     We could change the dataset to 'sli_houses_post'
     """
     sli_models = {}
+    debugging = False
+
 
     for target_feat in self.Dataset.keys():
       if "0.99" in target_feat:
@@ -306,7 +317,8 @@ class FinchML:
         cv = ShuffleSplit(n_splits=3, test_size=0.2, random_state=42)
         scores = cross_val_score(regr, X, y, cv=cv)
 
-        print("Accuracy for %s: %0.2f (+/- %0.2f)" % (target_feat, scores.mean(), scores.std() * 2))
+        if debugging:
+          print("Accuracy for %s: %0.2f (+/- %0.2f)" % (target_feat, scores.mean(), scores.std() * 2))
 
         # Now train the actual model with the whole dataset
         model = linear_model.LassoCV() 

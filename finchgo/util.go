@@ -677,9 +677,17 @@ func transposeCSV(fileName string) string {
 // We need this because in this experiment I will be running a simulation
 // then stoping, generating the dataset, manually tweaking the knobs, and repeat. In the end I want a single dataset
 func mergeDatasets(fileName string) {
+	// First, copy previously merged dataset.csv being used to training to the dataset/ folder. Rename it to final_dataset.csv so that it can be merged with the new datasets being generated in runtime. All this IF such dataset exists
+
+	dst := "src/github.com/digorithm/meal_planner/finchgo/dataset/final_dataset.csv"
+	src := "src/github.com/digorithm/meal_planner/finchgo/machine_learning/dataset.csv"
+
+	copyDatasetFile(src, dst)
+
 	path, _ := filepath.Split(fileName)
 
 	files, err := ioutil.ReadDir(path)
+	fmt.Printf("All files:: %v\n", files)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -703,11 +711,13 @@ func mergeDatasets(fileName string) {
 			logrus.Fatal(err)
 		}
 		if match {
+			fmt.Printf("File match:: %v\n", f.Name())
 			csvFile, _ := os.Open(fmt.Sprintf("%v%v", path, f.Name()))
 			reader := csv.NewReader(bufio.NewReader(csvFile))
 
 			if firstIteration {
 				fmt.Println("### Writing first dataset ###")
+				fmt.Printf("Merging %v\n", f.Name())
 				tempDataset, err := reader.ReadAll()
 				if err != nil {
 					logrus.Fatal(err)
@@ -716,6 +726,7 @@ func mergeDatasets(fileName string) {
 				firstIteration = false
 			} else {
 				fmt.Println("### Merging another dataset ###")
+				fmt.Printf("Merging %v\n", f.Name())
 				tempDataset, err := reader.ReadAll()
 				if err != nil {
 					logrus.Fatal(err)
@@ -881,4 +892,12 @@ func transposeCsv(csvFile io.Reader, w io.Writer) error {
 
 	_, err = buf.WriteTo(w)
 	return err
+}
+
+func getTrainingAverage(scores []float64) float64 {
+	var total float64 = 0
+	for _, value := range scores {
+		total += value
+	}
+	return total / float64(len(scores))
 }
