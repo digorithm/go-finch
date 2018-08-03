@@ -8,11 +8,11 @@
     "agreement": 95
   },
   {
-    "sla": "95% of the POST requests to Recipes should be under 1000ms",
+    "sla": "95% of the POST requests to Recipes should be under 2000ms",
     "endpoint": "/recipes",
     "method": "POST",
     "metric": "latency",
-    "threshold": 1000,
+    "threshold": 2000,
     "agreement": 95
   },
   {
@@ -32,8 +32,8 @@
     "agreement": 95
   },
   {
-    "sla": "95% of GET requests should be under 100ms",
-    "endpoint": "*",
+    "sla": "95% of GET requests to recipes should be under 100ms",
+    "endpoint": "/recipes",
     "method": "GET",
     "metric": "latency",
     "threshold": 100,

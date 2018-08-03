@@ -51,3 +51,71 @@ def validate_prediction_workflow(slos, desired_configuration, dataset_file="data
     print("### \n SLI: %s \n SLO: %.f \n Predicted: %.f \n difference between prediction and SLO: %.f \n### \n" % (sli, slos[sli], scaled_back_sli_predictions[sli], slos[sli] - scaled_back_sli_predictions[sli]))
 
   print("Optimal set of knobs for test case:: " + str(final_knob_predictions))
+
+
+def validate_prediction_for_single_sla_workflow(violatedSLO, dataset_file="dataset.csv"):
+  """
+  Validate the prediction models by performing bidirectional predictions
+  slos is a dictionary where keys are the SLIs and the values are its respective SLOs
+  """
+  dataset = pd.read_csv(dataset_file)
+  #dataset = dataset.drop(["io_wait", "memory_usage", "cpu_usage", "cpu_idle", "disk_write_bytes", "disk_read_bytes"], 1)
+  
+  ds = dataset.loc[1:].copy()
+
+  # Train the model using the dataset that does not contain the test sample
+  finch = FinchML()
+  finch.train_models(dataframe=ds)
+
+  # This datapoint is a sample of a bad performance. All SLIs are violating our fictional SLOs
+  test = dataset.loc[0].copy()
+
+  # Grab knob names
+  knobs = [k for k in dataset.keys() if "knob" in k]
+  final_knob_predictions = finch.predict_optimal_knobs_for_single_sla(test, knobs, violatedSLO)
+
+  print("Optimal set of knobs for test case:: " + str(final_knob_predictions))
+
+
+def validate_prediction_with_multioutput_regressor_workflow(SLOs, dataset_file="dataset.csv"):
+  """
+  Validate the prediction models by performing bidirectional predictions
+  slos is a dictionary where keys are the SLIs and the values are its respective SLOs
+  """
+  dataset = pd.read_csv(dataset_file)
+  #dataset = dataset.drop(["io_wait", "memory_usage", "cpu_usage", "cpu_idle", "disk_write_bytes", "disk_read_bytes"], 1)
+  
+  ds = dataset.loc[1:].copy()
+
+  # Train the model using the dataset that does not contain the test sample
+  finch = FinchML()
+  finch.train_models(dataframe=ds)
+
+  # This datapoint is a sample of a bad performance. All SLIs are violating our fictional SLOs
+  test = dataset.loc[0].copy()
+
+  # Grab knob names
+  knobs = [k for k in dataset.keys() if "knob" in k]
+  final_knob_predictions = finch.predict_optimal_configuration(test, knobs, SLOs)
+
+  print("Optimal set of knobs for test case:: " + str(final_knob_predictions))
+
+
+def validate_prediction_with_SLI_approach(SLOs, dataset_file="dataset.csv"):
+  dataset = pd.read_csv(dataset_file)
+  #dataset = dataset.drop(["io_wait", "memory_usage", "cpu_usage", "cpu_idle", "disk_write_bytes", "disk_read_bytes"], 1)
+  
+  ds = dataset.loc[1:].copy()
+
+  # Train the model using the dataset that does not contain the test sample
+  finch = FinchML()
+  finch.train_models(dataframe=ds)
+
+  # This datapoint is a sample of a bad performance. All SLIs are violating our fictional SLOs
+  test = dataset.loc[0].copy()
+
+  # Grab knob names
+  knobs = [k for k in dataset.keys() if "knob" in k]
+  final_knob_predictions = finch.predict_optimal_configuration_2(knobs, SLOs)
+
+  print("Optimal set of knobs for test case:: " + str(final_knob_predictions))

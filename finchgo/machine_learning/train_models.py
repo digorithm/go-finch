@@ -8,7 +8,6 @@ import sys
 
 finch = FinchML()
 
-sli_knob_models, sli_models, scores = finch.train_models()
-
-print(json.dumps(scores))
+sli_models, score = finch.train_models()
+print(json.dumps(score))
 sys.stdout.flush()
