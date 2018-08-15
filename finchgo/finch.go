@@ -360,7 +360,7 @@ func (f *Finch) contextBuilderLoop(tickerBuilder *time.Ticker, quitBuilder chan 
 	for {
 		select {
 		case <-tickerBuilder.C:
-			trainingAccuracy, success := f.DatasetBuilder(true, "-50m")
+			trainingAccuracy, success := f.DatasetBuilder(true, "-60m")
 			if success {
 				trainingAccuracyChannel <- trainingAccuracy
 			}
@@ -427,6 +427,7 @@ func (f *Finch) logSLAMetrics(SLAMetrics map[SLA]float64) {
 
 func (f *Finch) mutateKnobs() {
 
+	fmt.Printf("### %v ###\n", f.knobHasBeenMutated)
 	for knob, wasMutated := range f.knobHasBeenMutated {
 		if !wasMutated {
 			fmt.Printf("### Mutating knob %v ###\n", knob)
@@ -445,11 +446,22 @@ func (f *Finch) mutateKnobs() {
 			f.knobHasBeenMutated[knob] = true
 			break
 		}
+	}
+	if f.allKnobsHaveBeenMutated() {
 		fmt.Println("### All knobs have been mutated ###\n")
 		for knob, _ := range f.knobHasBeenMutated {
 			f.knobHasBeenMutated[knob] = false
 		}
 	}
+}
+
+func (f *Finch) allKnobsHaveBeenMutated() bool {
+	for _, wasMutated := range f.knobHasBeenMutated {
+		if !wasMutated {
+			return false
+		}
+	}
+	return true
 }
 
 func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string) (float64, bool) {
@@ -483,7 +495,7 @@ func (f *Finch) DatasetBuilder(isTrainingDataset bool, NegativeStartTime string)
 		if success {
 			fmt.Printf("### Models training average accuracy:: %v ### \n", trainingAverage)
 
-			if !f.trainingMode {
+			if f.trainingMode {
 				// If in training mode, adaptations will only happen when we create the dataset, in order to let parameter mutation do its job in peace
 				adaptationPlan := f.optimizeConfiguration()
 				fmt.Printf("### Predicted optimal configuration:: %v ###\n", adaptationPlan)
@@ -514,7 +526,7 @@ func (f *Finch) trainModels() (float64, bool) {
 		logrus.Fatal(err)
 	}
 
-	var trainingScore float64
+	var trainingScore []float64
 	trainingSuccessful := false
 
 	cmd := exec.Command("python3", "train_models.py")
@@ -529,13 +541,15 @@ func (f *Finch) trainModels() (float64, bool) {
 	fmt.Println(string(out))
 	err = json.Unmarshal(out, &trainingScore)
 
+	finalScore := getTrainingAverage(trainingScore)
+
 	if err != nil {
 		fmt.Println(err)
 	}
 	// If all good, set as successful
 	trainingSuccessful = true
 
-	return trainingScore, trainingSuccessful
+	return finalScore, trainingSuccessful
 
 }
 

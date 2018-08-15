@@ -10,12 +10,20 @@ from os.path import isfile, join
 from sklearn import preprocessing
 from sklearn.externals import joblib
 from sklearn import linear_model
+from sklearn.svm import SVR
 from sklearn.model_selection import ShuffleSplit, cross_val_score
 from collections import Counter
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, GradientBoostingRegressor
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputRegressor
 import numpy as np
+# from matplotlib import pyplot as plt
+from sklearn.metrics import make_scorer
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import learning_curve
+# from sklearn_evaluation.plot import grid_search
+# import scikitplot as skplt
 import itertools
 
 from collections import OrderedDict
@@ -31,7 +39,7 @@ class FinchML:
     self.Dataset = None
     self.Scaler = None
 
-  def train_models(self, dataset_filepath="dataset_test.csv", dataframe=None):
+  def train_models(self, dataset_filepath="dataset.csv", dataframe=None):
     """Train all models.
     It takes either the path or the loaded pandas dataframe"""
 
@@ -239,7 +247,7 @@ class FinchML:
       
       optimal_configuration_decoded = []
 
-      target_candidates = [p for p in predictions if p <= slos[sli] + 1000.0]
+      target_candidates = [p for p in predictions if p <=  3 * slos[sli]]
       
       # Also append sub-optimals to the SLI, in case the min is higher than SLO but it's still the minimum
       target_candidates.append(min(predictions))
@@ -483,6 +491,8 @@ class FinchML:
     """
     Testing new approach. This one will predict, given knobs, the SLI, one model for each SLA.
     """
+    debugging = False
+    evaluating = False
     # The dataset in self.Dataset has already been pre-processed
     non_knob_features = [k for k in self.Dataset.keys() if "knob" not in k and "0.99" in k]
     knob_features = [k for k in self.Dataset.keys() if "knob" in k]
@@ -490,25 +500,120 @@ class FinchML:
     sli_models = {}
 
     all_scores = []
+    SLI_number = 1
     for target_sli in non_knob_features:
       X = self.Dataset[knob_features]
       y = self.Dataset[target_sli]
 
       # Test accuracy with cross validation
-      regr = linear_model.LassoCV()
+      regr = GradientBoostingRegressor()
       
-      cv = ShuffleSplit(n_splits=3, test_size=0.2, random_state=42)
-      scores = cross_val_score(regr, X, y, cv=cv)
+      cv = ShuffleSplit(n_splits=3, test_size=0.3, random_state=0)
 
-      # print("Accuracy for %s: %0.2f (+/- %0.2f)" % (target_sli, scores.mean(), scores.std() * 2))
-      all_scores.append(scores.mean())
+      if not evaluating:
+        """
+        If we are not running evaluation, we should proceed with normal training path
+        """
+        parameters = {
+          'n_estimators':[200, 300, 400, 500, 600],
+          'learning_rate': [0.001, 0.01, 0.1],
+          'max_depth': [3, 5, 8, 15]
+          }
+        
+        clf = GridSearchCV(regr, parameters, cv=cv, n_jobs=-1, refit='AUC')
+        clf.fit(X, y)
 
-      # Now train the actual model with the whole dataset
-      model = linear_model.LassoCV() 
-      model.fit(X, y)
-      sli_models[target_sli] = model
+        if debugging:
+          print(clf.best_params_)
+          print(clf.best_score_)
+        
+        all_scores.append(clf.best_score_)
+
+        sli_models[target_sli] = clf
+
+      if evaluating:
+        """
+        If evaluating, don't perform grid search
+        """
+        title = "SLI model #" + str(SLI_number)
+        evaluated_estimator = regr = GradientBoostingRegressor(learning_rate=0.01, n_estimators=500, max_depth=5)
+        self.plot_learning_curve(evaluated_estimator, title, X, y, ylim=(0.3, 1.01), cv=cv, n_jobs=-1)
+        plt.show()
+      
+      SLI_number += 1
     
     return sli_models, all_scores
+  
+  def plot_learning_curve(self, estimator, title, X, y, ylim=None, cv=None,
+                        n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
+    """
+    Generate a simple plot of the test and training learning curve.
+
+    Parameters
+    ----------
+    estimator : object type that implements the "fit" and "predict" methods
+        An object of that type which is cloned for each validation.
+
+    title : string
+        Title for the chart.
+
+    X : array-like, shape (n_samples, n_features)
+        Training vector, where n_samples is the number of samples and
+        n_features is the number of features.
+
+    y : array-like, shape (n_samples) or (n_samples, n_features), optional
+        Target relative to X for classification or regression;
+        None for unsupervised learning.
+
+    ylim : tuple, shape (ymin, ymax), optional
+        Defines minimum and maximum yvalues plotted.
+
+    cv : int, cross-validation generator or an iterable, optional
+        Determines the cross-validation splitting strategy.
+        Possible inputs for cv are:
+          - None, to use the default 3-fold cross-validation,
+          - integer, to specify the number of folds.
+          - An object to be used as a cross-validation generator.
+          - An iterable yielding train/test splits.
+
+        For integer/None inputs, if ``y`` is binary or multiclass,
+        :class:`StratifiedKFold` used. If the estimator is not a classifier
+        or if ``y`` is neither binary nor multiclass, :class:`KFold` is used.
+
+        Refer :ref:`User Guide <cross_validation>` for the various
+        cross-validators that can be used here.
+
+    n_jobs : integer, optional
+        Number of jobs to run in parallel (default 1).
+    """
+    plt.figure()
+    plt.title(title)
+    if ylim is not None:
+        plt.ylim(*ylim)
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    train_sizes, train_scores, test_scores = learning_curve(
+        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+    return plt
+
+    
 
   def train_sli_models(self):
     """

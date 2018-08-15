@@ -1,0 +1,4604 @@
+positions: instr line
+events: cpu(ms)
+
+ob=(1) /go/bin/meal_planner
+fl=
+fn=(1) syscall.Syscall
+0x4b1754 0 430
+
+ob=(1)
+fl=
+fn=(2) runtime.futex
+-348321 0 130
+
+ob=(1)
+fl=
+fn=(3) runtime.usleep
+-1186 0 110
+
+ob=(1)
+fl=
+fn=(4) runtime.epollwait
++1592 0 60
+
+ob=(1)
+fl=
+fn=(5) runtime.mallocgc
+-310398 0 30
+
+ob=(1)
+fl=
+fn=(6) runtime._ExternalCode
++152118 0 20
+
+ob=(1)
+fl=
+fn=(7) syscall.RawSyscall
++506414 0 20
+
+ob=(1)
+fl=
+fn=(8) math/rand.(*rngSource).Seed
++489545 0 20
+
+ob=(1)
+fl=
+fn=(9) runtime.interhash
+0x401fd9 0 10
+
+ob=(1)
+fl=
+fn=(10) runtime.makechan
++11881 0 10
+
+ob=(1)
+fl=
+fn=(11) runtime.chanrecv
++5082 0 10
+
+ob=(1)
+fl=
+fn=(12) runtime.mapiterinit
++19677 0 10
+
+ob=(1)
+fl=
+fn=(13) runtime.mapaccess1_fast64
++8202 0 10
+
+ob=(1)
+fl=
+fn=(5)
++14758 0 10
++1918 0 10
+
+ob=(1)
+fl=
+fn=(14) runtime.heapBitsSetType
++10892 0 10
+
+ob=(1)
+fl=
+fn=(15) runtime.gcDrainN
++41458 0 10
+
+ob=(1)
+fl=
+fn=(16) runtime.scanobject
++1185 0 10
++97 0 10
+
+ob=(1)
+fl=
+fn=(17) runtime.greyobject
++1366 0 10
+
+ob=(1)
+fl=
+fn=(18) runtime.(*mSpanList).remove
++21836 0 10
+
+ob=(1)
+fl=
+fn=(19) runtime.netpollready
++21303 0 10
++9 0 10
+
+ob=(1)
+fl=
+fn=(20) runtime.futexsleep
++3198 0 10
+
+ob=(1)
+fl=
+fn=(21) runtime.deferproc
++4511 0 10
+
+ob=(1)
+fl=
+fn=(22) runtime.deferreturn
++2429 0 10
++2 0 10
++190 0 10
+
+ob=(1)
+fl=
+fn=(23) runtime.casgstatus
++17645 0 10
+
+ob=(1)
+fl=
+fn=(24) runtime.schedule
++14026 0 10
+
+ob=(1)
+fl=
+fn=(25) runtime.reentersyscall
++2918 0 10
++249 0 10
+
+ob=(1)
+fl=
+fn=(26) runtime.gfput
++5287 0 10
+
+ob=(1)
+fl=
+fn=(27) runtime.acquirep
++7129 0 10
+
+ob=(1)
+fl=
+fn=(28) runtime.runqgrab
++9269 0 10
+
+ob=(1)
+fl=
+fn=(29) runtime.selectgoImpl
++12003 0 10
+
+ob=(1)
+fl=
+fn=(30) runtime.makeslice
++24216 0 10
+
+ob=(1)
+fl=
+fn=(31) runtime.rawstring
++18010 0 10
+
+ob=(1)
+fl=
+fn=(32) runtime.step
++12155 0 10
+
+ob=(1)
+fl=
+fn=(33) runtime.readvarint
++221 0 10
+
+ob=(1)
+fl=
+fn=(34) runtime.getArgInfo
++26881 0 10
+
+ob=(1)
+fl=
+fn=(35) runtime.jmpdefer
++40105 0 10
++22 0 10
+
+ob=(1)
+fl=
+fn=(36) runtime.memeqbody
++2799 0 10
+
+ob=(1)
+fl=
+fn=(37) runtime.fastrand
++2121 0 10
+
+ob=(1)
+fl=
+fn=(38) runtime.memclrNoHeapPointers
++1972 0 10
+
+ob=(1)
+fl=
+fn=(39) runtime.memmove
++818 0 10
++993 0 10
++14 0 10
+
+ob=(1)
+fl=
+fn=(2)
++1545 0 10
+
+ob=(1)
+fl=
+fn=(40) strconv.(*extFloat).Multiply
++45497 0 10
+
+ob=(1)
+fl=
+fn=(41) strconv.fmtF
++12722 0 10
+
+ob=(1)
+fl=
+fn=(42) reflect.(*rtype).Elem
++40805 0 10
+
+ob=(1)
+fl=
+fn=(43) reflect.ValueOf
++71173 0 10
+
+ob=(1)
+fl=
+fn=(44) syscall.ParseDirent
++129665 0 10
+
+ob=(1)
+fl=
+fn=(45) fmt.newPrinter
++181461 0 10
+
+ob=(1)
+fl=
+fn=(8)
++356826 0 10
++3 0 10
++55 0 10
++67 0 10
+
+ob=(1)
+fl=
+fn=(46) context.propagateCancel
++301133 0 10
+
+ob=(1)
+fl=
+fn=(47) net.(*netFD).Read
++100798 0 10
+
+ob=(1)
+fl=
+fn=(48) net.(*netFD).Write
++3265 0 10
+
+ob=(1)
+fl=
+fn=(49) net/url.unescape
++524857 0 10
+
+ob=(1)
+fl=
+fn=(50) net/textproto.(*Reader).readContinuedLineSlice
++43296 0 10
+
+ob=(1)
+fl=
+fn=(51) net/http.(*conn).setState
++522420 0 10
+
+ob=(1)
+fl=
+fn=(52) encoding/json.unquoteBytes
++213853 0 10
+
+ob=(1)
+fl=
+fn=(53) regexp.(*machine).onepass
++321782 0 10
+
+ob=(1)
+fl=
+fn=(54) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*goCollector).Collect
+0x82f3b4 0 10
+
+ob=(1)
+fl=
+fn=(55) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/blowfish.ExpandKey
++503370 0 10
+
+ob=(1)
+fl=
+fn=(56) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/blowfish.encryptBlock
++3013 0 10
+
+ob=(1)
+fl=
+fn=(57) github.com/digorithm/meal_planner/models.(*Base).GetAllRecipesForStruct
++75641 0 10
+
+ob=(1)
+fl=
+fn=(58) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).simpleExec
++166716 0 10
+
+ob=(1)
+fl=
+fn=(59) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).prepareTo
++4586 0 10
+
+ob=(1)
+fl=
+fn=(60) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).send
++5368 0 10
+
+ob=(1)
+fl=
+fn=(61) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).parseComplete
++16532 0 10
+
+ob=(1)
+fl=
+fn=(62) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.textDecode
++38847 0 10
+
+ob=(1)
+fl=
+fn=(63) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).errRecover
++19043 0 10
+
+ob=(1)
+fl=
+fn=(64) github.com/digorithm/meal_planner/middlewares.Log.func1.1
++62114 0 10
+
+ob=(1)
+fl=
+fn=(10)
+0x404eb8 0 0
+cfl=
+cfn=(5)
+calls=10 0x411089 0
+* * 10
+
+ob=(1)
+fl=
+fn=(65) runtime.closechan
++4326 0 0
+cfl=
+cfn=(66) runtime.goready
+calls=10 +168715 0
+* * 10
+
+ob=(1)
+fl=
+fn=(67) runtime.chanrecv2
++310 0 0
+cfl=
+cfn=(11)
+calls=10 +638 0
+* * 10
+
+ob=(1)
+fl=
+fn=(68) runtime.mapassign
++17007 0 0
+cfl=
+cfn=(9)
+calls=10 -16635 0
+* * 10
++753 0 0
+cfl=
+cfn=(69) runtime.hashGrow
+calls=20 +6154 0
+* * 20
+
+ob=(1)
+fl=
+fn=(69)
++5401 0 0
+cfl=
+cfn=(70) runtime.newarray
+calls=20 +28415 0
+* * 20
+
+ob=(1)
+fl=
+fn=(71) reflect.mapiterinit
++3814 0 0
+cfl=
+cfn=(12)
+calls=10 -3156 0
+* * 10
+
+ob=(1)
+fl=
+fn=(72) runtime.mapaccess2_faststr
++3590 0 0
+cfl=
+cfn=(36)
+calls=10 +319319 0
+* * 10
+
+ob=(1)
+fl=
+fn=(73) runtime.convT2E
++4878 0 0
+cfl=
+cfn=(74) runtime.newobject
+calls=10 +15390 0
+* * 10
++39 0 0
+cfl=
+cfn=(75) runtime.typedmemmove
+calls=10 +13380 0
+* * 10
+
+ob=(1)
+fl=
+fn=(76) runtime.convT2I
++146 0 0
+cfl=
+cfn=(74)
+calls=10 +10473 0
+* * 10
+
+ob=(1)
+fl=
+fn=(77) runtime.notewakeup
++2917 0 0
+cfl=
+cfn=(78) runtime.futexwakeup
+calls=50 +110805 0
+* * 50
+
+ob=(1)
+fl=
+fn=(79) runtime.notesleep
++229 0 0
+cfl=
+cfn=(20)
+calls=20 +107676 0
+* * 20
+cfl=
+cfn=(20)
+calls=10 +107682 0
+* * 10
+
+ob=(1)
+fl=
+fn=(80) runtime.notetsleep_internal
++293 0 0
+cfl=
+cfn=(20)
+calls=70 +107564 0
+* * 70
+
+ob=(1)
+fl=
+fn=(81) runtime.notetsleep
++198 0 0
+cfl=
+cfn=(80)
+calls=70 * 0
+* * 70
+
+ob=(1)
+fl=
+fn=(82) runtime.(*mcache).nextFree
++3235 0 0
+cfl=
+cfn=(83) runtime.systemstack
+calls=10 +298163 0
+* * 10
+
+ob=(1)
+fl=
+fn=(5)
++1931 0 0
+cfl=
+cfn=(14)
+calls=10 +13275 0
+* * 10
++550 0 0
+cfl=
+cfn=(38)
+calls=10 +305956 0
+* * 10
++61 0 0
+cfl=
+cfn=(82)
+calls=10 -2481 0
+* * 10
++432 0 0
+cfl=
+cfn=(84) runtime.gcAssistAlloc
+calls=10 +44557 0
+* * 10
+
+ob=(1)
+fl=
+fn=(74)
++481 0 0
+cfl=
+cfn=(5)
+calls=10 -1707 0
+* * 10
+cfl=
+cfn=(5)
+calls=10 -1043 0
+* * 10
+cfl=
+cfn=(5)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(70)
++220 0 0
+cfl=
+cfn=(5)
+calls=10 -2188 0
+* * 10
+cfl=
+cfn=(5)
+calls=10 -913 0
+* * 10
+
+ob=(1)
+fl=
+fn=(75)
++2648 0 0
+cfl=
+cfn=(39)
+calls=10 +306037 0
+* * 10
+
+ob=(1)
+fl=
+fn=(85) runtime.(*mcache).refill
++12020 0 0
+cfl=
+cfn=(86) runtime.(*mcentral).cacheSpan
+calls=10 +13355 0
+* * 10
+
+ob=(1)
+fl=
+fn=(86)
++1335 0 0
+cfl=
+cfn=(18)
+calls=10 +60874 0
+* * 10
+
+ob=(1)
+fl=
+fn=(87) runtime.gcBgMarkWorker
++18277 0 0
+cfl=
+cfn=(83)
+calls=30 +275250 0
+* * 30
+cfl=
+cfn=(83)
+calls=10 +275300 0
+* * 10
+
+ob=(1)
+fl=
+fn=(84)
++9144 0 0
+cfl=
+cfn=(83)
+calls=10 +256973 0
+* * 10
+
+ob=(1)
+fl=
+fn=(88) runtime.gcAssistAlloc1
++547 0 0
+cfl=
+cfn=(15)
+calls=10 +7634 0
+* * 10
+
+ob=(1)
+fl=
+fn=(89) runtime.scanstack
++2382 0 0
+cfl=
+cfn=(90) runtime.gentraceback
+calls=10 +210804 0
+* * 10
+
+ob=(1)
+fl=
+fn=(91) runtime.gcDrain
++3818 0 0
+cfl=
+cfn=(16)
+calls=10 +5890 0
+* * 10
+cfl=
+cfn=(16)
+calls=10 +5987 0
+* * 10
+cfl=
+cfn=(16)
+calls=10 +6174 0
+* * 10
+
+ob=(1)
+fl=
+fn=(16)
++2356 0 0
+cfl=
+cfn=(17)
+calls=10 +3535 0
+* * 10
+
+ob=(1)
+fl=
+fn=(92) runtime.netpoll
++46974 0 0
+cfl=
+cfn=(4)
+calls=60 +255463 0
+* * 60
++367 0 0
+cfl=
+cfn=(19)
+calls=10 -2656 0
+* * 10
+cfl=
+cfn=(19)
+calls=10 -2647 0
+* * 10
+
+ob=(1)
+fl=
+fn=(20)
++178 0 0
+cfl=
+cfn=(2)
+calls=10 +207714 0
+* * 10
+cfl=
+cfn=(2)
+calls=10 +207716 0
+* * 10
++117 0 0
+cfl=
+cfn=(2)
+calls=70 +207538 0
+* * 70
+
+ob=(1)
+fl=
+fn=(78)
++95 0 0
+cfl=
+cfn=(2)
+calls=50 +207421 0
+* * 50
+
+ob=(1)
+fl=
+fn=(22)
++6841 0 0
+cfl=
+cfn=(35)
+calls=10 +197040 0
+* * 10
++142 0 0
+cfl=
+cfn=(39)
+calls=10 +198924 0
+* * 10
+
+ob=(1)
+fl=
+fn=(66)
++10663 0 0
+cfl=
+cfn=(83)
+calls=10 +184012 0
+* * 10
+
+ob=(1)
+fl=
+fn=(93) runtime.ready
++5137 0 0
+cfl=
+cfn=(94) runtime.wakep
+calls=10 +15972 0
+* * 10
+
+ob=(1)
+fl=
+fn=(95) runtime.scang
++3044 0 0
+cfl=
+cfn=(89)
+calls=10 -76688 0
+* * 10
+
+ob=(1)
+fl=
+fn=(96) runtime.mstart
++2107 0 0
+cfl=
+cfn=(97) runtime.mstart1
+calls=160 +2405 0
+* * 160
+
+ob=(1)
+fl=
+fn=(97)
++298 0 0
+cfl=
+cfn=(98) runtime.sysmon
+calls=90 +28799 0
+* * 90
+cfl=
+cfn=(98)
+calls=70 +28961 0
+* * 70
+
+ob=(1)
+fl=
+fn=(99) runtime.stopm
++3887 0 0
+cfl=
+cfn=(79)
+calls=30 -135891 0
+* * 30
++118 0 0
+cfl=
+cfn=(27)
+calls=10 +22061 0
+* * 10
+
+ob=(1)
+fl=
+fn=(100) runtime.startm
++378 0 0
+cfl=
+cfn=(77)
+calls=40 -140125 0
+* * 40
+
+ob=(1)
+fl=
+fn=(94)
++1003 0 0
+cfl=
+cfn=(100)
+calls=40 * 0
+* * 40
+
+ob=(1)
+fl=
+fn=(101) runtime.findrunnable
++2108 0 0
+cfl=
+cfn=(99)
+calls=30 -1499 0
+* * 30
+cfl=
+cfn=(99)
+calls=10 -1381 0
+* * 10
++59 0 0
+cfl=
+cfn=(92)
+calls=30 -36483 0
+* * 30
+cfl=
+cfn=(92)
+calls=20 -36116 0
+* * 20
++175 0 0
+cfl=
+cfn=(23)
+calls=10 -11214 0
+* * 10
++708 0 0
+cfl=
+cfn=(37)
+calls=10 +166022 0
+* * 10
++185 0 0
+cfl=
+cfn=(102) runtime.runqsteal
+calls=30 +26997 0
+* * 30
++242 0 0
+cfl=
+cfn=(92)
+calls=30 -37610 0
+* * 30
+
+ob=(1)
+fl=
+fn=(103) runtime.resetspinning
++724 0 0
+cfl=
+cfn=(94)
+calls=30 -3477 0
+* * 30
+
+ob=(1)
+fl=
+fn=(24)
++853 0 0
+cfl=
+cfn=(103)
+calls=30 * 0
+* * 30
++22 0 0
+cfl=
+cfn=(101)
+calls=50 -2887 0
+* * 50
+cfl=
+cfn=(101)
+calls=40 -2946 0
+* * 40
+cfl=
+cfn=(101)
+calls=30 -1819 0
+* * 30
+cfl=
+cfn=(101)
+calls=30 -1577 0
+* * 30
+cfl=
+cfn=(101)
+calls=10 -2712 0
+* * 10
+cfl=
+cfn=(101)
+calls=10 -2004 0
+* * 10
+
+ob=(1)
+fl=
+fn=(104) runtime.park_m
++767 0 0
+cfl=
+cfn=(24)
+calls=130 * 0
+* * 130
+cfl=
+cfn=(24)
+calls=20 -22 0
+* * 20
+cfl=
+cfn=(24)
+calls=10 -97 0
+* * 10
+
+ob=(1)
+fl=
+fn=(105) runtime.goexit0
++1512 0 0
+cfl=
+cfn=(26)
+calls=10 +7590 0
+* * 10
++5 0 0
+cfl=
+cfn=(24)
+calls=40 -2279 0
+* * 40
+cfl=
+cfn=(24)
+calls=10 -2301 0
+* * 10
+
+ob=(1)
+fl=
+fn=(25)
++1032 0 0
+cfl=
+cfn=(83)
+calls=10 +150017 0
+* * 10
+
+ob=(1)
+fl=
+fn=(106) runtime.entersyscall
++148 0 0
+cfl=
+cfn=(25)
+calls=10 -495 0
+* * 10
+cfl=
+cfn=(25)
+calls=10 -246 0
+* * 10
+cfl=
+cfn=(25)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(107) runtime.entersyscall_sysmon
++120 0 0
+cfl=
+cfn=(77)
+calls=10 -150046 0
+* * 10
+
+ob=(1)
+fl=
+fn=(108) runtime._System
++7125 0 0
+cfl=
+cfn=(6)
+calls=20 +7174 0
+* * 20
+
+ob=(1)
+fl=
+fn=(98)
++7330 0 0
+cfl=
+cfn=(3)
+calls=90 +156737 0
+* * 90
++162 0 0
+cfl=
+cfn=(81)
+calls=70 -163901 0
+* * 70
+
+ob=(1)
+fl=
+fn=(28)
++6548 0 0
+cfl=
+cfn=(3)
+calls=20 +149245 0
+* * 20
+
+ob=(1)
+fl=
+fn=(102)
++222 0 0
+cfl=
+cfn=(28)
+calls=20 * 0
+* * 20
+cfl=
+cfn=(28)
+calls=10 +6 0
+* * 10
+
+ob=(1)
+fl=
+fn=(109) runtime.selectgo
++11093 0 0
+cfl=
+cfn=(29)
+calls=10 +11787 0
+* * 10
+
+ob=(1)
+fl=
+fn=(30)
++24991 0 0
+cfl=
+cfn=(5)
+calls=10 -177424 0
+* * 10
+
+ob=(1)
+fl=
+fn=(110) runtime.adjustframe
++6162 0 0
+cfl=
+cfn=(111) runtime.pcdatavalue
+calls=20 +29646 0
+* * 20
+
+ob=(1)
+fl=
+fn=(112) runtime.copystack
++3351 0 0
+cfl=
+cfn=(39)
+calls=10 +98861 0
+* * 10
++524 0 0
+cfl=
+cfn=(90)
+calls=20 +45021 0
+* * 20
+
+ob=(1)
+fl=
+fn=(113) runtime.newstack
++1176 0 0
+cfl=
+cfn=(112)
+calls=20 * 0
+* * 20
+cfl=
+cfn=(112)
+calls=10 -524 0
+* * 10
+
+ob=(1)
+fl=
+fn=(114) runtime.concatstrings
++3953 0 0
+cfl=
+cfn=(115) runtime.rawstringtmp
+calls=10 +5216 0
+* * 10
+
+ob=(1)
+fl=
+fn=(116) runtime.concatstring2
++526 0 0
+cfl=
+cfn=(114)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(117) runtime.slicebytetostring
++471 0 0
+cfl=
+cfn=(115)
+calls=20 +737 0
+* * 20
+
+ob=(1)
+fl=
+fn=(115)
++266 0 0
+cfl=
+cfn=(31)
+calls=20 +1847 0
+* * 20
+cfl=
+cfn=(31)
+calls=10 +1766 0
+* * 10
+
+ob=(1)
+fl=
+fn=(31)
++1581 0 0
+cfl=
+cfn=(5)
+calls=10 -219646 0
+* * 10
+cfl=
+cfn=(5)
+calls=10 -217728 0
+* * 10
+
+ob=(1)
+fl=
+fn=(118) runtime.pcvalue
++9118 0 0
+cfl=
+cfn=(32)
+calls=10 +12054 0
+* * 10
+cfl=
+cfn=(32)
+calls=10 +12074 0
+* * 10
+
+ob=(1)
+fl=
+fn=(111)
++2518 0 0
+cfl=
+cfn=(118)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(32)
++418 0 0
+cfl=
+cfn=(33)
+calls=10 +659 0
+* * 10
+
+ob=(1)
+fl=
+fn=(90)
++24470 0 0
+cfl=
+cfn=(110)
+calls=20 -23902 0
+* * 20
++234 0 0
+cfl=
+cfn=(34)
+calls=10 +2652 0
+* * 10
+
+ob=(1)
+fl=
+fn=(119) runtime.(*mcache).nextFree.func1
++23255 0 0
+cfl=
+cfn=(85)
+calls=10 -240107 0
+* * 10
+
+ob=(1)
+fl=
+fn=(120) runtime.gcBgMarkWorker.func2
++2996 0 0
+cfl=
+cfn=(91)
+calls=10 -227859 0
+* * 10
++116 0 0
+cfl=
+cfn=(91)
+calls=20 -230855 0
+* * 20
+
+ob=(1)
+fl=
+fn=(121) runtime.markroot.func1
++163 0 0
+cfl=
+cfn=(95)
+calls=10 -155057 0
+* * 10
+
+ob=(1)
+fl=
+fn=(122) runtime.gcAssistAlloc.func1
++278 0 0
+cfl=
+cfn=(88)
+calls=10 -237334 0
+* * 10
+
+ob=(1)
+fl=
+fn=(123) runtime.goready.func1
++4213 0 0
+cfl=
+cfn=(93)
+calls=10 -158542 0
+* * 10
+
+ob=(1)
+fl=
+fn=(124) runtime.mcall
++5299 0 0
+cfl=
+cfn=(104)
+calls=160 -146077 0
+* * 160
+cfl=
+cfn=(105)
+calls=50 -144560 0
+* * 50
+cfl=
+cfn=(105)
+calls=10 -144565 0
+* * 10
+
+ob=(1)
+fl=
+fn=(83)
++158 0 0
+cfl=
+cfn=(120)
+calls=20 -9953 0
+* * 20
+cfl=
+cfn=(107)
+calls=10 -148559 0
+* * 10
+cfl=
+cfn=(119)
+calls=10 -13065 0
+* * 10
+cfl=
+cfn=(120)
+calls=10 -10069 0
+* * 10
+cfl=
+cfn=(122)
+calls=10 -9512 0
+* * 10
+cfl=
+cfn=(123)
+calls=10 -5299 0
+* * 10
++50 0 0
+cfl=
+cfn=(121)
+calls=10 -9948 0
+* * 10
+
+ob=(1)
+fl=
+fn=(125) runtime.morestack
++139 0 0
+cfl=
+cfn=(113)
+calls=30 -80083 0
+* * 30
+
+ob=(1)
+fl=
+fn=(126) runtime.goexit
++10875 0 0
+cfl=
+cfn=(127) net/http.(*conn).serve
+calls=770 0x696c61 0
+* * 770
+cfl=
+cfn=(128) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*Registry).Gather.func2
+calls=60 0x83d3c0 0
+* * 60
+cfl=
+cfn=(129) github.com/digorithm/meal_planner/finchgo.(*WorkflowSimulator).SignupTask
+calls=50 0x879ffb 0
+* * 50
+cfl=
+cfn=(87)
+calls=40 -257162 0
+* * 40
+cfl=
+cfn=(130) net/http.(*Transport).getConn.func4
+calls=30 0x6b3257 0
+* * 30
+cfl=
+cfn=(131) github.com/digorithm/meal_planner/finchgo.(*Finch).MAPELoop
+calls=30 0x86976f 0
+* * 30
+cfl=
+cfn=(129)
+calls=30 0x879ea1 0
+* * 30
+cfl=
+cfn=(132) net/http.(*persistConn).writeLoop
+calls=20 0x6acd06 0
+* * 20
+cfl=
+cfn=(133) internal/singleflight.(*Group).doCall
+calls=10 0x5752fb 0
+* * 10
+cfl=
+cfn=(127)
+calls=10 0x696ae9 0
+* * 10
+cfl=
+cfn=(127)
+calls=10 0x696ec9 0
+* * 10
+cfl=
+cfn=(134) net/http.(*persistConn).readLoop
+calls=10 0x6ab750 0
+* * 10
+cfl=
+cfn=(135) github.com/digorithm/meal_planner/vendor/github.com/tylerb/graceful.(*Server).manageConnections
+calls=10 0x7e7cd2 0
+* * 10
+cfl=
+cfn=(131)
+calls=10 0x8697be 0
+* * 10
+cfl=
+cfn=(129)
+calls=10 0x879be3 0
+* * 10
+
+ob=(1)
+fl=
+fn=(136) strconv.atof64
++42054 0 0
+cfl=
+cfn=(137) strconv.(*extFloat).AssignDecimal
+calls=10 +51518 0
+* * 10
+
+ob=(1)
+fl=
+fn=(138) strconv.ParseFloat
++675 0 0
+cfl=
+cfn=(136)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(137)
++8789 0 0
+cfl=
+cfn=(40)
+calls=10 +8033 0
+* * 10
+
+ob=(1)
+fl=
+fn=(139) strconv.AppendFloat
++4134 0 0
+cfl=
+cfn=(140) strconv.genericFtoa
+calls=10 +5035 0
+* * 10
+
+ob=(1)
+fl=
+fn=(140)
++901 0 0
+cfl=
+cfn=(141) strconv.formatDigits
+calls=10 +4360 0
+* * 10
+
+ob=(1)
+fl=
+fn=(141)
++3459 0 0
+cfl=
+cfn=(41)
+calls=10 +6931 0
+* * 10
+
+ob=(1)
+fl=
+fn=(142) reflect.Value.MapKeys
++99380 0 0
+cfl=
+cfn=(71)
+calls=10 -381529 0
+* * 10
+
+ob=(1)
+fl=
+fn=(143) io.ReadAtLeast
++61944 0 0
+cfl=
+cfn=(144) bufio.(*Reader).Read
+calls=100 +126849 0
+* * 100
+
+ob=(1)
+fl=
+fn=(145) io.ReadFull
++367 0 0
+cfl=
+cfn=(143)
+calls=100 * 0
+* * 100
+
+ob=(1)
+fl=
+fn=(146) bytes.(*Buffer).ReadFrom
++42376 0 0
+cfl=
+cfn=(147) os.(*File).Read
+calls=10 +223902 0
+* * 10
+cfl=
+cfn=(148) net/http.(*gzipReader).Read
+calls=10 0x6ae7dd 0
+* * 10
+
+ob=(1)
+fl=
+fn=(144)
++22162 0 0
+cfl=
+cfn=(149) net.(*conn).Read
+calls=100 0x59e7af 0
+* * 100
+
+ob=(1)
+fl=
+fn=(150) bufio.(*Writer).Flush
++5779 0 0
+cfl=
+cfn=(151) net/http.persistConnWriter.Write
+calls=20 0x6a9861 0
+* * 20
+
+ob=(1)
+fl=
+fn=(152) bufio.(*Scanner).Scan
++4223 0 0
+cfl=
+cfn=(147)
+calls=10 +153585 0
+* * 10
+
+ob=(1)
+fl=
+fn=(153) syscall.ReadDirent
++33573 0 0
+cfl=
+cfn=(154) syscall.Getdents
+calls=20 +43665 0
+* * 20
+
+ob=(1)
+fl=
+fn=(155) syscall.Read
++3008 0 0
+cfl=
+cfn=(156) syscall.read
+calls=90 +11100 0
+* * 90
+
+ob=(1)
+fl=
+fn=(157) syscall.Write
++128 0 0
+cfl=
+cfn=(158) syscall.write
+calls=320 +8956 0
+* * 320
+
+ob=(1)
+fl=
+fn=(159) syscall.Connect
++335 0 0
+cfl=
+cfn=(160) syscall.connect
+calls=10 +13940 0
+* * 10
+
+ob=(1)
+fl=
+fn=(161) syscall.Socket
++1452 0 0
+cfl=
+cfn=(162) syscall.socket
+calls=20 +14436 0
+* * 20
+
+ob=(1)
+fl=
+fn=(163) syscall.Close
++3126 0 0
+cfl=
+cfn=(1)
+calls=20 +18849 0
+* * 20
+
+ob=(1)
+fl=
+fn=(154)
++2043 0 0
+cfl=
+cfn=(1)
+calls=20 +15723 0
+* * 20
+
+ob=(1)
+fl=
+fn=(156)
++1008 0 0
+cfl=
+cfn=(1)
+calls=60 +13680 0
+* * 60
+cfl=
+cfn=(1)
+calls=30 +13648 0
+* * 30
+
+ob=(1)
+fl=
+fn=(158)
++864 0 0
+cfl=
+cfn=(1)
+calls=320 +12672 0
+* * 320
+
+ob=(1)
+fl=
+fn=(160)
++5112 0 0
+cfl=
+cfn=(1)
+calls=10 +11808 0
+* * 10
+
+ob=(1)
+fl=
+fn=(162)
++831 0 0
+cfl=
+cfn=(7)
+calls=20 +6915 0
+* * 20
+
+ob=(1)
+fl=
+fn=(1)
++5833 0 0
+cfl=
+cfn=(106)
+calls=30 -507624 0
+* * 30
+
+ob=(1)
+fl=
+fn=(164) os.(*File).Readdirnames
++82361 0 0
+cfl=
+cfn=(165) os.(*File).readdirnames
+calls=20 +83937 0
+* * 20
+cfl=
+cfn=(165)
+calls=10 +83813 0
+* * 10
+
+ob=(1)
+fl=
+fn=(165)
++1452 0 0
+cfl=
+cfn=(44)
+calls=10 -130790 0
+* * 10
++124 0 0
+cfl=
+cfn=(153)
+calls=20 -107553 0
+* * 20
+
+ob=(1)
+fl=
+fn=(147)
++8112 0 0
+cfl=
+cfn=(166) os.(*File).read
+calls=20 +21001 0
+* * 20
+
+ob=(1)
+fl=
+fn=(166)
++12889 0 0
+cfl=
+cfn=(155)
+calls=20 -112781 0
+* * 20
+
+ob=(1)
+fl=
+fn=(167) fmt.Sprintf
++29511 0 0
+cfl=
+cfn=(45)
+calls=10 +28094 0
+* * 10
+
+ob=(1)
+fl=
+fn=(168) strings.Join
++328650 0 0
+cfl=
+cfn=(30)
+calls=10 -590315 0
+* * 10
+
+ob=(1)
+fl=
+fn=(169) math/rand.(*Rand).Seed
++22835 0 0
+cfl=
+cfn=(170) math/rand.(*lockedSource).seedPos
+calls=60 +26158 0
+* * 60
+
+ob=(1)
+fl=
+fn=(171) math/rand.Seed
++2516 0 0
+cfl=
+cfn=(169)
+calls=60 * 0
+* * 60
+
+ob=(1)
+fl=
+fn=(170)
++807 0 0
+cfl=
+cfn=(8)
+calls=20 +1346 0
+* * 20
+cfl=
+cfn=(8)
+calls=10 +1408 0
+* * 10
+cfl=
+cfn=(8)
+calls=10 +1411 0
+* * 10
+cfl=
+cfn=(8)
+calls=10 +1466 0
+* * 10
+cfl=
+cfn=(8)
+calls=10 +1533 0
+* * 10
+
+ob=(1)
+fl=
+fn=(172) io/ioutil.readAll
++205810 0 0
+cfl=
+cfn=(146)
+calls=20 -578734 0
+* * 20
+
+ob=(1)
+fl=
+fn=(173) io/ioutil.ReadAll
++222 0 0
+cfl=
+cfn=(172)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(174) context.WithCancel
++95356 0 0
+cfl=
+cfn=(10)
+calls=10 0x404e42 0
+* * 10
++252 0 0
+cfl=
+cfn=(46)
+calls=10 +471 0
+* * 10
+
+ob=(1)
+fl=
+fn=(175) context.(*cancelCtx).cancel
++1746 0 0
+cfl=
+cfn=(65)
+calls=10 0x405f9e 0
+* * 10
+
+ob=(1)
+fl=
+fn=(176) context.WithCancel.func1
++3727 0 0
+cfl=
+cfn=(175)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(133)
++5365 0 0
+cfl=
+cfn=(177) net.(*Resolver).LookupIPAddr.func1
+calls=10 +276341 0
+* * 10
+
+ob=(1)
+fl=
+fn=(178) net.sortByRFC6724
++1415 0 0
+cfl=
+cfn=(179) net.srcAddrs
+calls=10 +2924 0
+* * 10
+
+ob=(1)
+fl=
+fn=(179)
++1509 0 0
+cfl=
+cfn=(180) net.DialUDP
+calls=10 +219516 0
+* * 10
+
+ob=(1)
+fl=
+fn=(181) net.(*Dialer).DialContext
++21763 0 0
+cfl=
+cfn=(182) net.dialSerial
+calls=30 +25832 0
+* * 30
+
+ob=(1)
+fl=
+fn=(182)
++4069 0 0
+cfl=
+cfn=(183) net.dialSingle
+calls=30 +7134 0
+* * 30
+
+ob=(1)
+fl=
+fn=(183)
++3065 0 0
+cfl=
+cfn=(184) net.dialTCP
+calls=30 +182404 0
+* * 30
+
+ob=(1)
+fl=
+fn=(185) net.goLookupIPFiles
++25611 0 0
+cfl=
+cfn=(178)
+calls=10 -30406 0
+* * 10
+
+ob=(1)
+fl=
+fn=(186) net.goLookupIPCNAMEOrder
++3095 0 0
+cfl=
+cfn=(185)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(187) net.(*netFD).decref
++22515 0 0
+cfl=
+cfn=(188) net.(*netFD).destroy
+calls=20 +28495 0
+* * 20
+
+ob=(1)
+fl=
+fn=(189) net.(*netFD).connect
++3259 0 0
+cfl=
+cfn=(159)
+calls=10 -905046 0
+* * 10
+
+ob=(1)
+fl=
+fn=(188)
++2721 0 0
+cfl=
+cfn=(163)
+calls=20 -903727 0
+* * 20
+
+ob=(1)
+fl=
+fn=(190) net.(*netFD).Close
++176 0 0
+cfl=
+cfn=(187)
+calls=20 -5980 0
+* * 20
+
+ob=(1)
+fl=
+fn=(47)
++1009 0 0
+cfl=
+cfn=(155)
+calls=70 -911665 0
+* * 70
++293 0 0
+cfl=
+cfn=(35)
+calls=10 0x459e9b 0
+* * 10
++5 0 0
+cfl=
+cfn=(22)
+calls=10 0x42b78e 0
+* * 10
+
+ob=(1)
+fl=
+fn=(48)
++3001 0 0
+cfl=
+cfn=(157)
+calls=320 -912844 0
+* * 320
++314 0 0
+cfl=
+cfn=(22)
+calls=10 0x42b7e3 0
+* * 10
+
+ob=(1)
+fl=
+fn=(191) net.internetSocket
++59121 0 0
+cfl=
+cfn=(192) net.socket
+calls=20 +98674 0
+* * 20
+cfl=
+cfn=(192)
+calls=10 +99001 0
+* * 10
+cfl=
+cfn=(192)
+calls=10 +99043 0
+* * 10
+
+ob=(1)
+fl=
+fn=(193) net.(*Resolver).lookupIP
++10684 0 0
+cfl=
+cfn=(186)
+calls=10 -92414 0
+* * 10
+
+ob=(1)
+fl=
+fn=(149)
++5515 0 0
+cfl=
+cfn=(47)
+calls=70 -73418 0
+* * 70
+cfl=
+cfn=(47)
+calls=10 -73446 0
+* * 10
+cfl=
+cfn=(47)
+calls=10 -73125 0
+* * 10
+cfl=
+cfn=(47)
+calls=10 -73120 0
+* * 10
+
+ob=(1)
+fl=
+fn=(194) net.(*conn).Write
++736 0 0
+cfl=
+cfn=(48)
+calls=320 -75634 0
+* * 320
+cfl=
+cfn=(48)
+calls=10 -75696 0
+* * 10
+cfl=
+cfn=(48)
+calls=10 -75320 0
+* * 10
+
+ob=(1)
+fl=
+fn=(195) net.(*conn).Close
++620 0 0
+cfl=
+cfn=(190)
+calls=10 -80678 0
+* * 10
+
+ob=(1)
+fl=
+fn=(196) net.sysSocket
++19157 0 0
+cfl=
+cfn=(161)
+calls=20 -991048 0
+* * 20
+
+ob=(1)
+fl=
+fn=(192)
++2841 0 0
+cfl=
+cfn=(196)
+calls=20 * 0
+* * 20
++327 0 0
+cfl=
+cfn=(197) net.(*netFD).dial
+calls=10 +1471 0
+* * 10
++42 0 0
+cfl=
+cfn=(190)
+calls=10 -103623 0
+* * 10
+
+ob=(1)
+fl=
+fn=(197)
++1102 0 0
+cfl=
+cfn=(189)
+calls=10 -106562 0
+* * 10
+
+ob=(1)
+fl=
+fn=(184)
++17195 0 0
+cfl=
+cfn=(198) net.doDialTCP
+calls=30 +17440 0
+* * 30
+
+ob=(1)
+fl=
+fn=(198)
++245 0 0
+cfl=
+cfn=(191)
+calls=30 -58219 0
+* * 30
+
+ob=(1)
+fl=
+fn=(180)
++9526 0 0
+cfl=
+cfn=(199) net.dialUDP
+calls=10 +14976 0
+* * 10
+
+ob=(1)
+fl=
+fn=(199)
++5450 0 0
+cfl=
+cfn=(191)
+calls=10 -67990 0
+* * 10
+
+ob=(1)
+fl=
+fn=(200) net.glob..func11
++34697 0 0
+cfl=
+cfn=(201) net.(*Resolver).(net.lookupIP)-fm
+calls=10 +62765 0
+* * 10
+
+ob=(1)
+fl=
+fn=(177)
++9898 0 0
+cfl=
+cfn=(200)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(201)
++18170 0 0
+cfl=
+cfn=(193)
+calls=10 -107351 0
+* * 10
+
+ob=(1)
+fl=
+fn=(202) net/url.Parse
++332220 0 0
+cfl=
+cfn=(203) net/url.parse
+calls=10 +334231 0
+* * 10
+
+ob=(1)
+fl=
+fn=(203)
++2011 0 0
+cfl=
+cfn=(204) net/url.parseAuthority
+calls=10 +5138 0
+* * 10
+
+ob=(1)
+fl=
+fn=(204)
++3127 0 0
+cfl=
+cfn=(205) net/url.parseHost
+calls=10 +3277 0
+* * 10
+
+ob=(1)
+fl=
+fn=(205)
++150 0 0
+cfl=
+cfn=(49)
+calls=10 -8203 0
+* * 10
+
+ob=(1)
+fl=
+fn=(206) net/textproto.(*Reader).ReadMIMEHeader
++41502 0 0
+cfl=
+cfn=(50)
+calls=10 +34943 0
+* * 10
+
+ob=(1)
+fl=
+fn=(207) compress/flate.NewReader
++77916 0 0
+cfl=
+cfn=(74)
+calls=10 0x411457 0
+* * 10
+
+ob=(1)
+fl=
+fn=(208) compress/gzip.NewReader
++6708 0 0
+cfl=
+cfn=(209) compress/gzip.(*Reader).Reset
+calls=10 +7114 0
+* * 10
+
+ob=(1)
+fl=
+fn=(209)
++406 0 0
+cfl=
+cfn=(210) compress/gzip.(*Reader).readHeader
+calls=10 +2897 0
+* * 10
+
+ob=(1)
+fl=
+fn=(210)
++2491 0 0
+cfl=
+cfn=(207)
+calls=10 -7114 0
+* * 10
+
+ob=(1)
+fl=
+fn=(211) net/http.(*Client).send
++131455 0 0
+cfl=
+cfn=(212) net/http.send
+calls=20 +132345 0
+* * 20
+
+ob=(1)
+fl=
+fn=(212)
++890 0 0
+cfl=
+cfn=(213) net/http.(*Transport).RoundTrip
+calls=20 +349828 0
+* * 20
+
+ob=(1)
+fl=
+fn=(214) net/http.(*Client).Get
++3582 0 0
+cfl=
+cfn=(215) net/http.NewRequest
+calls=10 +246152 0
+* * 10
++71 0 0
+cfl=
+cfn=(216) net/http.(*Client).Do
+calls=20 +1316 0
+* * 20
+
+ob=(1)
+fl=
+fn=(216)
++1245 0 0
+cfl=
+cfn=(211)
+calls=20 -4543 0
+* * 20
+
+ob=(1)
+fl=
+fn=(215)
++241254 0 0
+cfl=
+cfn=(202)
+calls=10 -271554 0
+* * 10
+
+ob=(1)
+fl=
+fn=(217) net/http.readRequest
++5173 0 0
+cfl=
+cfn=(206)
+calls=10 -466018 0
+* * 10
+
+ob=(1)
+fl=
+fn=(218) net/http.(*conn).readRequest
++29012 0 0
+cfl=
+cfn=(217)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(127)
++17415 0 0
+cfl=
+cfn=(218)
+calls=10 * 0
+* * 10
++376 0 0
+cfl=
+cfn=(219) net/http.serverHandler.ServeHTTP
+calls=770 +15880 0
+* * 770
++616 0 0
+cfl=
+cfn=(220) net/http.(*conn).serve.func1
+calls=10 +114674 0
+* * 10
+
+ob=(1)
+fl=
+fn=(221) net/http.HandlerFunc.ServeHTTP
++4650 0 0
+cfl=
+cfn=(222) github.com/digorithm/meal_planner/handlers.PostStoragesHandler
+calls=460 0x907a21 0
+* * 460
+cfl=
+cfn=(223) github.com/digorithm/meal_planner/handlers.CreateScheduleHandler
+calls=100 0x906b43 0
+* * 100
+cfl=
+cfn=(224) github.com/digorithm/meal_planner/handlers.AddRecipesHandler
+calls=70 0x902932 0
+* * 70
+cfl=
+cfn=(225) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus/promhttp.HandlerFor.func1
+calls=30 0x843afb 0
+* * 30
+cfl=
+cfn=(226) github.com/digorithm/meal_planner/vendor/github.com/carbocation/interpose.(*Middleware).UseHandler.func1.1
+calls=20 0x7eac32 0
+* * 20
+cfl=
+cfn=(227) github.com/digorithm/meal_planner/handlers.GetRecipesHandler
+calls=20 0x903bff 0
+* * 20
+cfl=
+cfn=(228) github.com/digorithm/meal_planner/handlers.PostSignupHandler
+calls=20 0x909115 0
+* * 20
+cfl=
+cfn=(229) github.com/digorithm/meal_planner/handlers.PostHouseHandler
+calls=10 0x90027d 0
+* * 10
+cfl=
+cfn=(227)
+calls=10 0x903c39 0
+* * 10
+cfl=
+cfn=(222)
+calls=10 0x907a50 0
+* * 10
+cfl=
+cfn=(222)
+calls=10 0x907aae 0
+* * 10
+cfl=
+cfn=(64)
+calls=10 0x909cb2 0
+* * 10
+
+ob=(1)
+fl=
+fn=(219)
++10238 0 0
+cfl=
+cfn=(230) github.com/digorithm/meal_planner/vendor/github.com/carbocation/interpose.(*Middleware).ServeHTTP
+calls=770 0x7eaba0 0
+* * 770
+
+ob=(1)
+fl=
+fn=(213)
++35306 0 0
+cfl=
+cfn=(231) net/http.(*Transport).getConn
+calls=10 +50413 0
+* * 10
+cfl=
+cfn=(231)
+calls=10 +52816 0
+* * 10
+
+ob=(1)
+fl=
+fn=(232) net/http.(*Transport).dial
++14331 0 0
+cfl=
+cfn=(181)
+calls=30 0x57b36a 0
+* * 30
+
+ob=(1)
+fl=
+fn=(231)
++776 0 0
+cfl=
+cfn=(10)
+calls=10 0x404eb8 0
+* * 10
++2403 0 0
+cfl=
+cfn=(109)
+calls=10 0x43c0db 0
+* * 10
+
+ob=(1)
+fl=
+fn=(233) net/http.(*Transport).dialConn
++7546 0 0
+cfl=
+cfn=(232)
+calls=30 -3179 0
+* * 30
+
+ob=(1)
+fl=
+fn=(151)
++934 0 0
+cfl=
+cfn=(194)
+calls=20 0x59ea8f 0
+* * 20
+
+ob=(1)
+fl=
+fn=(134)
++7919 0 0
+cfl=
+cfn=(234) net/http.(*persistConn).readLoop.func1
+calls=10 +40047 0
+* * 10
+
+ob=(1)
+fl=
+fn=(132)
++5558 0 0
+cfl=
+cfn=(150)
+calls=20 0x4a26d4 0
+* * 20
+
+ob=(1)
+fl=
+fn=(235) net/http.(*persistConn).close
++4549 0 0
+cfl=
+cfn=(236) net/http.(*persistConn).closeLocked
+calls=10 +4794 0
+* * 10
+
+ob=(1)
+fl=
+fn=(236)
++245 0 0
+cfl=
+cfn=(195)
+calls=10 0x59ecfb 0
+* * 10
+
+ob=(1)
+fl=
+fn=(148)
++2077 0 0
+cfl=
+cfn=(208)
+calls=10 -528441 0
+* * 10
+
+ob=(1)
+fl=
+fn=(220)
++17526 0 0
+cfl=
+cfn=(51)
+calls=10 -99281 0
+* * 10
+
+ob=(1)
+fl=
+fn=(130)
++1540 0 0
+cfl=
+cfn=(233)
+calls=30 -38808 0
+* * 30
+
+ob=(1)
+fl=
+fn=(234)
++633 0 0
+cfl=
+cfn=(235)
+calls=10 -21388 0
+* * 10
+
+ob=(1)
+fl=
+fn=(237) encoding/json.Unmarshal
++63415 0 0
+cfl=
+cfn=(238) encoding/json.(*decodeState).unmarshal
+calls=20 +65017 0
+* * 20
+
+ob=(1)
+fl=
+fn=(238)
++1602 0 0
+cfl=
+cfn=(239) encoding/json.(*decodeState).value
+calls=20 +4556 0
+* * 20
+
+ob=(1)
+fl=
+fn=(239)
++2845 0 0
+cfl=
+cfn=(240) encoding/json.(*decodeState).array
+calls=10 +5449 0
+* * 10
++109 0 0
+cfl=
+cfn=(241) encoding/json.(*decodeState).object
+calls=20 +10065 0
+* * 20
++58 0 0
+cfl=
+cfn=(242) encoding/json.(*decodeState).literal
+calls=20 +12731 0
+* * 20
+
+ob=(1)
+fl=
+fn=(240)
++2437 0 0
+cfl=
+cfn=(239)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(241)
++7461 0 0
+cfl=
+cfn=(239)
+calls=10 -2604 0
+* * 10
+cfl=
+cfn=(239)
+calls=10 -2437 0
+* * 10
+
+ob=(1)
+fl=
+fn=(242)
++2775 0 0
+cfl=
+cfn=(243) encoding/json.(*decodeState).literalStore
+calls=10 +10272 0
+* * 10
+cfl=
+cfn=(243)
+calls=10 +11006 0
+* * 10
+
+ob=(1)
+fl=
+fn=(243)
++7497 0 0
+cfl=
+cfn=(43)
+calls=10 0x485f86 0
+* * 10
++734 0 0
+cfl=
+cfn=(52)
+calls=10 +6674 0
+* * 10
+
+ob=(1)
+fl=
+fn=(244) encoding/json.Marshal
++8504 0 0
+cfl=
+cfn=(245) encoding/json.(*encodeState).marshal
+calls=20 +9906 0
+* * 20
+
+ob=(1)
+fl=
+fn=(246) encoding/json.MarshalIndent
++241 0 0
+cfl=
+cfn=(244)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(245)
++1161 0 0
+cfl=
+cfn=(247) encoding/json.(*encodeState).reflectValue
+calls=20 +1955 0
+* * 20
+
+ob=(1)
+fl=
+fn=(247)
++794 0 0
+cfl=
+cfn=(248) encoding/json.(*sliceEncoder).(encoding/json.encode)-fm
+calls=20 +48876 0
+* * 20
+
+ob=(1)
+fl=
+fn=(249) encoding/json.floatEncoder.encode
++6557 0 0
+cfl=
+cfn=(139)
+calls=10 0x468b84 0
+* * 10
+
+ob=(1)
+fl=
+fn=(250) encoding/json.interfaceEncoder
++1852 0 0
+cfl=
+cfn=(247)
+calls=10 -6557 0
+* * 10
+
+ob=(1)
+fl=
+fn=(251) encoding/json.(*structEncoder).encode
++840 0 0
+cfl=
+cfn=(252) encoding/json.(floatEncoder).(encoding/json.encode)-fm
+calls=10 +39295 0
+* * 10
+
+ob=(1)
+fl=
+fn=(253) encoding/json.(*mapEncoder).encode
++1178 0 0
+cfl=
+cfn=(142)
+calls=10 0x4820c0 0
+* * 10
++1244 0 0
+cfl=
+cfn=(250)
+calls=10 -2018 0
+* * 10
+
+ob=(1)
+fl=
+fn=(254) encoding/json.(*sliceEncoder).encode
++1640 0 0
+cfl=
+cfn=(255) encoding/json.(*arrayEncoder).(encoding/json.encode)-fm
+calls=20 +36539 0
+* * 20
+
+ob=(1)
+fl=
+fn=(256) encoding/json.(*arrayEncoder).encode
++788 0 0
+cfl=
+cfn=(257) encoding/json.(*structEncoder).(encoding/json.encode)-fm
+calls=10 +34515 0
+* * 10
+cfl=
+cfn=(258) encoding/json.(*mapEncoder).(encoding/json.encode)-fm
+calls=10 +34643 0
+* * 10
+
+ob=(1)
+fl=
+fn=(252)
++33605 0 0
+cfl=
+cfn=(249)
+calls=10 -7542 0
+* * 10
+
+ob=(1)
+fl=
+fn=(257)
++122 0 0
+cfl=
+cfn=(251)
+calls=10 -38455 0
+* * 10
+
+ob=(1)
+fl=
+fn=(258)
++128 0 0
+cfl=
+cfn=(253)
+calls=10 -37399 0
+* * 10
+
+ob=(1)
+fl=
+fn=(248)
++128 0 0
+cfl=
+cfn=(254)
+calls=20 -34643 0
+* * 20
+
+ob=(1)
+fl=
+fn=(255)
++128 0 0
+cfl=
+cfn=(256)
+calls=20 -33983 0
+* * 20
+
+ob=(1)
+fl=
+fn=(259) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.Entry.log
++6332 0 0
+cfl=
+cfn=(260) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*TextFormatter).Format
+calls=10 +22260 0
+* * 10
+
+ob=(1)
+fl=
+fn=(261) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*Entry).Info
++1558 0 0
+cfl=
+cfn=(259)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(262) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*Entry).Infof
++1628 0 0
+cfl=
+cfn=(261)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(260)
++12742 0 0
+cfl=
+cfn=(263) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*TextFormatter).appendKeyValue
+calls=10 +16512 0
+* * 10
+
+ob=(1)
+fl=
+fn=(263)
++3770 0 0
+cfl=
+cfn=(264) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*TextFormatter).appendValue
+calls=10 +4340 0
+* * 10
+
+ob=(1)
+fl=
+fn=(264)
++570 0 0
+cfl=
+cfn=(265) github.com/digorithm/meal_planner/vendor/github.com/sirupsen/logrus.(*TextFormatter).quoteString
+calls=10 +1156 0
+* * 10
+
+ob=(1)
+fl=
+fn=(265)
++586 0 0
+cfl=
+cfn=(73)
+calls=10 0x40eb47 0
+* * 10
+
+ob=(1)
+fl=
+fn=(266) regexp.(*Regexp).doMatch
++243458 0 0
+cfl=
+cfn=(267) regexp.(*Regexp).doExecute
+calls=10 +244656 0
+* * 10
+
+ob=(1)
+fl=
+fn=(267)
++1198 0 0
+cfl=
+cfn=(53)
+calls=10 -1832 0
+* * 10
+
+ob=(1)
+fl=
+fn=(268) regexp.(*Regexp).MatchString
++11510 0 0
+cfl=
+cfn=(266)
+calls=10 -1198 0
+* * 10
+
+ob=(1)
+fl=
+fn=(135)
++832423 0 0
+cfl=
+cfn=(68)
+calls=10 0x40a343 0
+* * 10
+
+ob=(1)
+fl=
+fn=(230)
++11982 0 0
+cfl=
+cfn=(221)
+calls=770 0x6980f3 0
+* * 770
+
+ob=(1)
+fl=
+fn=(226)
++146 0 0
+cfl=
+cfn=(269) github.com/digorithm/meal_planner/vendor/github.com/gorilla/mux.(*Router).ServeHTTP
+calls=750 +932779 0
+* * 750
+cfl=
+cfn=(269)
+calls=10 +932670 0
+* * 10
+
+ob=(1)
+fl=
+fn=(270) github.com/digorithm/meal_planner/vendor/github.com/prometheus/procfs.Proc.FileDescriptorsLen
++218384 0 0
+cfl=
+cfn=(271) github.com/digorithm/meal_planner/vendor/github.com/prometheus/procfs.Proc.fileDescriptors
+calls=30 +219272 0
+* * 30
+
+ob=(1)
+fl=
+fn=(271)
++888 0 0
+cfl=
+cfn=(164)
+calls=30 0x4c58ed 0
+* * 30
+
+ob=(1)
+fl=
+fn=(272) github.com/digorithm/meal_planner/vendor/github.com/prometheus/procfs.Proc.NewStat
++7183 0 0
+cfl=
+cfn=(173)
+calls=10 0x55b32d 0
+* * 10
+
+ob=(1)
+fl=
+fn=(273) github.com/digorithm/meal_planner/vendor/github.com/prometheus/procfs.ProcStat.StartTime
++2358 0 0
+cfl=
+cfn=(274) github.com/digorithm/meal_planner/vendor/github.com/prometheus/procfs.FS.NewStat
+calls=10 +6636 0
+* * 10
+
+ob=(1)
+fl=
+fn=(274)
++4278 0 0
+cfl=
+cfn=(152)
+calls=10 0x4a3753 0
+* * 10
+
+ob=(1)
+fl=
+fn=(275) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*processCollector).Collect
++55358 0 0
+cfl=
+cfn=(276) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*processCollector).(github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.processCollect)-fm
+calls=50 +109166 0
+* * 50
+
+ob=(1)
+fl=
+fn=(277) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*processCollector).processCollect
++194 0 0
+cfl=
+cfn=(272)
+calls=10 -61994 0
+* * 10
++105 0 0
+cfl=
+cfn=(270)
+calls=30 -70259 0
+* * 30
++1103 0 0
+cfl=
+cfn=(273)
+calls=10 -59935 0
+* * 10
+
+ob=(1)
+fl=
+fn=(278) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.(*Registry).Gather
++6960 0 0
+cfl=
+cfn=(67)
+calls=10 0x4060d4 0
+* * 10
++1420 0 0
+cfl=
+cfn=(279) github.com/digorithm/meal_planner/vendor/github.com/prometheus/client_golang/prometheus.checkMetricConsistency
+calls=20 +10399 0
+* * 20
+
+ob=(1)
+fl=
+fn=(279)
++8979 0 0
+cfl=
+cfn=(68)
+calls=20 0x40a634 0
+* * 20
+
+ob=(1)
+fl=
+fn=(128)
++30596 0 0
+cfl=
+cfn=(275)
+calls=50 -18761 0
+* * 50
+cfl=
+cfn=(54)
+calls=10 -26760 0
+* * 10
+
+ob=(1)
+fl=
+fn=(276)
++4451 0 0
+cfl=
+cfn=(277)
+calls=30 -49058 0
+* * 30
+cfl=
+cfn=(277)
+calls=10 -49163 0
+* * 10
+cfl=
+cfn=(277)
+calls=10 -47955 0
+* * 10
+
+ob=(1)
+fl=
+fn=(225)
++21976 0 0
+cfl=
+cfn=(278)
+calls=20 -44026 0
+* * 20
+cfl=
+cfn=(278)
+calls=10 -45446 0
+* * 10
+
+ob=(1)
+fl=
+fn=(280) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.seedAndReturnRandom
++113234 0 0
+cfl=
+cfn=(171)
+calls=30 0x528b36 0
+* * 30
+
+ob=(1)
+fl=
+fn=(281) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.randomFrom
++205 0 0
+cfl=
+cfn=(280)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(282) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.Paragraph
++1994 0 0
+cfl=
+cfn=(281)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(283) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.Number
++125 0 0
+cfl=
+cfn=(171)
+calls=30 0x528b36 0
+* * 30
++84 0 0
+cfl=
+cfn=(280)
+calls=20 -2324 0
+* * 20
+
+ob=(1)
+fl=
+fn=(284) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.StringNumberExt
++516 0 0
+cfl=
+cfn=(283)
+calls=30 -84 0
+* * 30
+cfl=
+cfn=(283)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(285) github.com/digorithm/meal_planner/vendor/github.com/Pallinder/go-randomdata.StringNumber
++462 0 0
+cfl=
+cfn=(284)
+calls=50 * 0
+* * 50
+
+ob=(1)
+fl=
+fn=(131)
++38120 0 0
+cfl=
+cfn=(286) github.com/digorithm/meal_planner/finchgo.(*Finch).getSLAMetrics
+calls=20 +51388 0
+* * 20
+cfl=
+cfn=(286)
+calls=10 +51209 0
+* * 10
++79 0 0
+cfl=
+cfn=(287) github.com/digorithm/meal_planner/finchgo.(*Finch).logSLAMetrics
+calls=10 +4190 0
+* * 10
+
+ob=(1)
+fl=
+fn=(287)
++4111 0 0
+cfl=
+cfn=(262)
+calls=10 0x6d9b81 0
+* * 10
+
+ob=(1)
+fl=
+fn=(288) github.com/digorithm/meal_planner/finchgo.(*Finch).getInstantResult
++6041 0 0
+cfl=
+cfn=(237)
+calls=20 0x6c2c87 0
+* * 20
+
+ob=(1)
+fl=
+fn=(286)
++2858 0 0
+cfl=
+cfn=(289) github.com/digorithm/meal_planner/finchgo.getBodyFromURL
+calls=10 +23411 0
+* * 10
++179 0 0
+cfl=
+cfn=(288)
+calls=20 -2858 0
+* * 20
+
+ob=(1)
+fl=
+fn=(290) github.com/digorithm/meal_planner/finchgo.GenerateRecipe
++4833 0 0
+cfl=
+cfn=(282)
+calls=10 -52575 0
+* * 10
+
+ob=(1)
+fl=
+fn=(291) github.com/digorithm/meal_planner/finchgo.GenerateIngredientList
++3013 0 0
+cfl=
+cfn=(285)
+calls=50 -56221 0
+* * 50
+
+ob=(1)
+fl=
+fn=(289)
++12528 0 0
+cfl=
+cfn=(173)
+calls=10 0x55b32d 0
+* * 10
+
+ob=(1)
+fl=
+fn=(292) github.com/digorithm/meal_planner/finchgo.(*WorkflowSimulator).requestAddRecipe
++20685 0 0
+cfl=
+cfn=(290)
+calls=10 -15541 0
+* * 10
+
+ob=(1)
+fl=
+fn=(293) github.com/digorithm/meal_planner/finchgo.(*WorkflowSimulator).requestSearchRecipeByName
++2027 0 0
+cfl=
+cfn=(214)
+calls=20 0x64ee16 0
+* * 20
+cfl=
+cfn=(214)
+calls=10 0x64edcf 0
+* * 10
+
+ob=(1)
+fl=
+fn=(294) github.com/digorithm/meal_planner/finchgo.(*WorkflowSimulator).requestAddIngredientListToStorage
++5943 0 0
+cfl=
+cfn=(291)
+calls=50 -35240 0
+* * 50
+
+ob=(1)
+fl=
+fn=(129)
++4379 0 0
+cfl=
+cfn=(292)
+calls=10 -7970 0
+* * 10
++702 0 0
+cfl=
+cfn=(293)
+calls=30 -10322 0
+* * 30
++346 0 0
+cfl=
+cfn=(294)
+calls=50 -5081 0
+* * 50
+
+ob=(1)
+fl=
+fn=(295) database/sql.ctxDriverExec
++22897 0 0
+cfl=
+cfn=(296) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).ExecContext
+calls=110 +494102 0
+* * 110
+
+ob=(1)
+fl=
+fn=(297) database/sql.ctxDriverQuery
++736 0 0
+cfl=
+cfn=(298) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).QueryContext
+calls=260 +470410 0
+* * 260
+
+ob=(1)
+fl=
+fn=(299) database/sql.ctxDriverBegin
++1561 0 0
+cfl=
+cfn=(300) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).BeginTx
+calls=60 +470769 0
+* * 60
+
+ob=(1)
+fl=
+fn=(301) database/sql.(*DB).QueryContext
++23202 0 0
+cfl=
+cfn=(302) database/sql.(*DB).query
+calls=250 +24185 0
+* * 250
+
+ob=(1)
+fl=
+fn=(303) database/sql.(*DB).Query
++618 0 0
+cfl=
+cfn=(301)
+calls=250 * 0
+* * 250
+
+ob=(1)
+fl=
+fn=(302)
++365 0 0
+cfl=
+cfn=(304) database/sql.(*DB).queryConn
+calls=240 +2159 0
+* * 240
+cfl=
+cfn=(304)
+calls=10 +2372 0
+* * 10
+
+ob=(1)
+fl=
+fn=(304)
++1794 0 0
+cfl=
+cfn=(305) database/sql.withLock
+calls=260 +29270 0
+* * 260
++213 0 0
+cfl=
+cfn=(306) database/sql.(*Rows).initContextClose
+calls=10 +19880 0
+* * 10
+
+ob=(1)
+fl=
+fn=(307) database/sql.(*DB).BeginTx
++1002 0 0
+cfl=
+cfn=(308) database/sql.(*DB).begin
+calls=60 +1881 0
+* * 60
+cfl=
+cfn=(308)
+calls=10 +1928 0
+* * 10
+
+ob=(1)
+fl=
+fn=(309) database/sql.(*DB).Begin
++492 0 0
+cfl=
+cfn=(307)
+calls=70 * 0
+* * 70
+
+ob=(1)
+fl=
+fn=(308)
++387 0 0
+cfl=
+cfn=(305)
+calls=60 +25769 0
+* * 60
++47 0 0
+cfl=
+cfn=(174)
+calls=10 0x5727a9 0
+* * 10
+
+ob=(1)
+fl=
+fn=(310) database/sql.(*Tx).close
++921 0 0
+cfl=
+cfn=(176)
+calls=10 0x573e06 0
+* * 10
+
+ob=(1)
+fl=
+fn=(311) database/sql.(*Tx).Commit
++918 0 0
+cfl=
+cfn=(305)
+calls=80 +24414 0
+* * 80
+cfl=
+cfn=(305)
+calls=10 +24400 0
+* * 10
++70 0 0
+cfl=
+cfn=(310)
+calls=10 -918 0
+* * 10
+
+ob=(1)
+fl=
+fn=(312) database/sql.(*Tx).ExecContext
++5250 0 0
+cfl=
+cfn=(305)
+calls=110 +23426 0
+* * 110
+cfl=
+cfn=(305)
+calls=10 +23432 0
+* * 10
+
+ob=(1)
+fl=
+fn=(313) database/sql.(*Tx).Exec
++704 0 0
+cfl=
+cfn=(312)
+calls=120 * 0
+* * 120
+
+ob=(1)
+fl=
+fn=(314) database/sql.(*Tx).QueryContext
++459 0 0
+cfl=
+cfn=(304)
+calls=20 -10004 0
+* * 20
+
+ob=(1)
+fl=
+fn=(315) database/sql.(*Tx).QueryRowContext
++432 0 0
+cfl=
+cfn=(314)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(316) database/sql.(*Tx).QueryRow
++332 0 0
+cfl=
+cfn=(315)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(306)
++8653 0 0
+cfl=
+cfn=(174)
+calls=10 0x5728a5 0
+* * 10
+
+ob=(1)
+fl=
+fn=(317) database/sql.(*Rows).Next
++458 0 0
+cfl=
+cfn=(305)
+calls=40 +7596 0
+* * 40
+
+ob=(1)
+fl=
+fn=(318) database/sql.(*Rows).nextLocked
++169 0 0
+cfl=
+cfn=(319) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*rows).Next
+calls=40 +400365 0
+* * 40
+
+ob=(1)
+fl=
+fn=(320) database/sql.(*Rows).Err
++1242 0 0
+cfl=
+cfn=(22)
+calls=10 0x42b725 0
+* * 10
+
+ob=(1)
+fl=
+fn=(321) database/sql.(*Rows).Close
++3815 0 0
+cfl=
+cfn=(322) database/sql.(*Rows).close
+calls=10 +4109 0
+* * 10
+
+ob=(1)
+fl=
+fn=(322)
++294 0 0
+cfl=
+cfn=(323) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*rows).Close
+calls=10 +393372 0
+* * 10
+
+ob=(1)
+fl=
+fn=(305)
++1604 0 0
+cfl=
+cfn=(21)
+calls=10 0x42ada6 0
+* * 10
++14 0 0
+cfl=
+cfn=(324) database/sql.(*DB).queryConn.func1
+calls=260 +2210 0
+* * 260
+cfl=
+cfn=(325) database/sql.(*Tx).ExecContext.func1
+calls=110 +3890 0
+* * 110
+cfl=
+cfn=(326) database/sql.(*Tx).Commit.func1
+calls=80 +2965 0
+* * 80
+cfl=
+cfn=(327) database/sql.(*DB).begin.func1
+calls=60 +2756 0
+* * 60
+cfl=
+cfn=(328) database/sql.(*Rows).Next.func1
+calls=40 +4917 0
+* * 40
++6 0 0
+cfl=
+cfn=(22)
+calls=10 0x42b723 0
+* * 10
+
+ob=(1)
+fl=
+fn=(324)
++2190 0 0
+cfl=
+cfn=(297)
+calls=260 -55022 0
+* * 260
+
+ob=(1)
+fl=
+fn=(327)
++546 0 0
+cfl=
+cfn=(299)
+calls=60 -55651 0
+* * 60
+
+ob=(1)
+fl=
+fn=(326)
++209 0 0
+cfl=
+cfn=(329) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).Commit
+calls=80 +358802 0
+* * 80
+
+ob=(1)
+fl=
+fn=(325)
++925 0 0
+cfl=
+cfn=(295)
+calls=110 -58703 0
+* * 110
+
+ob=(1)
+fl=
+fn=(328)
++1027 0 0
+cfl=
+cfn=(318)
+calls=40 -10845 0
+* * 40
+
+ob=(1)
+fl=
+fn=(330) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx/reflectx.(*Mapper).TraversalsByName
++10241 0 0
+cfl=
+cfn=(331) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx/reflectx.Deref
+calls=10 +12181 0
+* * 10
++296 0 0
+cfl=
+cfn=(72)
+calls=10 0x40d839 0
+* * 10
+
+ob=(1)
+fl=
+fn=(331)
++1644 0 0
+cfl=
+cfn=(42)
+calls=10 0x474981 0
+* * 10
+
+ob=(1)
+fl=
+fn=(332) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*Row).Scan
++34700 0 0
+cfl=
+cfn=(317)
+calls=10 -24222 0
+* * 10
++94 0 0
+cfl=
+cfn=(321)
+calls=10 -53696 0
+* * 10
++119 0 0
+cfl=
+cfn=(320)
+calls=10 -57605 0
+* * 10
+
+ob=(1)
+fl=
+fn=(333) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*DB).Get
++3870 0 0
+cfl=
+cfn=(334) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.Get
+calls=110 +15787 0
+* * 110
+cfl=
+cfn=(334)
+calls=50 +15826 0
+* * 50
+
+ob=(1)
+fl=
+fn=(335) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*DB).Beginx
++210 0 0
+cfl=
+cfn=(309)
+calls=70 -81636 0
+* * 70
+
+ob=(1)
+fl=
+fn=(336) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*DB).Queryx
++417 0 0
+cfl=
+cfn=(303)
+calls=140 -85712 0
+* * 140
+
+ob=(1)
+fl=
+fn=(337) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*DB).QueryRowx
++384 0 0
+cfl=
+cfn=(303)
+calls=110 -86129 0
+* * 110
+
+ob=(1)
+fl=
+fn=(338) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*Tx).MustExec
++4317 0 0
+cfl=
+cfn=(339) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.MustExec
+calls=20 +11117 0
+* * 20
+
+ob=(1)
+fl=
+fn=(334)
++6589 0 0
+cfl=
+cfn=(337)
+calls=110 -4317 0
+* * 110
++39 0 0
+cfl=
+cfn=(340) github.com/digorithm/meal_planner/vendor/github.com/jmoiron/sqlx.(*Row).scanAny
+calls=30 +1913 0
+* * 30
+cfl=
+cfn=(340)
+calls=20 +1547 0
+* * 20
+
+ob=(1)
+fl=
+fn=(339)
++172 0 0
+cfl=
+cfn=(313)
+calls=20 -85295 0
+* * 20
+
+ob=(1)
+fl=
+fn=(340)
++1336 0 0
+cfl=
+cfn=(330)
+calls=10 -52851 0
+* * 10
+cfl=
+cfn=(330)
+calls=10 -52555 0
+* * 10
++366 0 0
+cfl=
+cfn=(332)
+calls=10 -17547 0
+* * 10
+cfl=
+cfn=(332)
+calls=10 -17453 0
+* * 10
+cfl=
+cfn=(332)
+calls=10 -17334 0
+* * 10
+
+ob=(1)
+fl=
+fn=(341) github.com/digorithm/meal_planner/vendor/github.com/buger/jsonparser.ArrayEach
++42807 0 0
+cfl=
+cfn=(342) github.com/digorithm/meal_planner/models.(*User).addJsonIngredientStepTable.func1.1
+calls=30 +175620 0
+* * 30
+cfl=
+cfn=(342)
+calls=20 +175836 0
+* * 20
+cfl=
+cfn=(342)
+calls=20 +176358 0
+* * 20
+
+ob=(1)
+fl=
+fn=(55)
++6290 0 0
+cfl=
+cfn=(56)
+calls=10 +8983 0
+* * 10
+
+ob=(1)
+fl=
+fn=(343) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/bcrypt.GenerateFromPassword
++8046 0 0
+cfl=
+cfn=(344) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/bcrypt.newFromPassword
+calls=20 +9310 0
+* * 20
+
+ob=(1)
+fl=
+fn=(344)
++1264 0 0
+cfl=
+cfn=(345) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/bcrypt.bcrypt
+calls=20 +2921 0
+* * 20
+
+ob=(1)
+fl=
+fn=(345)
++1657 0 0
+cfl=
+cfn=(346) github.com/digorithm/meal_planner/vendor/golang.org/x/crypto/bcrypt.expensiveBlowfishSetup
+calls=20 +2444 0
+* * 20
+
+ob=(1)
+fl=
+fn=(346)
++787 0 0
+cfl=
+cfn=(55)
+calls=10 -11287 0
+* * 10
+cfl=
+cfn=(55)
+calls=10 -10967 0
+* * 10
+
+ob=(1)
+fl=
+fn=(347) github.com/digorithm/meal_planner/models.(*Base).newTransactionIfNeeded
++6051 0 0
+cfl=
+cfn=(335)
+calls=70 -74471 0
+* * 70
+
+ob=(1)
+fl=
+fn=(348) github.com/digorithm/meal_planner/models.(*Base).InsertIntoTable
++241 0 0
+cfl=
+cfn=(347)
+calls=10 * 0
+* * 10
++1540 0 0
+cfl=
+cfn=(168)
+calls=10 0x52282f 0
+* * 10
++572 0 0
+cfl=
+cfn=(316)
+calls=20 -154629 0
+* * 20
++222 0 0
+cfl=
+cfn=(311)
+calls=30 -162448 0
+* * 30
++149 0 0
+cfl=
+cfn=(338)
+calls=20 -77979 0
+* * 20
+
+ob=(1)
+fl=
+fn=(349) github.com/digorithm/meal_planner/models.(*Base).InsertIntoMultiKeyTable
++493 0 0
+cfl=
+cfn=(347)
+calls=30 -2724 0
+* * 30
++1811 0 0
+cfl=
+cfn=(313)
+calls=40 -157288 0
+* * 40
++120 0 0
+cfl=
+cfn=(311)
+calls=30 -165123 0
+* * 30
+cfl=
+cfn=(311)
+calls=10 -165053 0
+* * 10
+
+ob=(1)
+fl=
+fn=(350) github.com/digorithm/meal_planner/models.(*Base).UpdateFromTable
++549 0 0
+cfl=
+cfn=(347)
+calls=30 -5148 0
+* * 30
++1460 0 0
+cfl=
+cfn=(313)
+calls=60 -159768 0
+* * 60
++120 0 0
+cfl=
+cfn=(311)
+calls=30 -167252 0
+* * 30
+
+ob=(1)
+fl=
+fn=(351) github.com/digorithm/meal_planner/models.(*Base).GetCompoundModelWithoutID
++8559 0 0
+cfl=
+cfn=(336)
+calls=10 -87382 0
+* * 10
+
+ob=(1)
+fl=
+fn=(352) github.com/digorithm/meal_planner/models.(*Base).GetCompoundModel
++1021 0 0
+cfl=
+cfn=(336)
+calls=130 -95941 0
+* * 130
++189 0 0
+cfl=
+cfn=(317)
+calls=30 -160594 0
+* * 30
+
+ob=(1)
+fl=
+fn=(353) github.com/digorithm/meal_planner/models.(*House).CreateHouse
++8830 0 0
+cfl=
+cfn=(348)
+calls=10 -14471 0
+* * 10
+
+ob=(1)
+fl=
+fn=(354) github.com/digorithm/meal_planner/models.(*Ingredient).ingredientRowFromSqlResult
++1699 0 0
+cfl=
+cfn=(355) github.com/digorithm/meal_planner/models.(*Ingredient).GetById
+calls=40 +2175 0
+* * 40
+
+ob=(1)
+fl=
+fn=(355)
++476 0 0
+cfl=
+cfn=(333)
+calls=40 -108307 0
+* * 40
+
+ob=(1)
+fl=
+fn=(356) github.com/digorithm/meal_planner/models.(*Ingredient).GetByName
++311 0 0
+cfl=
+cfn=(167)
+calls=10 0x4d2465 0
+* * 10
++223 0 0
+cfl=
+cfn=(333)
+calls=120 -109094 0
+* * 120
+
+ob=(1)
+fl=
+fn=(357) github.com/digorithm/meal_planner/models.(*Ingredient).AddIngredient
++1949 0 0
+cfl=
+cfn=(348)
+calls=20 -26232 0
+* * 20
+cfl=
+cfn=(348)
+calls=20 -26010 0
+* * 20
+cfl=
+cfn=(348)
+calls=10 -28344 0
+* * 10
+cfl=
+cfn=(348)
+calls=10 -26804 0
+* * 10
++217 0 0
+cfl=
+cfn=(354)
+calls=40 -2959 0
+* * 40
+
+ob=(1)
+fl=
+fn=(358) github.com/digorithm/meal_planner/models.(*Recipe).GetAllRecipesByStringSearch
++26310 0 0
+cfl=
+cfn=(57)
+calls=10 +29772 0
+* * 10
+cfl=
+cfn=(57)
+calls=10 +29778 0
+* * 10
+
+ob=(1)
+fl=
+fn=(359) github.com/digorithm/meal_planner/models.(*Recipe).GetFullRecipesByStringSearch
++617 0 0
+cfl=
+cfn=(358)
+calls=20 * 0
+* * 20
+
+ob=(1)
+fl=
+fn=(57)
++2845 0 0
+cfl=
+cfn=(351)
+calls=10 -41842 0
+* * 10
+
+ob=(1)
+fl=
+fn=(360) github.com/digorithm/meal_planner/models.(*Schedule).CreateHouseSchedule
++21938 0 0
+cfl=
+cfn=(361) github.com/digorithm/meal_planner/models.(*Schedule).CreateFullSchedule
+calls=100 +22800 0
+* * 100
+
+ob=(1)
+fl=
+fn=(361)
++862 0 0
+cfl=
+cfn=(349)
+calls=40 -77433 0
+* * 40
+cfl=
+cfn=(349)
+calls=30 -79244 0
+* * 30
+cfl=
+cfn=(349)
+calls=30 -77313 0
+* * 30
+
+ob=(1)
+fl=
+fn=(362) github.com/digorithm/meal_planner/models.(*ItemInStorage).AddIngredientList
++3080 0 0
+cfl=
+cfn=(356)
+calls=90 -54738 0
+* * 90
+cfl=
+cfn=(356)
+calls=10 -54961 0
+* * 10
++269 0 0
+cfl=
+cfn=(363) github.com/digorithm/meal_planner/models.(*ItemInStorage).UpdateStorage
+calls=130 +2982 0
+* * 130
+cfl=
+cfn=(363)
+calls=120 +2556 0
+* * 120
+cfl=
+cfn=(363)
+calls=30 +2789 0
+* * 30
++311 0 0
+cfl=
+cfn=(357)
+calls=50 -56138 0
+* * 50
+cfl=
+cfn=(357)
+calls=30 -55921 0
+* * 30
+
+ob=(1)
+fl=
+fn=(364) github.com/digorithm/meal_planner/models.(*ItemInStorage).GetHouseStorage
++222 0 0
+cfl=
+cfn=(352)
+calls=10 -69937 0
+* * 10
+
+ob=(1)
+fl=
+fn=(365) github.com/digorithm/meal_planner/models.(*ItemInStorage).AddIngToStorage
++1208 0 0
+cfl=
+cfn=(349)
+calls=10 -82057 0
+* * 10
++173 0 0
+cfl=
+cfn=(366) github.com/digorithm/meal_planner/models.(*ItemInStorage).GetStorageIngredient
+calls=20 +2617 0
+* * 20
+
+ob=(1)
+fl=
+fn=(363)
++373 0 0
+cfl=
+cfn=(366)
+calls=120 +2444 0
+* * 120
++233 0 0
+cfl=
+cfn=(365)
+calls=20 -373 0
+* * 20
+cfl=
+cfn=(365)
+calls=10 -546 0
+* * 10
++193 0 0
+cfl=
+cfn=(367) github.com/digorithm/meal_planner/models.(*ItemInStorage).UpdateIngredient
+calls=120 +1182 0
+* * 120
+cfl=
+cfn=(367)
+calls=10 +1355 0
+* * 10
+
+ob=(1)
+fl=
+fn=(367)
++989 0 0
+cfl=
+cfn=(350)
+calls=60 -82228 0
+* * 60
+cfl=
+cfn=(350)
+calls=30 -83688 0
+* * 30
+cfl=
+cfn=(350)
+calls=30 -82108 0
+* * 30
++173 0 0
+cfl=
+cfn=(366)
+calls=10 +656 0
+* * 10
+
+ob=(1)
+fl=
+fn=(366)
++483 0 0
+cfl=
+cfn=(352)
+calls=130 -73690 0
+* * 130
+cfl=
+cfn=(352)
+calls=20 -73501 0
+* * 20
+
+ob=(1)
+fl=
+fn=(368) github.com/digorithm/meal_planner/models.(*User).Signup
++7389 0 0
+cfl=
+cfn=(343)
+calls=20 -100789 0
+* * 20
+
+ob=(1)
+fl=
+fn=(369) github.com/digorithm/meal_planner/models.(*User).AddRecipe
++3680 0 0
+cfl=
+cfn=(370) github.com/digorithm/meal_planner/models.(*User).addJsonIngredientStepTable
+calls=70 +6456 0
+* * 70
+
+ob=(1)
+fl=
+fn=(370)
++2776 0 0
+cfl=
+cfn=(341)
+calls=70 -126194 0
+* * 70
+
+ob=(1)
+fl=
+fn=(342)
++3843 0 0
+cfl=
+cfn=(356)
+calls=30 -76290 0
+* * 30
++216 0 0
+cfl=
+cfn=(348)
+calls=20 -105994 0
+* * 20
++522 0 0
+cfl=
+cfn=(357)
+calls=10 -78400 0
+* * 10
+cfl=
+cfn=(357)
+calls=10 -78183 0
+* * 10
+
+ob=(1)
+fl=
+fn=(371) github.com/digorithm/meal_planner/models.(*User).addJsonIngredientStepTable.func1
++2001 0 0
+cfl=
+cfn=(341)
+calls=70 -133551 0
+* * 70
+
+ob=(1)
+fl=
+fn=(372) github.com/digorithm/meal_planner/vendor/github.com/gorilla/mux.(*Router).Match
++18791 0 0
+cfl=
+cfn=(373) github.com/digorithm/meal_planner/vendor/github.com/gorilla/mux.(*Route).Match
+calls=10 +43333 0
+* * 10
+
+ob=(1)
+fl=
+fn=(269)
++331 0 0
+cfl=
+cfn=(372)
+calls=10 * 0
+* * 10
++109 0 0
+cfl=
+cfn=(221)
+calls=740 0x6980f3 0
+* * 740
+cfl=
+cfn=(374) net/http/pprof.(*handler).ServeHTTP
+calls=10 +368501 0
+* * 10
+
+ob=(1)
+fl=
+fn=(375) github.com/digorithm/meal_planner/vendor/github.com/gorilla/mux.(*routeRegexp).Match
++18271 0 0
+cfl=
+cfn=(268)
+calls=10 0x71c92b 0
+* * 10
+
+ob=(1)
+fl=
+fn=(373)
++5831 0 0
+cfl=
+cfn=(375)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(376) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*readBuf).string
++56134 0 0
+cfl=
+cfn=(117)
+calls=10 0x44619d 0
+* * 10
+
+ob=(1)
+fl=
+fn=(377) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).begin
++12784 0 0
+cfl=
+cfn=(58)
+calls=30 +15810 0
+* * 30
+cfl=
+cfn=(58)
+calls=20 +15884 0
+* * 20
+cfl=
+cfn=(58)
+calls=10 +16292 0
+* * 10
+
+ob=(1)
+fl=
+fn=(329)
++1237 0 0
+cfl=
+cfn=(58)
+calls=30 +3026 0
+* * 30
+cfl=
+cfn=(58)
+calls=30 +3100 0
+* * 30
+cfl=
+cfn=(58)
+calls=10 +3471 0
+* * 10
+cfl=
+cfn=(58)
+calls=10 +3537 0
+* * 10
+
+ob=(1)
+fl=
+fn=(58)
++1789 0 0
+cfl=
+cfn=(60)
+calls=60 +12274 0
+* * 60
++74 0 0
+cfl=
+cfn=(378) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).recv1
+calls=50 +12651 0
+* * 50
++371 0 0
+cfl=
+cfn=(376)
+calls=10 -15884 0
+* * 10
++37 0 0
+cfl=
+cfn=(61)
+calls=10 +26861 0
+* * 10
+
+ob=(1)
+fl=
+fn=(379) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).simpleQuery
++1051 0 0
+cfl=
+cfn=(60)
+calls=10 +10003 0
+* * 10
+
+ob=(1)
+fl=
+fn=(59)
++3179 0 0
+cfl=
+cfn=(116)
+calls=10 0x445fc6 0
+* * 10
++964 0 0
+cfl=
+cfn=(60)
+calls=140 +5773 0
+* * 140
+cfl=
+cfn=(60)
+calls=10 +5753 0
+* * 10
++17 0 0
+cfl=
+cfn=(380) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).readParseResponse
+calls=20 +32873 0
+* * 20
++17 0 0
+cfl=
+cfn=(381) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).readStatementDescribeResponse
+calls=10 +33409 0
+* * 10
+
+ob=(1)
+fl=
+fn=(382) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).query
++3091 0 0
+cfl=
+cfn=(59)
+calls=100 -34 0
+* * 100
+cfl=
+cfn=(59)
+calls=20 -17 0
+* * 20
+cfl=
+cfn=(59)
+calls=10 -998 0
+* * 10
+cfl=
+cfn=(59)
+calls=10 -613 0
+* * 10
+cfl=
+cfn=(59)
+calls=10 * 0
+* * 10
++58 0 0
+cfl=
+cfn=(383) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*stmt).exec
+calls=80 +16631 0
+* * 80
+cfl=
+cfn=(383)
+calls=10 +16648 0
+* * 10
++210 0 0
+cfl=
+cfn=(63)
+calls=10 +76028 0
+* * 10
++187 0 0
+cfl=
+cfn=(379)
+calls=10 -7536 0
+* * 10
+
+ob=(1)
+fl=
+fn=(384) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).Exec
++697 0 0
+cfl=
+cfn=(59)
+calls=50 -3580 0
+* * 50
++50 0 0
+cfl=
+cfn=(385) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*stmt).Exec
+calls=50 +12848 0
+* * 50
+cfl=
+cfn=(385)
+calls=10 +12941 0
+* * 10
+
+ob=(1)
+fl=
+fn=(60)
++482 0 0
+cfl=
+cfn=(194)
+calls=320 0x59ea8f 0
+* * 320
+
+ob=(1)
+fl=
+fn=(386) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).recvMessage
++1135 0 0
+cfl=
+cfn=(145)
+calls=100 0x491427 0
+* * 100
+
+ob=(1)
+fl=
+fn=(387) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).recv1Buf
++779 0 0
+cfl=
+cfn=(386)
+calls=100 * 0
+* * 100
+
+ob=(1)
+fl=
+fn=(378)
++252 0 0
+cfl=
+cfn=(387)
+calls=100 * 0
+* * 100
+
+ob=(1)
+fl=
+fn=(385)
++10150 0 0
+cfl=
+cfn=(383)
+calls=30 +12781 0
+* * 30
+cfl=
+cfn=(383)
+calls=20 +12798 0
+* * 20
++93 0 0
+cfl=
+cfn=(22)
+calls=10 0x42b81c 0
+* * 10
+
+ob=(1)
+fl=
+fn=(383)
++2538 0 0
+cfl=
+cfn=(60)
+calls=110 -12409 0
+* * 110
++17 0 0
+cfl=
+cfn=(388) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.(*conn).readBindResponse
+calls=30 +15101 0
+* * 30
+
+ob=(1)
+fl=
+fn=(61)
++1857 0 0
+cfl=
+cfn=(76)
+calls=10 0x40ec00 0
+* * 10
+
+ob=(1)
+fl=
+fn=(323)
++821 0 0
+cfl=
+cfn=(319)
+calls=10 +1578 0
+* * 10
+
+ob=(1)
+fl=
+fn=(319)
++757 0 0
+cfl=
+cfn=(61)
+calls=10 -1130 0
+* * 10
++1010 0 0
+cfl=
+cfn=(389) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.decode
+calls=30 +34687 0
+* * 30
+cfl=
+cfn=(389)
+calls=10 +34526 0
+* * 10
+
+ob=(1)
+fl=
+fn=(380)
++8655 0 0
+cfl=
+cfn=(378)
+calls=20 -17243 0
+* * 20
+
+ob=(1)
+fl=
+fn=(381)
++553 0 0
+cfl=
+cfn=(390) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.parseStatementRowDescribe
+calls=10 +4137 0
+* * 10
+
+ob=(1)
+fl=
+fn=(388)
++1431 0 0
+cfl=
+cfn=(378)
+calls=30 -26451 0
+* * 30
+
+ob=(1)
+fl=
+fn=(390)
++2153 0 0
+cfl=
+cfn=(30)
+calls=10 0x442229 0
+* * 10
+
+ob=(1)
+fl=
+fn=(298)
++8639 0 0
+cfl=
+cfn=(382)
+calls=150 -33885 0
+* * 150
+cfl=
+cfn=(382)
+calls=90 -33827 0
+* * 90
+cfl=
+cfn=(382)
+calls=10 -33617 0
+* * 10
+cfl=
+cfn=(382)
+calls=10 -33430 0
+* * 10
+
+ob=(1)
+fl=
+fn=(296)
++795 0 0
+cfl=
+cfn=(384)
+calls=60 -41322 0
+* * 60
+cfl=
+cfn=(384)
+calls=50 -41372 0
+* * 50
+
+ob=(1)
+fl=
+fn=(300)
++300 0 0
+cfl=
+cfn=(377)
+calls=60 -55146 0
+* * 60
+
+ob=(1)
+fl=
+fn=(389)
++10990 0 0
+cfl=
+cfn=(391) github.com/digorithm/meal_planner/vendor/github.com/lib/pq.binaryDecode
+calls=10 +11888 0
+* * 10
++161 0 0
+cfl=
+cfn=(62)
+calls=10 +1430 0
+* * 10
+cfl=
+cfn=(62)
+calls=10 +2427 0
+* * 10
+cfl=
+cfn=(62)
+calls=10 +2434 0
+* * 10
+
+ob=(1)
+fl=
+fn=(391)
++737 0 0
+cfl=
+cfn=(73)
+calls=10 0x40eb6e 0
+* * 10
+
+ob=(1)
+fl=
+fn=(62)
++532 0 0
+cfl=
+cfn=(117)
+calls=10 0x44619d 0
+* * 10
++997 0 0
+cfl=
+cfn=(138)
+calls=10 0x465909 0
+* * 10
+
+ob=(1)
+fl=
+fn=(229)
++41687 0 0
+cfl=
+cfn=(353)
+calls=10 -266695 0
+* * 10
+
+ob=(1)
+fl=
+fn=(224)
++9909 0 0
+cfl=
+cfn=(369)
+calls=70 -232159 0
+* * 70
+
+ob=(1)
+fl=
+fn=(227)
++4813 0 0
+cfl=
+cfn=(359)
+calls=20 -286489 0
+* * 20
++58 0 0
+cfl=
+cfn=(392) github.com/digorithm/meal_planner/handlers.buildFullRecipeJSONResponse
+calls=10 +9677 0
+* * 10
+
+ob=(1)
+fl=
+fn=(392)
++9619 0 0
+cfl=
+cfn=(246)
+calls=10 0x6cb25e 0
+* * 10
+
+ob=(1)
+fl=
+fn=(223)
++2423 0 0
+cfl=
+cfn=(360)
+calls=100 -276196 0
+* * 100
+
+ob=(1)
+fl=
+fn=(222)
++3806 0 0
+cfl=
+cfn=(362)
+calls=280 -274408 0
+* * 280
+cfl=
+cfn=(362)
+calls=100 -274677 0
+* * 100
+cfl=
+cfn=(362)
+calls=80 -274097 0
+* * 80
++47 0 0
+cfl=
+cfn=(364)
+calls=10 -277681 0
+* * 10
++94 0 0
+cfl=
+cfn=(244)
+calls=10 0x6cb16d 0
+* * 10
+
+ob=(1)
+fl=
+fn=(228)
++5735 0 0
+cfl=
+cfn=(368)
+calls=20 -266608 0
+* * 20
+
+ob=(1)
+fl=
+fn=(393) github.com/digorithm/meal_planner/middlewares.SetDB.func1.1
++1824 0 0
+cfl=
+cfn=(221)
+calls=770 0x6980f3 0
+* * 770
+
+ob=(1)
+fl=
+fn=(394) github.com/digorithm/meal_planner/middlewares.SetSessionStore.func1.1
++603 0 0
+cfl=
+cfn=(221)
+calls=770 0x6980f3 0
+* * 770
+
+ob=(1)
+fl=
+fn=(64)
++455 0 0
+cfl=
+cfn=(221)
+calls=760 0x6980f3 0
+* * 760
+
+ob=(1)
+fl=
+fn=(395) internal/pprof/profile.(*Profile).remapLocationIDs
++23937 0 0
+cfl=
+cfn=(13)
+calls=10 0x40cf03 0
+* * 10
+
+ob=(1)
+fl=
+fn=(396) internal/pprof/profile.(*Profile).ParseMemoryMap
++3643 0 0
+cfl=
+cfn=(395)
+calls=10 * 0
+* * 10
+
+ob=(1)
+fl=
+fn=(397) runtime/pprof/internal/protopprof.EncodeMemProfile
++50894 0 0
+cfl=
+cfn=(398) runtime/pprof/internal/protopprof.addMappings
+calls=10 +55078 0
+* * 10
+
+ob=(1)
+fl=
+fn=(398)
++4184 0 0
+cfl=
+cfn=(396)
+calls=10 -50894 0
+* * 10
+
+ob=(1)
+fl=
+fn=(399) runtime/pprof.(*Profile).WriteTo
++12235 0 0
+cfl=
+cfn=(400) runtime/pprof.writeHeap
+calls=10 +26402 0
+* * 10
+
+ob=(1)
+fl=
+fn=(400)
++14167 0 0
+cfl=
+cfn=(397)
+calls=10 -16419 0
+* * 10
+
+ob=(1)
+fl=
+fn=(401) net/http/pprof.handler.ServeHTTP
++14997 0 0
+cfl=
+cfn=(399)
+calls=10 -14167 0
+* * 10
+
+ob=(1)
+fl=
+fn=(374)
++1379 0 0
+cfl=
+cfn=(401)
+calls=10 * 0
+* * 10

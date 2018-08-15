@@ -6,6 +6,7 @@ import pandas as pd
 from finch_ml import FinchML
 from collections import Counter
 from util import get_score
+import datetime
 
 
 def validate_prediction_workflow(slos, desired_configuration, dataset_file="dataset.csv"):
@@ -109,13 +110,23 @@ def validate_prediction_with_SLI_approach(SLOs, dataset_file="dataset.csv"):
 
   # Train the model using the dataset that does not contain the test sample
   finch = FinchML()
+  a = datetime.datetime.now()
   finch.train_models(dataframe=ds)
+  b = datetime.datetime.now()
+  print("### Training time ###")
+  print(b-a)
 
   # This datapoint is a sample of a bad performance. All SLIs are violating our fictional SLOs
   test = dataset.loc[0].copy()
 
   # Grab knob names
   knobs = [k for k in dataset.keys() if "knob" in k]
+  
+  a = datetime.datetime.now()  
   final_knob_predictions = finch.predict_optimal_configuration_2(knobs, SLOs)
+  b = datetime.datetime.now()
+
+  print("### Prediction time ###")
+  print(b-a)
 
   print("Optimal set of knobs for test case:: " + str(final_knob_predictions))
