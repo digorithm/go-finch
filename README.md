@@ -1,3 +1,12 @@
+# Disclaimer
+
+This is a highly experimental work. Shouldn't be used anywhere near a production environment. The thesis describing in detail what's going on here is hosted here: https://open.library.ubc.ca/cIRcle/collections/ubctheses/24/items/1.0379346
+
+The core of this theoretical/experimental work lives in the `finch/` directory. The other directories in this repo is virtually a simple CRUD application that makes use of the ideas in `finch/`. 
+
+This hasn't been updated in years, so proceed at your own caution! 
+
+
 # Research and setup
 
 ## Running app and pg on docker compose
