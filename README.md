@@ -2,12 +2,23 @@
 
 This is a highly experimental work. Shouldn't be used anywhere near a production environment. The thesis describing in detail what's going on here is hosted here: https://open.library.ubc.ca/cIRcle/collections/ubctheses/24/items/1.0379346
 
-The core of this theoretical/experimental work lives in the `finch/` directory. The other directories in this repo is virtually a simple CRUD application that makes use of the ideas in `finch/`. 
+The core of this theoretical/experimental work lives in the `finch/` directory. The other directories in this repo is virtually a simple CRUD application that makes use of the ideas in `finch/`.
 
-This hasn't been updated in years, so proceed at your own caution! 
+**The code in this repo, and specially in `finch/` lives up to the meme about academics writing code that's hard to maintain.** Goes without saying that it doesn't reflect how I would build things that should be production-ready. Time was short, pressure was high, pay was low, and papers needed to be published at the time of the creation of `finch/` and this hasn't been updated in years. That said, proceed at your own caution. 
 
 
 # Research and setup
+
+Due to advancements in distributed systems and the increasing industrial demands placed on these systems, distributed systems are comprised of multiple complex
+components (e.g databases and their replication infrastructure, caching components, proxies, and load balancers) each of which have their own complex configuration parameters that enable them to be tuned for given runtime requirements.
+
+Software Engineers must manually tinker with many of these configuration parameters that change the behaviour and/or structure of the system in order to achieve their system requirements. In many cases, static configuration settings might not meet certain demands in a given context and ad hoc modifications of these configuration parameters can trigger unexpected behaviours, which can have negative effects on the quality of the overall system.
+
+In this work, I show the design and analysis of Finch; a tool that injects a machine learning based MAPE-K feedback loop to existing systems to automate how these configuration parameters are set. Finch configures and optimizes the system to meet service-level agreements in uncertain workloads and usage patterns.
+Rather than changing the core infrastructure of a system to fit the feedback loop, Finch asks the user to perform a small set of actions: instrumenting the code and configuration parameters, defining service-level objectives and agreements, and enabling programmatic changes to these configurations. As a result, Finch learns how to dynamically configure the system at runtime to self-adapt to its dynamic workloads.
+
+I show how Finch can replace the trial-and-error engineering effort that otherwise would be spent manually optimizing a system’s wide array of configuration
+parameters with an automated self-adaptive system.
 
 ## Running app and pg on docker compose
 
